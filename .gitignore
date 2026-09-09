@@ -13,6 +13,7 @@
 **/.env
 **/.env.*
 !**/.env.example
+!**/.env.production
 UNAH_Reportes_API/appsettings.Development.json
 UNAH_Reportes_API/appsettings.Production.json
 
