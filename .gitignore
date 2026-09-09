@@ -19,3 +19,4 @@ UNAH_Reportes_API/appsettings.Production.json
 # Archivos del sistema operativo
 .DS_Store
 Thumbs.db
+Recursos/
