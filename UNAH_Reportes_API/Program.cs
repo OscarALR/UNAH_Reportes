@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
+using System.Threading.RateLimiting;
 using System.Text;
 using UNAH_Reportes_API.Data;
 using UNAH_Reportes_API.Services;
@@ -63,6 +64,20 @@ builder.Services.AddScoped<BlobStorageService>();
 builder.Services.AddScoped<LocalTokenService>();
 builder.Services.AddScoped<IPasswordHasher<UNAH_Reportes_API.Models.Usuario>, PasswordHasher<UNAH_Reportes_API.Models.Usuario>>();
 builder.Services.AddScoped<DemoUserSeeder>();
+builder.Services.AddRateLimiter(options =>
+{
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+    options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(context =>
+        RateLimitPartition.GetFixedWindowLimiter(
+            context.Connection.RemoteIpAddress?.ToString() ?? "sin-ip",
+            _ => new FixedWindowRateLimiterOptions
+            {
+                PermitLimit = 120,
+                Window = TimeSpan.FromMinutes(1),
+                QueueLimit = 0,
+                AutoReplenishment = true
+            }));
+});
 
 var localJwt = builder.Configuration.GetSection("LocalJwt");
 var localSigningKey = localJwt["SigningKey"] ?? throw new InvalidOperationException("Configura LocalJwt:SigningKey mediante secretos de usuario.");
@@ -119,11 +134,19 @@ builder.Services.AddAuthorization(options =>
     });
 });
 
+var corsConfigurado = builder.Configuration["Cors:AllowedOrigins"];
+var origenesPermitidos = (corsConfigurado ?? string.Empty)
+    .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+if (builder.Environment.IsDevelopment())
+    origenesPermitidos = origenesPermitidos.Append("http://localhost:5173").Distinct().ToArray();
+if (origenesPermitidos.Length == 0)
+    throw new InvalidOperationException("Configura Cors:AllowedOrigins con el dominio público del frontend.");
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("PermitirFrontend", policy =>
     {
-        policy.WithOrigins("http://localhost:5173")
+        policy.WithOrigins(origenesPermitidos)
             .AllowAnyMethod()
             .AllowAnyHeader();
     });
@@ -146,10 +169,16 @@ if (app.Environment.IsDevelopment())
         options.OAuthUsePkce();
     });
 }
+else
+{
+    app.UseHsts();
+}
 
 app.UseCors("PermitirFrontend");
 
 app.UseHttpsRedirection();
+
+app.UseRateLimiter();
 
 app.UseAuthentication();
 

@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using UNAH_Reportes_API.Data;
 using UNAH_Reportes_API.Models;
 using UNAH_Reportes_API.Services;
+using UNAH_Reportes_API.Extensions;
 
 namespace UNAH_Reportes_API.Controllers
 {
@@ -37,9 +38,18 @@ namespace UNAH_Reportes_API.Controllers
         [HttpPost]
         public async Task<ActionResult> SubirImagen(int idReporte, IFormFile archivo)
         {
-            var reporteExiste = await _context.Reportes.AnyAsync(r => r.IdReporte == idReporte);
-            if (!reporteExiste)
+            var correo = User.GetCorreoInstitucional();
+            var usuario = await _context.Usuarios.Include(u => u.Rol)
+                .SingleOrDefaultAsync(u => u.CorreoInstitucional == correo);
+            if (usuario == null) return Unauthorized();
+
+            var reporte = await _context.Reportes.FindAsync(idReporte);
+            if (reporte == null)
                 return NotFound($"No existe un reporte con ID {idReporte}");
+
+            var puedeAdjuntar = reporte.IdUsuario == usuario.IdUsuario ||
+                usuario.Rol.NombreRol is "Gestor" or "Administrador";
+            if (!puedeAdjuntar) return Forbid();
 
             if (archivo == null || archivo.Length == 0)
                 return BadRequest("No se recibió ningún archivo.");

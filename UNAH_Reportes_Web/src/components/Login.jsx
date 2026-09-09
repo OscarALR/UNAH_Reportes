@@ -128,9 +128,9 @@ function Login() {
               <button type="submit" className="login-local-button" disabled={iniciando}>{modoLocal === 'registro' ? 'Crear cuenta' : 'Ingresar con correo'}</button>
             </form>
 
-            <p className="login-nota">
+            {import.meta.env.DEV && <p className="login-nota">
               Usuario de prueba: prueba@unahreportes.local · Contraseña: PruebaUNAH2026!
-            </p>
+            </p>}
           </div>
         </section>
       </div>
