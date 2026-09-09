@@ -1,0 +1,70 @@
+.layout-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-surface);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, .03);
+}
+
+.layout-header-contenido {
+  display: flex;
+  align-items: center;
+  max-width: 1800px;
+  min-height: 66px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.layout-logo { display: flex; align-items: center; gap: 10px; color: var(--color-text); text-decoration: none; }
+.layout-logo-badge { display: grid; place-items: center; width: 35px; height: 35px; border-radius: 10px; background: var(--color-primary); color: var(--color-accent); font-size: 15px; font-weight: 800; box-shadow: 0 5px 14px rgba(26, 47, 92, .24); }
+.layout-logo-title { font-size: 13px; font-weight: 800; line-height: 1.2; }
+.layout-logo-subtitle { margin-top: 2px; color: var(--color-text-secondary); font-size: 10px; }
+
+.layout-nav { display: flex; flex: 1; align-items: center; margin-left: 40px; }
+.layout-enlaces, .layout-acciones { display: flex; align-items: center; gap: 9px; }
+.layout-enlaces { flex-wrap: wrap; }
+.layout-acciones { margin-left: auto; flex-shrink: 0; }
+
+.layout-nav-link { display: inline-flex; align-items: center; gap: 7px; padding: 8px 11px; border-radius: 7px; color: var(--color-text-secondary); font-size: 12px; font-weight: 700; text-decoration: none; white-space: nowrap; transition: color .15s, background .15s; }
+.layout-nav-link:hover { color: var(--color-text); background: var(--color-bg); }
+.layout-nav-link.activo { background: rgba(245, 166, 35, .14); color: var(--color-primary); }
+[data-theme='dark'] .layout-nav-link.activo { color: var(--color-accent); }
+
+.layout-notificaciones-contador { display: grid; place-items: center; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 20px; background: var(--color-accent); color: #1a1a2e; font-size: 10px; font-weight: 800; }
+.layout-user { display: flex; align-items: center; gap: 8px; margin: 0 6px 0 9px; padding-right: 10px; border-right: 1px solid var(--color-border); color: inherit; text-decoration: none; }
+.layout-avatar { display: grid; place-items: center; width: 31px; height: 31px; border-radius: 50%; background: var(--color-accent); color: var(--color-primary); font-size: 12px; font-weight: 800; }
+.layout-user-info { display: flex; flex-direction: column; min-width: 0; }
+.layout-username { max-width: 150px; overflow: hidden; color: var(--color-text); font-size: 11px; font-weight: 700; text-overflow: ellipsis; white-space: nowrap; }
+.layout-user-role { margin-top: 1px; color: var(--color-text-secondary); font-size: 10px; }
+
+.layout-theme-toggle, .layout-logout, .layout-menu-toggle { display: inline-flex; align-items: center; justify-content: center; gap: 7px; border: 1px solid var(--color-border); border-radius: 7px; background: transparent; color: var(--color-text); cursor: pointer; font-weight: 700; transition: border-color .15s, background .15s; }
+.layout-theme-toggle { width: 33px; height: 33px; padding: 0; font-size: 13px; }
+.layout-logout { padding: 8px 10px; font-size: 11px; }
+.layout-menu-toggle { display: none; width: 35px; height: 35px; }
+.layout-theme-toggle:hover { border-color: var(--color-accent); background: rgba(245, 166, 35, .08); }
+.layout-logout:hover { border-color: rgba(216, 90, 48, .55); background: rgba(216, 90, 48, .08); }
+.layout-content { max-width: 1300px; min-height: calc(100vh - 66px); margin: 0 auto; padding: 28px 24px; }
+
+/* En laptops el menú queda visible como una barra lateral, sin ocupar el contenido. */
+@media (max-width: 1500px) {
+  .layout-header-contenido { max-width: none; min-height: 60px; padding: 0 18px; }
+  .layout-nav { position: fixed; top: 60px; bottom: 0; left: 0; z-index: 90; display: block; width: 236px; margin: 0; overflow-y: auto; padding: 16px 12px 28px; border-right: 1px solid var(--color-border); background: var(--color-surface); }
+  .layout-enlaces { flex-direction: column; align-items: stretch; gap: 5px; }
+  .layout-nav-link { justify-content: flex-start; padding: 11px 12px; }
+  .layout-content { max-width: none; min-height: calc(100vh - 60px); margin-left: 236px; padding: 24px 28px; }
+}
+
+/* En teléfonos la barra se convierte en un panel lateral de ancho limitado. */
+@media (max-width: 760px) {
+  .layout-header-contenido { padding: 0 14px; }
+  .layout-logo-subtitle, .layout-user-info, .layout-logout span { display: none; }
+  .layout-logo-title { font-size: 12px; }
+  .layout-acciones { margin-left: auto; gap: 5px; }
+  .layout-user { margin: 0 1px; padding: 0; border: 0; }
+  .layout-theme-toggle, .layout-logout, .layout-menu-toggle { width: 34px; height: 34px; padding: 0; }
+  .layout-menu-toggle { display: grid; place-items: center; margin-left: 6px; }
+  .layout-nav { display: none; top: 60px; width: min(280px, calc(100vw - 32px)); padding: 14px 10px 24px; border-radius: 0 0 12px 0; box-shadow: 8px 14px 30px rgba(0, 0, 0, .16); }
+  .layout-nav.abierto { display: block; }
+  .layout-content { min-height: calc(100vh - 60px); margin-left: 0; padding: 20px 16px; }
+}

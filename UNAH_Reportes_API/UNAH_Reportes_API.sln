@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.37111.16 d17.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UNAH_Reportes_API", "UNAH_Reportes_API.csproj", "{42B73CAD-9B15-4314-8CFD-8FDCB8DD0834}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{42B73CAD-9B15-4314-8CFD-8FDCB8DD0834}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{42B73CAD-9B15-4314-8CFD-8FDCB8DD0834}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{42B73CAD-9B15-4314-8CFD-8FDCB8DD0834}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{42B73CAD-9B15-4314-8CFD-8FDCB8DD0834}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {D8AF5B08-FEDE-4E6E-AC57-901A20F73505}
+	EndGlobalSection
+EndGlobal

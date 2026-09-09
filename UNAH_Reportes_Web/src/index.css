@@ -1,0 +1,58 @@
+:root {
+  --color-primary: #1a2f5c;
+  --color-primary-light: #2a4270;
+  --color-accent: #f5a623;
+  --color-accent-hover: #e0951a;
+
+  --color-bg: #f5f6fa;
+  --color-surface: #ffffff;
+  --color-text: #1a1a2e;
+  --color-text-secondary: #6b7280;
+  --color-border: #e2e4ea;
+  --color-field: #ffffff;
+  --color-field-border: #b8c2d3;
+  --color-field-placeholder: #6b7280;
+
+  --radius: 12px;
+  --font-sans: 'Manrope', system-ui, sans-serif;
+  --font-heading: 'Sora', 'Manrope', system-ui, sans-serif;
+}
+
+[data-theme='dark'] {
+  --color-bg: #0f1729;
+  --color-surface: #1c2740;
+  --color-text: #e8eaf0;
+  --color-text-secondary: #c6d0e2;
+  --color-border: #2d3a56;
+  --color-field: #101b31;
+  --color-field-border: #40577f;
+  --color-field-placeholder: #b4c3dc;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  background: var(--color-bg);
+  color: var(--color-text);
+  transition: background 0.2s, color 0.2s;
+}
+
+button, input, select, textarea {
+  font-family: inherit;
+  font-size: 14px;
+}
+
+a {
+  color: var(--color-accent);
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-heading);
+  letter-spacing: -0.025em;
+}

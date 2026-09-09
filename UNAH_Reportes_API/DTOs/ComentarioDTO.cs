@@ -1,0 +1,10 @@
+﻿namespace UNAH_Reportes_API.DTOs
+{
+    public class ComentarioDTO
+    {
+        public int IdComentario { get; set; }
+        public string Texto { get; set; } = string.Empty;
+        public string Usuario {  get; set; } = string.Empty;
+        public DateTime FechaComentario { get; set; }
+    }
+}

@@ -1,0 +1,352 @@
+.login-page {
+  display: grid;
+  min-height: 100vh;
+  place-items: center;
+  padding: 28px;
+  background:
+    radial-gradient(circle at 12% 15%, rgba(245, 166, 35, .14), transparent 28%),
+    radial-gradient(circle at 86% 88%, rgba(42, 66, 112, .6), transparent 35%),
+    #0f1729;
+}
+
+.login-contenedor {
+  display: grid;
+  grid-template-columns: 1.15fr .85fr;
+  width: min(100%, 1050px);
+  min-height: 610px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, .12);
+  border-radius: 22px;
+  background: var(--color-surface);
+  box-shadow: 0 28px 80px rgba(0, 0, 0, .34);
+}
+
+.login-presentacion {
+  display: flex;
+  flex-direction: column;
+  padding: 46px;
+  color: #eef3ff;
+  background:
+    linear-gradient(145deg, rgba(26, 47, 92, .97), rgba(12, 26, 54, .98)),
+    var(--color-primary);
+}
+
+.login-marca {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.login-marca-simbolo {
+  display: grid;
+  place-items: center;
+  width: 35px;
+  height: 35px;
+  border-radius: 10px;
+  background: var(--color-accent);
+  color: var(--color-primary);
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.login-marca strong,
+.login-marca div > span {
+  display: block;
+}
+
+.login-marca strong {
+  font-size: 14px;
+}
+
+.login-marca div > span {
+  margin-top: 2px;
+  color: rgba(238, 243, 255, .68);
+  font-size: 11px;
+}
+
+.login-presentacion-texto {
+  max-width: 470px;
+  margin: auto 0;
+}
+
+.login-etiqueta,
+.login-acceso-etiqueta {
+  margin: 0 0 10px;
+  color: var(--color-accent);
+  font-size: 12px;
+  font-weight: 750;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.login-presentacion h1 {
+  margin: 0 0 15px;
+  font-size: clamp(30px, 4vw, 44px);
+  letter-spacing: -.035em;
+  line-height: 1.08;
+}
+
+.login-presentacion-texto > p:last-child {
+  margin: 0;
+  color: rgba(238, 243, 255, .72);
+  font-size: 15px;
+  line-height: 1.65;
+}
+
+.login-beneficios {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+}
+
+.login-beneficios > div {
+  padding-top: 13px;
+  border-top: 1px solid rgba(255, 255, 255, .18);
+}
+
+.login-beneficios span {
+  color: var(--color-accent);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.login-beneficios p {
+  margin: 7px 0 0;
+  color: rgba(238, 243, 255, .72);
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.login-acceso {
+  display: grid;
+  place-items: center;
+  padding: 42px;
+  background: var(--color-surface);
+}
+
+.login-acceso-contenido {
+  width: min(100%, 330px);
+  text-align: center;
+}
+
+.login-badge {
+  display: grid;
+  place-items: center;
+  width: 55px;
+  height: 55px;
+  margin: 0 auto 24px;
+  border-radius: 16px;
+  background: var(--color-primary);
+  color: var(--color-accent);
+  font-size: 23px;
+  font-weight: 800;
+  box-shadow: 0 8px 22px rgba(26, 47, 92, .22);
+}
+
+.login-acceso-etiqueta {
+  margin-bottom: 7px;
+  color: var(--color-accent-hover);
+}
+
+.login-acceso h2 {
+  margin: 0 0 9px;
+  color: var(--color-text);
+  font-size: 25px;
+}
+
+.login-text {
+  margin: 0 0 27px;
+  color: var(--color-text-secondary);
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.login-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  border: none;
+  border-radius: 10px;
+  padding: 13px 16px;
+  background: var(--color-accent);
+  color: #1a1a2e;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 750;
+  transition: background .15s, transform .1s, box-shadow .15s;
+}
+
+.login-button:hover:not(:disabled) {
+  background: var(--color-accent-hover);
+  box-shadow: 0 7px 16px rgba(224, 149, 26, .25);
+}
+
+.login-button:active:not(:disabled) {
+  transform: scale(.985);
+}
+
+.login-button:disabled {
+  cursor: not-allowed;
+  opacity: .72;
+}
+
+.login-microsoft-logo {
+  display: grid;
+  grid-template-columns: repeat(2, 7px);
+  grid-template-rows: repeat(2, 7px);
+  gap: 2px;
+}
+
+.login-microsoft-logo i:nth-child(1) { background: #f35325; }
+.login-microsoft-logo i:nth-child(2) { background: #81bc06; }
+.login-microsoft-logo i:nth-child(3) { background: #05a6f0; }
+.login-microsoft-logo i:nth-child(4) { background: #ffba08; }
+
+.login-nota {
+  margin: 17px 0 0;
+  color: var(--color-text-secondary);
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+@media (max-width: 800px) {
+  .login-page {
+    padding: 18px;
+  }
+
+  .login-contenedor {
+    grid-template-columns: 1fr;
+    max-width: 520px;
+  }
+
+  .login-presentacion {
+    min-height: 300px;
+    padding: 32px;
+  }
+
+  .login-presentacion-texto {
+    margin: 42px 0 30px;
+  }
+
+  .login-presentacion h1 {
+    font-size: 32px;
+  }
+
+  .login-acceso {
+    padding: 38px 28px;
+  }
+}
+
+@media (max-width: 480px) {
+  .login-page {
+    padding: 0;
+  }
+
+  .login-contenedor {
+    min-height: 100vh;
+    border: none;
+    border-radius: 0;
+  }
+
+  .login-presentacion {
+    min-height: 255px;
+    padding: 28px 24px;
+  }
+
+  .login-beneficios {
+    display: none;
+  }
+
+  .login-acceso {
+    padding: 35px 24px;
+  }
+}
+
+.login-page {
+  position: relative;
+}
+
+.login-theme-toggle {
+  position: fixed;
+  top: 22px;
+  right: 22px;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid rgba(255, 255, 255, .22);
+  border-radius: 10px;
+  background: rgba(15, 23, 41, .28);
+  color: #ffffff;
+  cursor: pointer;
+  font-size: 15px;
+  backdrop-filter: blur(10px);
+  transition: background .15s, transform .15s;
+}
+
+.login-theme-toggle:hover {
+  background: rgba(245, 166, 35, .22);
+  transform: translateY(-1px);
+}
+
+.login-button {
+  justify-content: space-between;
+}
+
+.login-separador { display: flex; align-items: center; gap: 10px; margin: 18px 0 12px; color: var(--color-text-secondary); font-size: 11px; }
+.login-separador::before, .login-separador::after { content: ''; flex: 1; height: 1px; background: var(--color-border); }
+.login-local-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 3px; border-radius: 8px; background: var(--color-bg); }
+.login-local-tabs button { border: 0; border-radius: 6px; background: transparent; color: var(--color-text-secondary); cursor: pointer; padding: 8px; font-size: 12px; font-weight: 700; }
+.login-local-tabs button.activo { background: var(--color-surface); color: var(--color-primary); box-shadow: 0 1px 4px rgba(0, 0, 0, .1); }
+[data-theme='dark'] .login-local-tabs { background: #101b31; }
+[data-theme='dark'] .login-local-tabs button { color: #d7e1f3; }
+[data-theme='dark'] .login-local-tabs button.activo { background: var(--color-primary-light); color: #ffffff; box-shadow: 0 1px 5px rgba(0, 0, 0, .28); }
+.login-local-form { display: grid; gap: 10px; margin-top: 12px; text-align: left; }
+.login-local-form label { display: grid; gap: 4px; color: var(--color-text-secondary); font-size: 11px; font-weight: 700; }
+.login-local-form input, .login-local-form select { width: 100%; border: 1px solid var(--color-field-border); border-radius: 7px; background: var(--color-field); color: var(--color-text); padding: 9px; font-size: 13px; }
+.campo-contrasena { position: relative; display: block; }
+.campo-contrasena input { padding-right: 42px; }
+.campo-contrasena button { position: absolute; top: 50%; right: 4px; width: 34px; height: 30px; transform: translateY(-50%); border: 0; border-radius: 5px; background: transparent; color: var(--color-text-secondary); cursor: pointer; }
+.campo-contrasena button:hover { background: var(--color-bg); color: var(--color-text); }
+.login-local-button { border: 1px solid var(--color-primary); border-radius: 8px; background: transparent; color: var(--color-primary); cursor: pointer; padding: 10px; font-size: 13px; font-weight: 750; }
+.login-local-button:hover:not(:disabled) { background: rgba(26, 47, 92, .08); }
+.login-local-button:disabled { cursor: wait; opacity: .7; }
+.login-local-error { margin: 0; color: #b33b21; font-size: 12px; }
+[data-theme='dark'] .login-local-button { border-color: var(--color-accent); color: var(--color-accent); }
+[data-theme='dark'] .login-local-error { color: #ffb09a; }
+
+[data-theme='light'] .login-page {
+  background:
+    radial-gradient(circle at 12% 15%, rgba(245, 166, 35, .20), transparent 28%),
+    radial-gradient(circle at 86% 88%, rgba(42, 66, 112, .12), transparent 35%),
+    var(--color-bg);
+}
+
+[data-theme='light'] .login-contenedor {
+  border-color: var(--color-border);
+  box-shadow: 0 24px 64px rgba(26, 47, 92, .13);
+}
+
+[data-theme='light'] .login-presentacion {
+  color: var(--color-text);
+  background: linear-gradient(145deg, #f7faff, #e5eefc);
+}
+
+[data-theme='light'] .login-marca div > span,
+[data-theme='light'] .login-presentacion-texto > p:last-child,
+[data-theme='light'] .login-beneficios p {
+  color: var(--color-text-secondary);
+}
+
+[data-theme='light'] .login-beneficios > div {
+  border-top-color: var(--color-border);
+}
+
+[data-theme='light'] .login-theme-toggle {
+  border-color: var(--color-field-border);
+  background: rgba(255, 255, 255, .72);
+  color: var(--color-primary);
+}

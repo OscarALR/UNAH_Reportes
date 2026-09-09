@@ -1,0 +1,21 @@
+# Dependencias y artefactos web generados
+**/node_modules/
+**/dist/
+
+# Artefactos .NET y archivos de Visual Studio
+**/bin/
+**/obj/
+**/.vs/
+**/*.user
+*.suo
+
+# Configuración local y secretos
+**/.env
+**/.env.*
+!**/.env.example
+UNAH_Reportes_API/appsettings.Development.json
+UNAH_Reportes_API/appsettings.Production.json
+
+# Archivos del sistema operativo
+.DS_Store
+Thumbs.db

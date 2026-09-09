@@ -1,0 +1,564 @@
+.detalle-volver {
+    display: inline-block;
+    margin-bottom: 16px;
+    color: var(--color-accent);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.detalle-volver:hover {
+    text-decoration: underline;
+}
+
+/* Bloque genérico tipo tarjeta, reutilizado por toda la página */
+.detalle-card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-bottom: 16px;
+}
+
+.detalle-card h3 {
+    margin: 0 0 14px;
+    font-size: 16px;
+}
+
+/* --- Cabecera del reporte --- */
+.detalle-header h2 {
+    margin: 0 0 8px;
+    font-size: 22px;
+}
+
+.detalle-descripcion {
+    color: var(--color-text-secondary);
+    line-height: 1.6;
+    margin: 0 0 16px;
+}
+
+.detalle-badges {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+}
+
+.detalle-badges .badge[class*="badge-estado-"] {
+    font-size: 12px;
+    padding: 5px 12px;
+    font-weight: 700;
+}
+
+.detalle-meta {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 10px 20px;
+    margin-bottom: 12px;
+}
+
+.detalle-meta-item {
+    font-size: 14px;
+}
+
+.detalle-meta-item span {
+    display: block;
+    color: var(--color-text-secondary);
+    font-size: 12px;
+    margin-bottom: 2px;
+}
+
+.detalle-fecha {
+    color: var(--color-text-secondary);
+    font-size: 12px;
+    margin: 0;
+}
+
+/* --- Panel de gestión --- */
+.panel-gestion {
+    border: 1px solid var(--color-accent);
+    background: rgba(245, 166, 35, 0.06);
+    padding: 16px 20px;
+}
+
+.panel-gestion h3 {
+    color: var(--color-accent-hover);
+    margin: 0 0 2px;
+    font-size: 15px;
+}
+
+.panel-gestion-subtitulo {
+    font-size: 12px;
+    color: var(--color-text-secondary);
+    margin: 0 0 14px;
+}
+
+.panel-gestion-fila {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: flex-end;
+}
+
+.panel-gestion-campo {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.panel-gestion-campo label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--color-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.panel-gestion-campo select,
+.panel-gestion-campo input {
+    padding: 8px 10px;
+    border-radius: 8px;
+    border: 1px solid var(--color-border);
+    background: var(--color-bg);
+    color: var(--color-text);
+    font-size: 13px;
+}
+
+.panel-gestion-campo select:focus,
+.panel-gestion-campo input:focus {
+    outline: none;
+    border-color: var(--color-accent);
+}
+
+.campo-estado {
+    min-width: 150px;
+}
+
+.campo-comentario {
+    flex: 1;
+    min-width: 180px;
+}
+
+.panel-gestion-divisor {
+    width: 1px;
+    align-self: stretch;
+    background: rgba(245, 166, 35, 0.25);
+    margin: 0 4px;
+}
+
+.btn {
+    font-size: 13px;
+    font-weight: 600;
+    padding: 8px 16px;
+    border-radius: 8px;
+    border: 1px solid var(--color-border);
+    background: var(--color-surface);
+    color: var(--color-text);
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s, transform 0.1s;
+    white-space: nowrap;
+}
+
+.btn:hover {
+    border-color: var(--color-accent);
+}
+
+.btn:active {
+    transform: scale(0.98);
+}
+
+.btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.btn-primary {
+    background: var(--color-accent);
+    border-color: var(--color-accent);
+    color: #1a1a2e;
+}
+
+.btn-primary:hover {
+    background: var(--color-accent-hover);
+}
+
+.detalle-meta-item .detalle-etiqueta,
+.detalle-card h3 {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+}
+
+.detalle-etiqueta svg,
+.detalle-card h3 svg {
+    color: var(--color-accent);
+}
+
+.detalle-meta-item .detalle-meta-valor {
+    display: block;
+    margin: 0;
+    color: var(--color-text);
+    font-size: 14px;
+}
+
+.btn-danger {
+    border-color: rgba(216, 90, 48, .6);
+    color: #b33b21;
+}
+
+[data-theme='dark'] .btn-danger {
+    color: #ffb09a;
+}
+
+/* En pantallas angostas, la fila se acomoda en varias líneas
+   y los campos crecen a ancho completo, sin quedar apretados */
+@media (max-width: 640px) {
+    .panel-gestion-divisor {
+        display: none;
+    }
+
+    .campo-estado,
+    .campo-comentario {
+        flex: 1 1 100%;
+        min-width: 0;
+    }
+
+    .panel-gestion-fila .btn {
+        width: 100%;
+    }
+}
+
+/* --- Imágenes --- */
+.detalle-imagenes {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.detalle-imagenes img {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid var(--color-border);
+}
+
+/* --- Historial de estados --- */
+.historial-lista {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-left: 2px solid var(--color-border);
+}
+
+.historial-item {
+    position: relative;
+    padding: 0 0 16px 20px;
+}
+
+.historial-item::before {
+    content: '';
+    position: absolute;
+    left: -6px;
+    top: 4px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--color-accent);
+}
+
+.historial-item:last-child {
+    padding-bottom: 0;
+}
+
+.historial-cabecera {
+    font-size: 13px;
+    color: var(--color-text-secondary);
+}
+
+.historial-cabecera strong {
+    color: var(--color-text);
+}
+
+.historial-comentario {
+    margin: 4px 0 0;
+    font-size: 13px;
+    color: var(--color-text-secondary);
+    background: var(--color-bg);
+    padding: 8px 12px;
+    border-radius: 8px;
+}
+
+/* --- Comentarios --- */
+.comentarios-lista {
+    list-style: none;
+    margin: 0 0 16px;
+    padding: 0;
+}
+
+.comentario-item {
+    padding: 10px 0;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.comentario-item:last-child {
+    border-bottom: none;
+}
+
+.comentario-cabecera {
+    font-size: 13px;
+    color: var(--color-text-secondary);
+    margin-bottom: 4px;
+}
+
+.comentario-cabecera strong {
+    color: var(--color-text);
+}
+
+.comentario-texto {
+    margin: 0;
+    font-size: 14px;
+}
+
+.comentario-form {
+    display: flex;
+    gap: 10px;
+    align-items: flex-end;
+}
+
+.comentario-form textarea {
+    flex: 1;
+    min-height: 60px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--color-border);
+    background: var(--color-bg);
+    color: var(--color-text);
+    resize: vertical;
+    font-family: inherit;
+}
+
+/* --- Layout con imagen protagonista (solo cuando el reporte tiene imágenes) --- */
+.detalle-con-imagen {
+    display: grid;
+    grid-template-columns: 1fr 1.6fr; /* panel más ancho que la imagen */
+    gap: 20px;
+    align-items: start;
+}
+
+.detalle-visor {
+    position: sticky;
+    top: 20px;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.detalle-visor-imagen-wrap {
+    position: relative;
+    width: 100%;
+    max-height: calc(100vh - 220px); /* deja espacio para header + miniaturas */
+    aspect-ratio: 4 / 3; /* referencia para fotos horizontales; el max-height controla las verticales */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-bg);
+    cursor: zoom-in;
+}
+
+.detalle-visor-imagen-wrap img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+.detalle-panel-lateral {
+    display: flex;
+    flex-direction: column;
+}
+
+
+.detalle-visor-flecha {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0, 0, 0, 0.5);
+    color: #fff;
+    border: none;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s;
+}
+
+.detalle-visor-flecha:hover {
+    background: rgba(0, 0, 0, 0.75);
+}
+
+.detalle-visor-flecha.izq {
+    left: 10px;
+}
+
+.detalle-visor-flecha.der {
+    right: 10px;
+}
+
+/* --- Lightbox (vista ampliada con zoom) --- */
+.lightbox-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 20px;
+}
+
+.lightbox-cerrar {
+    position: absolute;
+    top: 20px;
+    right: 24px;
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    font-size: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.lightbox-cerrar:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.lightbox-imagen-wrap {
+    max-width: 100%;
+    max-height: 100%;
+    overflow: auto; /* permite desplazarse dentro de la imagen ampliada */
+}
+
+.lightbox-imagen-wrap img {
+    display: block;
+    max-width: 90vw;
+    max-height: 90vh;
+    object-fit: contain;
+    cursor: zoom-in;
+    transition: transform 0.2s;
+}
+
+.lightbox-imagen-wrap img.zoom {
+    max-width: none;
+    max-height: none;
+    width: 160%; /* nivel de zoom */
+    cursor: zoom-out;
+}
+
+.lightbox-flecha {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    border: none;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.lightbox-flecha:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.lightbox-flecha.izq {
+    left: 20px;
+}
+
+.lightbox-flecha.der {
+    right: 20px;
+}
+
+
+
+.detalle-visor-miniaturas {
+    display: flex;
+    gap: 8px;
+    padding: 10px;
+    overflow-x: auto;
+    justify-content: center;
+    background: var(--color-surface); /* antes: #111 */
+    border-top: 1px solid var(--color-border); /* nuevo */
+}
+
+.detalle-visor-miniaturas img {
+    width: 56px;
+    height: 56px;
+    object-fit: cover;
+    border-radius: 6px;
+    cursor: pointer;
+    opacity: 0.55;
+    border: 2px solid transparent;
+    transition: opacity 0.15s, border-color 0.15s;
+    flex-shrink: 0;
+}
+
+.detalle-visor-miniaturas img.activa {
+    opacity: 1;
+    border-color: var(--color-accent);
+}
+
+
+/* En pantallas grandes, el panel lateral scrollea internamente
+   para que la imagen quede fija como en el ejemplo de LinkedIn */
+@media (min-width: 1600px) {
+    .detalle-con-imagen {
+        display: grid;
+        grid-template-columns: 1fr 1300px;
+        gap: 20px;
+        align-items: start;
+        width: 100vw;
+        position: relative;
+        left: 50%;
+        transform: translateX(-50%);
+        padding: 0 24px;
+        box-sizing: border-box;
+    }
+
+    .detalle-visor {
+        position: sticky;
+        top: 20px;
+        margin-bottom: 0;
+    }
+
+    .detalle-panel-lateral {
+        max-height: calc(100vh - 40px);
+        overflow-y: auto;
+        padding-right: 6px;
+    }
+}
+
+/* En móvil: todo se apila, sin scroll anidado, sin sticky */
+@media (max-width: 899px) {
+    .detalle-con-imagen {
+        grid-template-columns: 1fr;
+    }
+
+    .detalle-visor {
+        position: static;
+    }
+}
