@@ -4,6 +4,7 @@ import { useMsal } from '@azure/msal-react';
 import { useUser } from '../context/UserContext';
 import { getAccessToken } from '../auth/getToken';
 import { getTodosLosReportes } from '../api/reportesApi';
+import { ordenarAlfabeticamente } from '../utils/ordenarAlfabeticamente';
 import './GestionPage.css';
 
 function slugTexto(texto = '') {
@@ -49,12 +50,12 @@ function GestionPage() {
   }, [cargarReportes]);
 
   const estados = useMemo(
-    () => [...new Set(reportes.map((reporte) => reporte.estado))],
+    () => ordenarAlfabeticamente([...new Set(reportes.map((reporte) => reporte.estado))]),
     [reportes]
   );
 
   const categorias = useMemo(
-    () => [...new Set(reportes.map((reporte) => reporte.categoria))],
+    () => ordenarAlfabeticamente([...new Set(reportes.map((reporte) => reporte.categoria))]),
     [reportes]
   );
 

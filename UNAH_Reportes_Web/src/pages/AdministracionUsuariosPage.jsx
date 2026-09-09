@@ -10,6 +10,7 @@ import {
   getUsuariosAdministracion,
 } from '../api/administracionApi';
 import { useUser } from '../context/UserContext';
+import { ordenarAlfabeticamente } from '../utils/ordenarAlfabeticamente';
 import './AdministracionCategoriasPage.css';
 
 const formularioInicial = { correoInstitucional: '', nombreCompleto: '', idCarrera: '', idRol: '', estado: 'Activo' };
@@ -35,8 +36,8 @@ function AdministracionUsuariosPage() {
         getCatalogosUsuariosAdministracion(token),
       ]);
       setUsuarios(usuariosCargados);
-      setRoles(catalogos.roles);
-      setCarreras(catalogos.carreras);
+      setRoles(ordenarAlfabeticamente(catalogos.roles, (rol) => rol.nombreRol));
+      setCarreras(ordenarAlfabeticamente(catalogos.carreras, (carrera) => carrera.nombreCarrera));
     } catch (error) {
       console.error('Error cargando usuarios:', error);
       setMensaje({ tipo: 'error', texto: 'No se pudieron cargar los usuarios.' });

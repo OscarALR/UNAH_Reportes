@@ -1,10 +1,11 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useMsal } from '@azure/msal-react';
 import { getAccessToken } from '../auth/getToken';
 import { getCategorias, getEdificios, getEspaciosSinEdificio, getEspaciosDeEdificio } from '../api/catalogosApi';
 import { crearReporte } from '../api/reportesApi';
 import { subirImagen } from '../api/imagenesApi';
+import { ordenarAlfabeticamente } from '../utils/ordenarAlfabeticamente';
 import './CrearReportePage.css';
 
 function CrearReportePage() {
@@ -16,6 +17,7 @@ function CrearReportePage() {
   const [espaciosSinEdificio, setEspaciosSinEdificio] = useState([]);
   const [espaciosDelEdificio, setEspaciosDelEdificio] = useState([]);
   const [imagenesSeleccionadas, setImagenesSeleccionadas] = useState([]); 
+  const imagenesSeleccionadasRef = useRef([]);
 
   const [titulo, setTitulo] = useState('');
   const [descripcion, setDescripcion] = useState('');
@@ -35,9 +37,9 @@ function CrearReportePage() {
         getEdificios(),
         getEspaciosSinEdificio(),
       ]);
-      setCategorias(cats);
-      setEdificios(edifs);
-      setEspaciosSinEdificio(sinEdif);
+      setCategorias(ordenarAlfabeticamente(cats, (categoria) => categoria.nombreCategoria));
+      setEdificios(ordenarAlfabeticamente(edifs, (edificio) => edificio.nombreEdificio));
+      setEspaciosSinEdificio(ordenarAlfabeticamente(sinEdif, (espacio) => espacio.nombreEspacio));
     } catch (err) {
       console.error('Error cargando catálogos:', err);
       setError('No se pudieron cargar los catálogos.');
@@ -47,7 +49,7 @@ function CrearReportePage() {
   const cargarEspaciosDelEdificio = useCallback(async (idEdificio) => {
     try {
       const espacios = await getEspaciosDeEdificio(idEdificio);
-      setEspaciosDelEdificio(espacios);
+      setEspaciosDelEdificio(ordenarAlfabeticamente(espacios, (espacio) => espacio.nombreEspacio));
       setIdEspacio(''); // resetea la selección anterior de espacio
     } catch (err) {
       console.error('Error cargando espacios del edificio:', err);
@@ -65,6 +67,33 @@ function CrearReportePage() {
       setEspaciosDelEdificio([]);
     }
   }, [cargarEspaciosDelEdificio, idEdificioSeleccionado]);
+
+  useEffect(() => {
+    imagenesSeleccionadasRef.current = imagenesSeleccionadas;
+  }, [imagenesSeleccionadas]);
+
+  useEffect(() => () => {
+    imagenesSeleccionadasRef.current.forEach(({ vistaPrevia }) => URL.revokeObjectURL(vistaPrevia));
+  }, []);
+
+  const seleccionarImagenes = (evento) => {
+    const archivos = Array.from(evento.target.files);
+    imagenesSeleccionadas.forEach(({ vistaPrevia }) => URL.revokeObjectURL(vistaPrevia));
+    setImagenesSeleccionadas(archivos.map((archivo, indice) => ({
+      archivo,
+      id: `${archivo.name}-${archivo.lastModified}-${indice}`,
+      vistaPrevia: URL.createObjectURL(archivo),
+    })));
+    evento.target.value = '';
+  };
+
+  const quitarImagen = (id) => {
+    setImagenesSeleccionadas((imagenes) => {
+      const imagen = imagenes.find((elemento) => elemento.id === id);
+      if (imagen) URL.revokeObjectURL(imagen.vistaPrevia);
+      return imagenes.filter((elemento) => elemento.id !== id);
+    });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -89,7 +118,7 @@ function CrearReportePage() {
         token
       );
 
-      for (const archivo of imagenesSeleccionadas) {
+      for (const { archivo } of imagenesSeleccionadas) {
         await subirImagen(reporteCreado.idReporte, archivo, token);
       }
 
@@ -205,8 +234,8 @@ function CrearReportePage() {
               }}
             >
               <option value="">Selecciona una opción</option>
-              <option value="edificio">Dentro de un edificio</option>
               <option value="sin-edificio">Área común</option>
+              <option value="edificio">Dentro de un edificio</option>
             </select>
           </div>
 
@@ -287,14 +316,25 @@ function CrearReportePage() {
               type="file"
               accept="image/*"
               multiple
-              onChange={(e) => setImagenesSeleccionadas(Array.from(e.target.files))}
+              onChange={seleccionarImagenes}
             />
           </label>
 
           {imagenesSeleccionadas.length > 0 && (
-            <p className="crear-reporte-archivos">
-              {imagenesSeleccionadas.length} archivo(s) seleccionado(s)
-            </p>
+            <div className="crear-reporte-vistas-previas" aria-label="Imágenes seleccionadas">
+              {imagenesSeleccionadas.map(({ archivo, id, vistaPrevia }) => (
+                <article className="crear-reporte-vista-previa" key={id}>
+                  <img src={vistaPrevia} alt={`Vista previa de ${archivo.name}`} />
+                  <div>
+                    <strong title={archivo.name}>{archivo.name}</strong>
+                    <small>{Math.ceil(archivo.size / 1024)} KB</small>
+                  </div>
+                  <button type="button" onClick={() => quitarImagen(id)} aria-label={`Quitar ${archivo.name}`}>
+                    Quitar
+                  </button>
+                </article>
+              ))}
+            </div>
           )}
         </section>
 

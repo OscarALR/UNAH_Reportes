@@ -12,6 +12,7 @@ import { loginRequest } from '../auth/authConfig';
 import { useTheme } from '../context/ThemeContext';
 import { useUser } from '../context/UserContext';
 import { getCarrerasRegistro, ingresarCuenta, registrarCuenta } from '../api/autenticacionApi';
+import { ordenarAlfabeticamente } from '../utils/ordenarAlfabeticamente';
 import './Login.css';
 
 function Login() {
@@ -26,7 +27,7 @@ function Login() {
   const [mostrarContrasena, setMostrarContrasena] = useState(false);
 
   useEffect(() => {
-    getCarrerasRegistro().then(setCarreras).catch(() => setErrorLocal('No se pudieron cargar las carreras.'));
+    getCarrerasRegistro().then((datos) => setCarreras(ordenarAlfabeticamente(datos, (carrera) => carrera.nombreCarrera))).catch(() => setErrorLocal('No se pudieron cargar las carreras.'));
   }, []);
 
   const handleLogin = async () => {

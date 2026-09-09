@@ -5,6 +5,7 @@ import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import { useUser } from '../context/UserContext';
 import { getAccessToken } from '../auth/getToken';
 import { actualizarPerfil, cambiarContrasena, getCarrerasRegistro } from '../api/autenticacionApi';
+import { ordenarAlfabeticamente } from '../utils/ordenarAlfabeticamente';
 import './PerfilPage.css';
 
 function CampoContrasena({ label, value, onChange }) {
@@ -23,7 +24,7 @@ function PerfilPage() {
   const [contrasenas, setContrasenas] = useState({ actual: '', nueva: '', confirmar: '' });
   const esLocal = usuario?.tipoAutenticacion === 'Local' || usuario?.tipoAutenticacion === 'Prueba';
 
-  useEffect(() => { getCarrerasRegistro().then((datos) => { setCarreras(datos); setIdCarrera(String(datos.find((carrera) => carrera.nombreCarrera === usuario?.carrera)?.idCarrera ?? '')); }); }, [usuario?.carrera]);
+  useEffect(() => { getCarrerasRegistro().then((datos) => { const carrerasOrdenadas = ordenarAlfabeticamente(datos, (carrera) => carrera.nombreCarrera); setCarreras(carrerasOrdenadas); setIdCarrera(String(carrerasOrdenadas.find((carrera) => carrera.nombreCarrera === usuario?.carrera)?.idCarrera ?? '')); }); }, [usuario?.carrera]);
   const token = () => getAccessToken(instance, accounts);
   const guardar = async (e) => { e.preventDefault(); setMensaje(''); try { const actualizado = await actualizarPerfil({ nombreCompleto, idCarrera: Number(idCarrera), ...(esLocal && { correoRecuperacion }) }, await token()); actualizarUsuario(actualizado); setMensaje('Tus datos se actualizaron correctamente.'); } catch { setMensaje('No se pudieron actualizar tus datos.'); } };
   const guardarContrasena = async (e) => { e.preventDefault(); if (contrasenas.nueva !== contrasenas.confirmar) { setMensaje('La nueva contraseña y su confirmación no coinciden.'); return; } try { await cambiarContrasena({ contrasenaActual: contrasenas.actual, nuevaContrasena: contrasenas.nueva }, await token()); setContrasenas({ actual: '', nueva: '', confirmar: '' }); setMensaje('Tu contraseña se actualizó correctamente.'); } catch (error) { setMensaje(error.response?.data || 'No se pudo actualizar la contraseña.'); } };

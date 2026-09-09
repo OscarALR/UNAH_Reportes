@@ -11,6 +11,7 @@ import {
   getTiposEspacioAdministracion,
 } from '../api/administracionApi';
 import { useUser } from '../context/UserContext';
+import { ordenarAlfabeticamente } from '../utils/ordenarAlfabeticamente';
 import './AdministracionCategoriasPage.css';
 
 const formularioInicial = { nombreEspacio: '', idEdificio: '', idTipoEspacio: '' };
@@ -37,8 +38,8 @@ function AdministracionEspaciosPage() {
         getTiposEspacioAdministracion(token),
       ]);
       setEspacios(espaciosCargados);
-      setEdificios(edificiosCargados);
-      setTiposEspacio(tiposCargados);
+      setEdificios(ordenarAlfabeticamente(edificiosCargados, (edificio) => edificio.nombreEdificio));
+      setTiposEspacio(ordenarAlfabeticamente(tiposCargados, (tipo) => tipo.nombreTipo));
     } catch (error) {
       console.error('Error cargando espacios:', error);
       setMensaje({ tipo: 'error', texto: 'No se pudieron cargar los datos de espacios.' });

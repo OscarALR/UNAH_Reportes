@@ -4,6 +4,7 @@ import { useMsal } from '@azure/msal-react';
 import { useUser } from '../context/UserContext';
 import { getAccessToken } from '../auth/getToken';
 import { getFeed } from '../api/reportesApi';
+import { ordenarAlfabeticamente } from '../utils/ordenarAlfabeticamente';
 import './FeedPage.css';
 
 function slugTexto(texto = '') {
@@ -54,12 +55,12 @@ function FeedPage() {
   }, [cargarFeed, idUsuario]);
 
   const estados = useMemo(
-    () => [...new Set(reportes.map((reporte) => reporte.estado))],
+    () => ordenarAlfabeticamente([...new Set(reportes.map((reporte) => reporte.estado))]),
     [reportes]
   );
 
   const categorias = useMemo(
-    () => [...new Set(reportes.map((reporte) => reporte.categoria))],
+    () => ordenarAlfabeticamente([...new Set(reportes.map((reporte) => reporte.categoria))]),
     [reportes]
   );
 

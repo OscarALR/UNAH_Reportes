@@ -19,6 +19,7 @@ import { getImagenes } from '../api/imagenesApi';
 import { useUser } from '../context/UserContext';
 import { archivarReporte, cambiarEstado, asignarGestor } from '../api/reportesApi';
 import { getEstados } from '../api/catalogosApi';
+import { ordenarAlfabeticamente } from '../utils/ordenarAlfabeticamente';
 import './ReporteDetallePage.css';
 
 function slugEstado(estado) {
@@ -79,7 +80,7 @@ function ReporteDetallePage() {
       setImagenes(imgs);
       setImagenActiva(0);
 
-      if (estadosData) setEstados(estadosData);
+      if (estadosData) setEstados(ordenarAlfabeticamente(estadosData, (estado) => estado.nombreEstado));
     } catch (err) {
       console.error('Error cargando el detalle del reporte:', err);
       setError('No se pudo cargar el reporte.');
