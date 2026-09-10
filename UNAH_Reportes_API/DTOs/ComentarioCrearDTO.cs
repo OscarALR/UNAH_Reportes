@@ -6,5 +6,6 @@ namespace UNAH_Reportes_API.DTOs
         [Required(ErrorMessage = "El comentario no puede estar vacío.")]
         [MaxLength(500, ErrorMessage = "El comentario no puede superar los 500 caracteres.")]
         public string Texto { get; set; } = string.Empty;
+        public int? IdComentarioPadre { get; set; }
     }
 }

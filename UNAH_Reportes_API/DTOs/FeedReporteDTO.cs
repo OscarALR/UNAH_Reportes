@@ -15,6 +15,8 @@
         public string? ImagenPortada { get; set; }
         public string? GestorAsignado { get; set; }
         public DateTime FechaCreacion { get; set; }
-        public bool EsRelevante { get; set; }
+        public int NumeroLikes { get; set; }
+        public bool LeGustaUsuarioActual { get; set; }
+        public bool EsDeMiCarrera { get; set; }
     }
 }

@@ -5,9 +5,9 @@ namespace UNAH_Reportes_API.DTOs
     public class RegistroLocalDTO
     {
         [Required, EmailAddress, StringLength(150)] public string Correo { get; set; } = string.Empty;
-        [Required, StringLength(150)] public string NombreCompleto { get; set; } = string.Empty;
+        [Required, StringLength(150, MinimumLength = 3)] public string NombreCompleto { get; set; } = string.Empty;
         [Range(1, int.MaxValue)] public int IdCarrera { get; set; }
-        [Required, StringLength(100, MinimumLength = 8)] public string Contrasena { get; set; } = string.Empty;
+        [Required, StringLength(100, MinimumLength = 8), RegularExpression(@"^(?=.*[A-Za-z])(?=.*\d)(?=.*[^A-Za-z\d]).+$", ErrorMessage = "La contraseña debe incluir letras, números y símbolos.")] public string Contrasena { get; set; } = string.Empty;
         [Required, EmailAddress, StringLength(150)] public string CorreoRecuperacion { get; set; } = string.Empty;
     }
 
@@ -33,6 +33,6 @@ namespace UNAH_Reportes_API.DTOs
     public class CambiarContrasenaDTO
     {
         [Required] public string ContrasenaActual { get; set; } = string.Empty;
-        [Required, StringLength(100, MinimumLength = 8)] public string NuevaContrasena { get; set; } = string.Empty;
+        [Required, StringLength(100, MinimumLength = 8), RegularExpression(@"^(?=.*[A-Za-z])(?=.*\d)(?=.*[^A-Za-z\d]).+$", ErrorMessage = "La contraseña debe incluir letras, números y símbolos.")] public string NuevaContrasena { get; set; } = string.Empty;
     }
 }

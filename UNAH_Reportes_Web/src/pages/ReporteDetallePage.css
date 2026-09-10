@@ -182,6 +182,8 @@
 .btn-primary:hover {
     background: var(--color-accent-hover);
 }
+.detalle-like { border: 1px solid var(--color-border); border-radius: 20px; background: var(--color-surface); color: var(--color-text-secondary); cursor: pointer; font-size: 12px; margin: -7px 0 14px; padding: 6px 10px; }
+.detalle-like.activo, .comentario-acciones button.activo { color: #b42335; }
 
 .detalle-meta-item .detalle-etiqueta,
 .detalle-card h3 {
@@ -203,7 +205,7 @@
 }
 
 .detalle-reportante strong { display: block; font-size: 14px; }
-.detalle-reportante a { align-items: center; color: var(--color-text-secondary); display: inline-flex; font-size: 12px; gap: 5px; margin-top: 4px; max-width: 100%; overflow-wrap: anywhere; text-decoration: none; }
+.detalle-reportante a { align-items: center; color: var(--color-text-secondary); display: inline-flex; font-size: 12px; gap: 5px; margin-top: 4px; max-width: 100%; min-width: 0; overflow: hidden; text-decoration: none; text-overflow: ellipsis; white-space: nowrap; }
 .detalle-reportante a svg { flex: 0 0 auto; }
 .detalle-reportante a:hover { color: var(--color-accent-hover); text-decoration: underline; }
 .btn-danger {
@@ -566,3 +568,6 @@
         position: static;
     }
 }
+.comentario-respuesta { margin-left: 22px; padding-left: 12px; border-left: 2px solid var(--color-border); }
+.comentario-acciones, .comentarios-controles { display: flex; align-items: center; flex-wrap: wrap; gap: 9px; margin-top: 8px; }
+.comentario-acciones button, .comentarios-controles button, .comentarios-controles select { border: 1px solid var(--color-border); border-radius: 7px; background: var(--color-bg); color: var(--color-text-secondary); cursor: pointer; font-size: 12px; padding: 5px 8px; }

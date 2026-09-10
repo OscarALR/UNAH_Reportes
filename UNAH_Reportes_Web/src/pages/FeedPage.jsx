@@ -1,9 +1,11 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faHeart } from '@fortawesome/free-solid-svg-icons';
 import { useMsal } from '@azure/msal-react';
 import { useUser } from '../context/UserContext';
 import { getAccessToken } from '../auth/getToken';
-import { getFeed } from '../api/reportesApi';
+import { alternarLikeReporte, getFeed } from '../api/reportesApi';
 import { ordenarAlfabeticamente } from '../utils/ordenarAlfabeticamente';
 import reporteSinImagen from '../assets/reporte-sin-imagen.svg';
 import './FeedPage.css';
@@ -29,6 +31,7 @@ function FeedPage() {
   const [filtroEstado, setFiltroEstado] = useState('');
   const [filtroPrioridad, setFiltroPrioridad] = useState('');
   const [filtroCategoria, setFiltroCategoria] = useState('');
+  const [vistaFeed, setVistaFeed] = useState('todos');
 
   const idUsuario = usuario?.idUsuario;
   const reporteCreado = searchParams.get('creado') === '1';
@@ -80,9 +83,10 @@ function FeedPage() {
         (!filtroEstado || reporte.estado === filtroEstado) &&
         (!filtroPrioridad || reporte.prioridad === filtroPrioridad) &&
         (!filtroCategoria || reporte.categoria === filtroCategoria)
+        && (vistaFeed === 'todos' || (vistaFeed === 'populares' && reporte.numeroLikes > 0) || (vistaFeed === 'carrera' && reporte.esDeMiCarrera) || (vistaFeed === 'otros' && !reporte.esDeMiCarrera))
       );
     });
-  }, [reportes, busqueda, filtroEstado, filtroPrioridad, filtroCategoria]);
+  }, [reportes, busqueda, filtroEstado, filtroPrioridad, filtroCategoria, vistaFeed]);
 
   const limpiarFiltros = () => {
     setBusqueda('');
@@ -93,6 +97,16 @@ function FeedPage() {
 
   const cerrarConfirmacion = () => {
     setSearchParams({});
+  };
+
+  const darLike = async (evento, idReporte) => {
+    evento.preventDefault();
+    evento.stopPropagation();
+    try {
+      const token = await getAccessToken(instance, accounts);
+      const resultado = await alternarLikeReporte(idReporte, token);
+      setReportes((actuales) => actuales.map((reporte) => reporte.idReporte === idReporte ? { ...reporte, leGustaUsuarioActual: resultado.leGusta, numeroLikes: resultado.numeroLikes } : reporte));
+    } catch (err) { console.error('No se pudo registrar el me gusta:', err); }
   };
 
   if (cargando) {
@@ -114,7 +128,7 @@ function FeedPage() {
         <div>
           <p className="feed-etiqueta">UNAH-VS · Comunidad</p>
           <h2>Feed de reportes</h2>
-          <p>Los reportes relevantes para tu carrera aparecen primero.</p>
+          <p>Explora los reportes de tu comunidad y apoya los más importantes.</p>
         </div>
 
         <Link to="/crear-reporte" className="feed-crear-boton">
@@ -185,6 +199,13 @@ function FeedPage() {
         </div>
       </section>
 
+      <div className="feed-vistas" role="group" aria-label="Vista del feed">
+        <button type="button" className={vistaFeed === 'todos' ? 'activo' : ''} onClick={() => setVistaFeed('todos')}>Todos</button>
+        <button type="button" className={vistaFeed === 'populares' ? 'activo' : ''} onClick={() => setVistaFeed('populares')}>Reportes populares</button>
+        <button type="button" className={vistaFeed === 'carrera' ? 'activo' : ''} onClick={() => setVistaFeed('carrera')}>Reportes de mi carrera</button>
+        <button type="button" className={vistaFeed === 'otros' ? 'activo' : ''} onClick={() => setVistaFeed('otros')}>Otros</button>
+      </div>
+
       <p className="feed-resultados">
         Mostrando {reportesFiltrados.length} de {reportes.length} reporte(s)
       </p>
@@ -214,7 +235,6 @@ function FeedPage() {
               <div className="reporte-card-imagen">
                 <img src={reporte.imagenPortada || reporteSinImagen} alt={reporte.imagenPortada ? `Imagen del reporte: ${reporte.titulo}` : 'Ilustración de reporte sin fotografías'} onError={(evento) => { evento.currentTarget.onerror = null; evento.currentTarget.src = reporteSinImagen; }} />
                 <div className="reporte-card-top">
-                  {reporte.esRelevante && <span className="badge badge-relevante">Relevante</span>}
                   <span className={`badge badge-prioridad-${slugTexto(reporte.prioridad)}`}>{reporte.prioridad}</span>
                 </div>
               </div>
@@ -224,6 +244,7 @@ function FeedPage() {
                 <span className="reporte-card-carrera">{reporte.carreraUsuarioReporta ?? 'Sin carrera asignada'}</span>
                 <div className="reporte-card-footer">
                   <span>{reporte.categoria}</span>
+                  <button type="button" className={`reporte-like ${reporte.leGustaUsuarioActual ? 'activo' : ''}`} onClick={(evento) => darLike(evento, reporte.idReporte)} aria-label="Me gusta"><FontAwesomeIcon icon={faHeart} /> {reporte.numeroLikes}</button>
                   <span className={`badge badge-estado-${slugTexto(reporte.estado)}`}>{reporte.estado}</span>
                 </div>
               </div>

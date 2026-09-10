@@ -18,5 +18,7 @@
         public bool Eliminado { get; set; }
         public DateTime? FechaEliminacion { get; set; }
         public string? MotivoEliminacion { get; set; }
+        public int NumeroLikes { get; set; }
+        public bool LeGustaUsuarioActual { get; set; }
     }
 }

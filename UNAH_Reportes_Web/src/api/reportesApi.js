@@ -62,3 +62,8 @@ export async function getReportesArchivados(tipo, alcance, token) {
 export async function archivarReporte(idReporte, motivo, token) {
   await apiClient.put(`/reportes/${idReporte}/archivar`, { motivo }, { headers: { Authorization: `Bearer ${token}` } });
 }
+
+export async function alternarLikeReporte(idReporte, token) {
+  const response = await apiClient.post(`/reportes/${idReporte}/likes`, {}, { headers: { Authorization: `Bearer ${token}` } });
+  return response.data;
+}

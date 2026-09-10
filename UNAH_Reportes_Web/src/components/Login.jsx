@@ -43,6 +43,8 @@ function Login() {
   const enviarFormularioLocal = async (e) => {
     e.preventDefault();
     setErrorLocal('');
+    if (modoLocal === 'registro' && formulario.nombreCompleto.trim().length < 3) { setErrorLocal('El nombre completo debe tener al menos 3 caracteres.'); return; }
+    if (modoLocal === 'registro' && !/^(?=.*[A-Za-z])(?=.*\d)(?=.*[^A-Za-z\d]).{8,}$/.test(formulario.contrasena)) { setErrorLocal('La contraseña debe tener al menos 8 caracteres e incluir letras, números y símbolos.'); return; }
     setIniciando(true);
     try {
       const sesion = modoLocal === 'registro'
@@ -122,9 +124,10 @@ function Login() {
             </div>
 
             <form className="login-local-form" onSubmit={enviarFormularioLocal}>
-              {modoLocal === 'registro' && <><label>Nombre completo<input required maxLength="150" value={formulario.nombreCompleto} onChange={(e) => setFormulario({ ...formulario, nombreCompleto: e.target.value })} /></label><label>Carrera<select required value={formulario.idCarrera} onChange={(e) => setFormulario({ ...formulario, idCarrera: e.target.value })}><option value="">Selecciona tu carrera</option>{carreras.map((carrera) => <option key={carrera.idCarrera} value={carrera.idCarrera}>{carrera.nombreCarrera}</option>)}</select></label><label>Correo de recuperación<input required type="email" maxLength="150" value={formulario.correoRecuperacion} onChange={(e) => setFormulario({ ...formulario, correoRecuperacion: e.target.value })} /></label></>}
+              {modoLocal === 'registro' && <><label>Nombre completo<input required minLength="3" maxLength="150" value={formulario.nombreCompleto} onChange={(e) => setFormulario({ ...formulario, nombreCompleto: e.target.value })} /></label><label>Carrera<select required value={formulario.idCarrera} onChange={(e) => setFormulario({ ...formulario, idCarrera: e.target.value })}><option value="">Selecciona tu carrera</option>{carreras.map((carrera) => <option key={carrera.idCarrera} value={carrera.idCarrera}>{carrera.nombreCarrera}</option>)}</select></label><label>Correo de recuperación<input required type="email" maxLength="150" value={formulario.correoRecuperacion} onChange={(e) => setFormulario({ ...formulario, correoRecuperacion: e.target.value })} /></label></>}
               <label>Correo electrónico<input required type="email" maxLength="150" value={formulario.correo} onChange={(e) => setFormulario({ ...formulario, correo: e.target.value })} /></label>
-              <label>Contraseña<span className="campo-contrasena"><input required type={mostrarContrasena ? 'text' : 'password'} minLength="8" value={formulario.contrasena} onChange={(e) => setFormulario({ ...formulario, contrasena: e.target.value })} /><button type="button" onClick={() => setMostrarContrasena((visible) => !visible)} aria-label={mostrarContrasena ? 'Ocultar contraseña' : 'Mostrar contraseña'}><FontAwesomeIcon icon={mostrarContrasena ? faEyeSlash : faEye} /></button></span></label>
+              <label>Contraseña<span className="campo-contrasena"><input required type={mostrarContrasena ? 'text' : 'password'} minLength="8" value={formulario.contrasena} onChange={(e) => setFormulario({ ...formulario, contrasena: e.target.value })} /><button type="button" onClick={() => setMostrarContrasena((visible) => !visible)} aria-label={mostrarContrasena ? 'Ocultar contraseña' : 'Mostrar contraseña'}><FontAwesomeIcon icon={mostrarContrasena ? faEyeSlash : faEye} /></button></span>{modoLocal === 'registro' && <small>8+ caracteres, combinando letras, números y símbolos.</small>}</label>
+              {modoLocal === 'ingresar' && <button type="button" className="login-recuperar" onClick={() => setErrorLocal('La recuperación por correo está en preparación; contacta a soporte mientras se configura el servicio de correo.')}>¿Olvidaste tu contraseña?</button>}
               {errorLocal && <p className="login-local-error" role="alert">{errorLocal}</p>}
               <button type="submit" className="login-local-button" disabled={iniciando}>{modoLocal === 'registro' ? 'Crear cuenta' : 'Ingresar con correo'}</button>
             </form>

@@ -7,11 +7,16 @@ export async function getComentarios(idReporte, token) {
     return response.data;
 }
 
-export async function crearComentario(idReporte, texto, token) {
+export async function crearComentario(idReporte, texto, token, idComentarioPadre = null) {
     const response = await apiClient.post(
         `/reportes/${idReporte}/comentarios`,
-        { texto },
+        { texto, idComentarioPadre },
         { headers: { Authorization: `Bearer ${token}` } }
     );
     return response.data;   
+}
+
+export async function alternarLikeComentario(idReporte, idComentario, token) {
+  const response = await apiClient.post(`/reportes/${idReporte}/comentarios/${idComentario}/likes`, {}, { headers: { Authorization: `Bearer ${token}` } });
+  return response.data;
 }

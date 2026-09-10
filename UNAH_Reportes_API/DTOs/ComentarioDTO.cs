@@ -6,5 +6,8 @@
         public string Texto { get; set; } = string.Empty;
         public string Usuario {  get; set; } = string.Empty;
         public DateTime FechaComentario { get; set; }
+        public int? IdComentarioPadre { get; set; }
+        public int NumeroLikes { get; set; }
+        public bool LeGustaUsuarioActual { get; set; }
     }
 }

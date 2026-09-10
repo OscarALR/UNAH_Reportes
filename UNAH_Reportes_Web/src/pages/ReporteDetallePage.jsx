@@ -12,10 +12,12 @@ import {
   faTag,
   faUser,
   faUserGear,
+  faHeart,
+  faReply,
 } from '@fortawesome/free-solid-svg-icons';
 import { getAccessToken } from '../auth/getToken';
-import { getReportePorId } from '../api/reportesApi';
-import { getComentarios, crearComentario } from '../api/comentariosApi';
+import { getReportePorId, alternarLikeReporte } from '../api/reportesApi';
+import { getComentarios, crearComentario, alternarLikeComentario } from '../api/comentariosApi';
 import { getHistorial } from '../api/historialApi';
 import { getImagenes } from '../api/imagenesApi';
 import { useUser } from '../context/UserContext';
@@ -56,6 +58,9 @@ function ReporteDetallePage() {
 
   const [nuevoComentario, setNuevoComentario] = useState('');
   const [enviandoComentario, setEnviandoComentario] = useState(false);
+  const [comentariosVisibles, setComentariosVisibles] = useState(5);
+  const [ordenComentarios, setOrdenComentarios] = useState('recientes');
+  const [respondiendoA, setRespondiendoA] = useState(null);
 
   const [lightboxAbierto, setLightboxAbierto] = useState(false);
   const [zoomActivo, setZoomActivo] = useState(false);
@@ -135,8 +140,9 @@ function ReporteDetallePage() {
     setEnviandoComentario(true);
     try {
       const token = await getAccessToken(instance, accounts);
-      await crearComentario(id, nuevoComentario, token);
+      await crearComentario(id, nuevoComentario, token, respondiendoA);
       setNuevoComentario('');
+      setRespondiendoA(null);
       const comsActualizados = await getComentarios(id, token);
       setComentarios(comsActualizados);
     } catch (err) {
@@ -150,6 +156,18 @@ function ReporteDetallePage() {
       setEnviandoComentario(false);
     }
   };
+
+  const darLikeReporte = async () => {
+    const token = await getAccessToken(instance, accounts);
+    const resultado = await alternarLikeReporte(id, token);
+    setReporte((actual) => ({ ...actual, leGustaUsuarioActual: resultado.leGusta, numeroLikes: resultado.numeroLikes }));
+  };
+  const darLikeComentario = async (idComentario) => {
+    const token = await getAccessToken(instance, accounts);
+    const resultado = await alternarLikeComentario(id, idComentario, token);
+    setComentarios((actuales) => actuales.map((comentario) => comentario.idComentario === idComentario ? { ...comentario, leGustaUsuarioActual: resultado.leGusta, numeroLikes: resultado.numeroLikes } : comentario));
+  };
+  const fechaLocal = (fecha) => new Intl.DateTimeFormat('es-HN', { dateStyle: 'short', timeStyle: 'short' }).format(new Date(fecha));
 
   const handleArchivar = async () => {
     const motivo = window.prompt('Indica el motivo para archivar este reporte:');
@@ -192,6 +210,7 @@ function ReporteDetallePage() {
         </span>
         <span className={`badge badge-estado-${slugEstado(reporte.estado)}`}>{reporte.estado}</span>
       </div>
+      <button type="button" className={`detalle-like ${reporte.leGustaUsuarioActual ? 'activo' : ''}`} onClick={darLikeReporte}><FontAwesomeIcon icon={faHeart} /> {reporte.numeroLikes ?? 0} Me gusta</button>
 
       <div className="detalle-meta">
         <div className="detalle-meta-item"><span className="detalle-etiqueta"><FontAwesomeIcon icon={faTag} />Categoría</span><span className="detalle-meta-valor">{reporte.categoria}</span></div>
@@ -201,7 +220,7 @@ function ReporteDetallePage() {
         <div className="detalle-meta-item"><span className="detalle-etiqueta"><FontAwesomeIcon icon={faUserGear} />Gestor asignado</span><span className="detalle-meta-valor">{reporte.gestorAsignado ?? 'Sin asignar'}</span></div>
       </div>
 
-      <p className="detalle-fecha">{new Date(reporte.fechaCreacion).toLocaleString()}</p>
+      <p className="detalle-fecha">{fechaLocal(reporte.fechaCreacion)}</p>
     </div>
   );
 
@@ -259,7 +278,7 @@ function ReporteDetallePage() {
           {historial.map((h) => (
             <li key={h.idHistorial} className="historial-item">
               <div className="historial-cabecera">
-                <strong>{h.estado}</strong> — {h.usuario} ({new Date(h.fechaCambio).toLocaleString()})
+                <strong>{h.estado}</strong> — {h.usuario} ({fechaLocal(h.fechaCambio)})
               </div>
               {h.comentario && <p className="historial-comentario">{h.comentario}</p>}
             </li>
@@ -276,16 +295,18 @@ function ReporteDetallePage() {
         <p>Sin comentarios todavía.</p>
       ) : (
         <ul className="comentarios-lista">
-          {comentarios.map((c) => (
-            <li key={c.idComentario} className="comentario-item">
+          {[...comentarios].sort((a, b) => ordenComentarios === 'populares' ? b.numeroLikes - a.numeroLikes : new Date(b.fechaComentario) - new Date(a.fechaComentario)).slice(0, comentariosVisibles).map((c) => (
+            <li key={c.idComentario} className={`comentario-item ${c.idComentarioPadre ? 'comentario-respuesta' : ''}`}>
               <div className="comentario-cabecera">
-                <strong>{c.usuario}</strong> ({new Date(c.fechaComentario).toLocaleString()})
+                <strong>{c.usuario}</strong> ({fechaLocal(c.fechaComentario)})
               </div>
               <p className="comentario-texto">{c.texto}</p>
+              <div className="comentario-acciones"><button type="button" className={c.leGustaUsuarioActual ? 'activo' : ''} onClick={() => darLikeComentario(c.idComentario)}><FontAwesomeIcon icon={faHeart} /> {c.numeroLikes || 0}</button><button type="button" onClick={() => setRespondiendoA(c.idComentario)}><FontAwesomeIcon icon={faReply} /> Responder</button></div>
             </li>
           ))}
         </ul>
       )}
+      {comentarios.length > 5 && <div className="comentarios-controles"><select value={ordenComentarios} onChange={(e) => setOrdenComentarios(e.target.value)}><option value="recientes">Más recientes</option><option value="populares">Más populares</option></select>{comentariosVisibles < comentarios.length && <button type="button" onClick={() => setComentariosVisibles(comentarios.length)}>Ver más comentarios</button>}</div>}
 
       <form className="comentario-form" onSubmit={handleComentar}>
         <textarea
@@ -294,6 +315,7 @@ function ReporteDetallePage() {
           placeholder="Escribe un comentario de seguimiento..."
           maxLength={500}
         />
+        {respondiendoA && <button type="button" className="btn" onClick={() => setRespondiendoA(null)}>Cancelar respuesta</button>}
         <button className="btn btn-primary" type="submit" disabled={enviandoComentario}>
           {enviandoComentario ? 'Enviando...' : 'Comentar'}
         </button>

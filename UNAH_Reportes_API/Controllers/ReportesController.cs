@@ -64,6 +64,9 @@ namespace UNAH_Reportes_API.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<ReporteDTO>> GetReporte(int id) 
         {
+            var correo = User.GetCorreoInstitucional();
+            var usuarioActual = await _context.Usuarios.SingleOrDefaultAsync(u => u.CorreoInstitucional == correo);
+            if (usuarioActual == null) return Unauthorized();
             var reporte = await _context.Reportes
                 .Include(r => r.Categoria)
                 .Include(r => r.Espacio)
@@ -89,6 +92,8 @@ namespace UNAH_Reportes_API.Controllers
                     Eliminado = r.Eliminado,
                     FechaEliminacion = r.FechaEliminacion,
                     MotivoEliminacion = r.MotivoEliminacion
+                    ,NumeroLikes = r.Likes.Count
+                    ,LeGustaUsuarioActual = r.Likes.Any(l => l.IdUsuario == usuarioActual.IdUsuario)
                 })
                 .FirstOrDefaultAsync();
 
@@ -206,8 +211,8 @@ namespace UNAH_Reportes_API.Controllers
                 IdEspacio = dto.IdEspacio,
                 Prioridad = dto.Prioridad,
                 IdEstadoActual = 1,
-                FechaCreacion = DateTime.Now,
-                FechaUltimaActualizacion = DateTime.Now,
+                FechaCreacion = DateTime.UtcNow,
+                FechaUltimaActualizacion = DateTime.UtcNow,
             };
 
             _context.Reportes.Add(reporte);
@@ -219,7 +224,7 @@ namespace UNAH_Reportes_API.Controllers
                 IdEstado = reporte.IdEstadoActual,
                 IdUsuario = usuarioActual.IdUsuario,
                 Comentario = "Reporte creado.",
-                FechaCambio = DateTime.Now
+                FechaCambio = DateTime.UtcNow
             });
 
             await _context.SaveChangesAsync();
@@ -298,7 +303,7 @@ namespace UNAH_Reportes_API.Controllers
                 IdEstado = dto.IdEstado,
                 IdUsuario = usuarioActual.IdUsuario,
                 Comentario = dto.Comentario,
-                FechaCambio = DateTime.Now
+                FechaCambio = DateTime.UtcNow
             };
 
             _context.HistorialEstados.Add(historial);
@@ -312,7 +317,7 @@ namespace UNAH_Reportes_API.Controllers
                     Tipo = "Cambio de estado",
                     Mensaje = $"Tu reporte \"{reporte.Titulo}\" cambió de estado a \"{nuevoEstado.NombreEstado}\".",
                     Leida = false,
-                    FechaCreacion = DateTime.Now
+                    FechaCreacion = DateTime.UtcNow
                 };
                 _context.Notificaciones.Add(notificacion);
             }
@@ -372,7 +377,10 @@ namespace UNAH_Reportes_API.Controllers
                 return NotFound();
 
             reporte.IdGestorAsignado = dto.IdGestorAsignado;
-            reporte.FechaUltimaActualizacion = DateTime.Now;
+            reporte.FechaUltimaActualizacion = DateTime.UtcNow;
+
+            if (reporte.IdUsuario != usuarioActual.IdUsuario)
+                _context.Notificaciones.Add(new Notificacion { IdUsuario = reporte.IdUsuario, IdReporte = reporte.IdReporte, Tipo = "Gestor asignado", Mensaje = $"Un gestor fue asignado a tu reporte \"{reporte.Titulo}\".", FechaCreacion = DateTime.UtcNow });
 
             await _context.SaveChangesAsync();
 
@@ -414,53 +422,6 @@ namespace UNAH_Reportes_API.Controllers
             if (usuario.CorreoInstitucional != correoToken)
                 return Forbid();
 
-            // Si el usuario no tiene carrera (ej. personal administrativo), no hay relevancia especial — feed normal
-            if (usuario.IdCarrera == null)
-            {
-                var reportesSinPrioridad = await _context.Reportes
-                    .Include(r => r.Categoria)
-                    .Include(r => r.Espacio)
-                    .Include(r => r.EstadoActual)
-                    .Include(r => r.Usuario)
-                    .Include(r => r.GestorAsignado)
-                    .Where(r => !r.Eliminado && !EstadosFinales.Contains(r.EstadoActual.NombreEstado))
-                    .OrderByDescending(r => r.FechaCreacion)
-                    .Select(r => new FeedReporteDTO
-                    {
-                        IdReporte = r.IdReporte,
-                        Titulo = r.Titulo,
-                        Descripcion = r.Descripcion,
-                        Categoria = r.Categoria.NombreCategoria,
-                        Espacio = r.Espacio.NombreEspacio,
-                        Ubicacion = r.Espacio.Edificio == null ? "Área común · " + r.Espacio.NombreEspacio : r.Espacio.Edificio.NombreEdificio + " · " + r.Espacio.NombreEspacio,
-                        Estado = r.EstadoActual.NombreEstado,
-                        Prioridad = r.Prioridad,
-                        UsuarioReporta = r.Usuario.NombreCompleto,
-                        CarreraUsuarioReporta = r.Usuario.Carrera == null ? "Sin carrera asignada" : r.Usuario.Carrera.NombreCarrera,
-                        ImagenPortada = r.Imagenes.OrderBy(imagen => imagen.FechaSubida).Select(imagen => imagen.UrlAzureBlob).FirstOrDefault(),
-                        GestorAsignado = r.GestorAsignado != null ? r.GestorAsignado.NombreCompleto : null,
-                        FechaCreacion = r.FechaCreacion,
-                        EsRelevante = false
-                    })
-                    .ToListAsync();
-
-                return Ok(reportesSinPrioridad);
-            }
-
-            int idCarrera = usuario.IdCarrera.Value;
-
-            // IDs de categorías relevantes para su carrera
-            var categoriasRelevantes = await _context.CategoriaCarreras
-                .Where(cc => cc.IdCarrera == idCarrera)
-                .Select(cc => cc.IdCategoria)
-                .ToListAsync();
-
-            // IDs de edificios relevantes para su carrera
-            var edificiosRelevantes = await _context.EdificioCarreras
-                .Where(ec => ec.IdCarrera == idCarrera)
-                .Select(ec => ec.IdEdificio)
-                .ToListAsync();
-
             var reportes = await _context.Reportes
                 .Include(r => r.Categoria)
                 .Include(r => r.Espacio)
@@ -483,14 +444,31 @@ namespace UNAH_Reportes_API.Controllers
                     ImagenPortada = r.Imagenes.OrderBy(imagen => imagen.FechaSubida).Select(imagen => imagen.UrlAzureBlob).FirstOrDefault(),
                     GestorAsignado = r.GestorAsignado != null ? r.GestorAsignado.NombreCompleto : null,
                     FechaCreacion = r.FechaCreacion,
-                    EsRelevante = categoriasRelevantes.Contains(r.IdCategoria) ||
-                                  (r.Espacio.IdEdificio != null && edificiosRelevantes.Contains(r.Espacio.IdEdificio.Value))
+                    NumeroLikes = r.Likes.Count,
+                    LeGustaUsuarioActual = r.Likes.Any(l => l.IdUsuario == usuario.IdUsuario),
+                    EsDeMiCarrera = usuario.IdCarrera != null && r.Usuario.IdCarrera == usuario.IdCarrera
                 })
-                .OrderByDescending(r => r.EsRelevante)
-                .ThenByDescending(r => r.FechaCreacion)
+                .OrderByDescending(r => r.FechaCreacion)
                 .ToListAsync();
 
             return Ok(reportes);
+        }
+
+        [HttpPost("{idReporte:int}/likes")]
+        public async Task<IActionResult> AlternarLike(int idReporte)
+        {
+            var correo = User.GetCorreoInstitucional();
+            var usuario = await _context.Usuarios.SingleOrDefaultAsync(u => u.CorreoInstitucional == correo);
+            if (usuario == null) return Unauthorized();
+            if (!await _context.Reportes.AnyAsync(r => r.IdReporte == idReporte && !r.Eliminado)) return NotFound();
+
+            var like = await _context.ReporteLikes.FindAsync(idReporte, usuario.IdUsuario);
+            var activo = like == null;
+            if (activo) _context.ReporteLikes.Add(new ReporteLike { IdReporte = idReporte, IdUsuario = usuario.IdUsuario });
+            else _context.ReporteLikes.Remove(like!);
+            await _context.SaveChangesAsync();
+            var total = await _context.ReporteLikes.CountAsync(l => l.IdReporte == idReporte);
+            return Ok(new { leGusta = activo, numeroLikes = total });
         }
     }
 }

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import { useMsal } from '@azure/msal-react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -28,7 +28,10 @@ function Layout({ children }) {
   const { tema, alternarTema } = useTheme();
 
   const [menuAbierto, setMenuAbierto] = useState(false);
+  const [menuUsuarioAbierto, setMenuUsuarioAbierto] = useState(false);
   const [noLeidas, setNoLeidas] = useState(0);
+  const [aviso, setAviso] = useState('');
+  const ultimaNotificacion = useRef(null);
 
   const esGestorOAdmin =
     usuario?.rol === 'Gestor' || usuario?.rol === 'Administrador';
@@ -48,6 +51,12 @@ function Layout({ children }) {
           setNoLeidas(
             notificaciones.filter((notificacion) => !notificacion.leida).length
           );
+          const masReciente = notificaciones[0];
+          if (ultimaNotificacion.current && masReciente && masReciente.idNotificacion !== ultimaNotificacion.current) {
+            setAviso(masReciente.mensaje);
+            window.setTimeout(() => setAviso(''), 6000);
+          }
+          if (masReciente) ultimaNotificacion.current = masReciente.idNotificacion;
         }
       } catch (error) {
         console.error('Error cargando notificaciones:', error);
@@ -55,6 +64,7 @@ function Layout({ children }) {
     };
 
     cargarConteoNotificaciones();
+    const intervalo = window.setInterval(cargarConteoNotificaciones, 30000);
 
     window.addEventListener(
       'notificacionesActualizadas',
@@ -67,6 +77,7 @@ function Layout({ children }) {
         'notificacionesActualizadas',
         cargarConteoNotificaciones
       );
+      window.clearInterval(intervalo);
     };
   }, [accounts, instance, usuario?.idUsuario]);
 
@@ -183,38 +194,14 @@ function Layout({ children }) {
                 </NavLink>
               )}
 
-              <NavLink
-                to="/notificaciones"
-                className={({ isActive }) =>
-                  `layout-nav-link layout-notificaciones ${isActive ? 'activo' : ''}`
-                }
-                onClick={cerrarMenu}
-              >
-                <FontAwesomeIcon icon={faBell} />
-                <span>Notificaciones</span>
-
-                {noLeidas > 0 && (
-                  <span className="layout-notificaciones-contador">
-                    {noLeidas > 9 ? '9+' : noLeidas}
-                  </span>
-                )}
-              </NavLink>
-
             </div>
           </nav>
 
           <div className="layout-acciones">
-              <NavLink to="/perfil" className="layout-user" title="Mi perfil">
-                <span className="layout-avatar">
-                  {usuario?.nombreCompleto?.charAt(0)?.toUpperCase() ?? '?'}
-                </span>
-
-                <div className="layout-user-info">
-                  <span className="layout-username">{usuario?.nombreCompleto}</span>
-                  <span className="layout-user-role">{usuario?.rol}</span>
-                </div>
+              <NavLink to="/notificaciones" className="layout-bell" title="Notificaciones" aria-label="Notificaciones">
+                <FontAwesomeIcon icon={faBell} />
+                {noLeidas > 0 && <span className="layout-notificaciones-contador">{noLeidas > 9 ? '9+' : noLeidas}</span>}
               </NavLink>
-
               <button
                 type="button"
                 onClick={alternarTema}
@@ -224,16 +211,19 @@ function Layout({ children }) {
               >
                 <FontAwesomeIcon icon={tema === 'light' ? faMoon : faSun} />
               </button>
+              <div className="layout-user-menu">
+              <button type="button" className="layout-user" onClick={() => setMenuUsuarioAbierto((abierto) => !abierto)} aria-expanded={menuUsuarioAbierto}>
+                <span className="layout-avatar">
+                  {usuario?.nombreCompleto?.charAt(0)?.toUpperCase() ?? '?'}
+                </span>
 
-              <button
-                type="button"
-                onClick={handleLogout}
-                className="layout-logout"
-                title="Cerrar sesión"
-              >
-                <FontAwesomeIcon icon={faRightFromBracket} />
-                <span>Cerrar sesión</span>
+                <div className="layout-user-info">
+                  <span className="layout-username">{usuario?.nombreCompleto}</span>
+                  <span className="layout-user-role">{usuario?.rol}</span>
+                </div>
               </button>
+              {menuUsuarioAbierto && <div className="layout-user-dropdown"><NavLink to="/perfil" onClick={() => setMenuUsuarioAbierto(false)}>Mi perfil</NavLink><button type="button" onClick={handleLogout}><FontAwesomeIcon icon={faRightFromBracket} /> Cerrar sesión</button></div>}
+              </div>
           </div>
 
           <button
@@ -249,6 +239,7 @@ function Layout({ children }) {
       </header>
 
       <main className="layout-content">{children}</main>
+      {aviso && <div className="layout-toast" role="status">{aviso}</div>}
       <footer className="layout-footer">
         <div className="layout-footer-contenido">
           <div>

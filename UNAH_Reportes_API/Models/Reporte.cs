@@ -32,6 +32,7 @@ namespace UNAH_Reportes_API.Models
         public ICollection<ReporteImagen> Imagenes { get; set; } = new List<ReporteImagen>();
         public ICollection<Comentario> Comentarios { get; set; } = new List<Comentario>();
         public ICollection<Notificacion> Notificaciones { get; set; } = new List<Notificacion>();
+        public ICollection<ReporteLike> Likes { get; set; } = new List<ReporteLike>();
         
     }
 }

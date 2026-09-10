@@ -24,16 +24,22 @@ namespace UNAH_Reportes_API.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ComentarioDTO>>> GetComentarios(int idReporte)
         {
+            var correo = User.GetCorreoInstitucional();
+            var usuario = await _context.Usuarios.SingleOrDefaultAsync(u => u.CorreoInstitucional == correo);
+            if (usuario == null) return Unauthorized();
             var comentarios = await _context.Comentarios
                 .Include(c => c.Usuario)
                 .Where(c => c.IdReporte == idReporte)
-                .OrderBy(c => c.FechaComentario)
+                .OrderByDescending(c => c.FechaComentario)
                 .Select(c => new ComentarioDTO
                 {
                     IdComentario = c.IdComentario,
                     Texto = c.Texto,
                     Usuario = c.Usuario.NombreCompleto,
-                    FechaComentario = c.FechaComentario
+                    FechaComentario = c.FechaComentario,
+                    IdComentarioPadre = c.IdComentarioPadre,
+                    NumeroLikes = c.Likes.Count,
+                    LeGustaUsuarioActual = c.Likes.Any(l => l.IdUsuario == usuario.IdUsuario)
                 })
                 .ToListAsync();
 
@@ -56,13 +62,16 @@ namespace UNAH_Reportes_API.Controllers
             var reporteExiste = await _context.Reportes.AnyAsync(r => r.IdReporte == idReporte);
             if (!reporteExiste)
                 return NotFound($"No existe un reporte con ID {idReporte}");
+            if (dto.IdComentarioPadre.HasValue && !await _context.Comentarios.AnyAsync(c => c.IdComentario == dto.IdComentarioPadre && c.IdReporte == idReporte))
+                return BadRequest("El comentario al que respondes no existe en este reporte.");
 
             var comentario = new Comentario
             {
                 IdReporte = idReporte,
                 IdUsuario = usuarioActual.IdUsuario,
                 Texto = dto.Texto,
-                FechaComentario = DateTime.Now
+                FechaComentario = DateTime.UtcNow,
+                IdComentarioPadre = dto.IdComentarioPadre
             };
 
             _context.Comentarios.Add(comentario);
@@ -76,11 +85,29 @@ namespace UNAH_Reportes_API.Controllers
                     IdComentario = c.IdComentario,
                     Texto = c.Texto,
                     Usuario = c.Usuario.NombreCompleto,
-                    FechaComentario = c.FechaComentario
+                    FechaComentario = c.FechaComentario,
+                    IdComentarioPadre = c.IdComentarioPadre,
+                    NumeroLikes = 0,
+                    LeGustaUsuarioActual = false
                 })
                 .FirstOrDefaultAsync();
 
             return CreatedAtAction(nameof(GetComentarios), new { idReporte }, comentarioCreado);
+        }
+
+        [HttpPost("{idComentario:int}/likes")]
+        public async Task<IActionResult> AlternarLike(int idReporte, int idComentario)
+        {
+            var correo = User.GetCorreoInstitucional();
+            var usuario = await _context.Usuarios.SingleOrDefaultAsync(u => u.CorreoInstitucional == correo);
+            if (usuario == null) return Unauthorized();
+            if (!await _context.Comentarios.AnyAsync(c => c.IdComentario == idComentario && c.IdReporte == idReporte)) return NotFound();
+            var like = await _context.ComentarioLikes.FindAsync(idComentario, usuario.IdUsuario);
+            var activo = like == null;
+            if (activo) _context.ComentarioLikes.Add(new ComentarioLike { IdComentario = idComentario, IdUsuario = usuario.IdUsuario });
+            else _context.ComentarioLikes.Remove(like!);
+            await _context.SaveChangesAsync();
+            return Ok(new { leGusta = activo, numeroLikes = await _context.ComentarioLikes.CountAsync(l => l.IdComentario == idComentario) });
         }
     }
 }

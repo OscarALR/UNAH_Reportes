@@ -22,6 +22,8 @@ namespace UNAH_Reportes_API.Data
         public DbSet<ReporteImagen> ReporteImagenes { get; set; }
         public DbSet<Comentario> Comentarios { get; set; }
         public DbSet<Notificacion> Notificaciones { get; set; }
+        public DbSet<ReporteLike> ReporteLikes { get; set; }
+        public DbSet<ComentarioLike> ComentarioLikes { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -155,6 +157,16 @@ namespace UNAH_Reportes_API.Data
                 .WithMany(r => r.Comentarios)
                 .HasForeignKey(c => c.IdReporte)
                 .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<Comentario>()
+                .HasOne(c => c.ComentarioPadre).WithMany(c => c.Respuestas)
+                .HasForeignKey(c => c.IdComentarioPadre).OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<ReporteLike>().HasKey(l => new { l.IdReporte, l.IdUsuario });
+            modelBuilder.Entity<ReporteLike>().HasOne(l => l.Reporte).WithMany(r => r.Likes).HasForeignKey(l => l.IdReporte).OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<ReporteLike>().HasOne(l => l.Usuario).WithMany().HasForeignKey(l => l.IdUsuario).OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<ComentarioLike>().HasKey(l => new { l.IdComentario, l.IdUsuario });
+            modelBuilder.Entity<ComentarioLike>().HasOne(l => l.Comentario).WithMany(c => c.Likes).HasForeignKey(l => l.IdComentario).OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<ComentarioLike>().HasOne(l => l.Usuario).WithMany().HasForeignKey(l => l.IdUsuario).OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Comentario>()
                 .HasOne(c => c.Usuario)
