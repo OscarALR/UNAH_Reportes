@@ -99,12 +99,11 @@ function Layout({ children }) {
     <div className="layout">
       <header className="layout-header">
         <div className="layout-header-contenido">
-          <Link to="/" className="layout-logo" onClick={cerrarMenu}>
-            <span className="layout-logo-badge">U</span>
-            <div>
-              <div className="layout-logo-title">UNAH Reportes</div>
-              <div className="layout-logo-subtitle">UNAH Valle de Sula</div>
-            </div>
+          <Link to="/" className="layout-logo" onClick={cerrarMenu} aria-label="RiUVS, inicio">
+            <img
+              src={tema === 'dark' ? '/riuvs-logo-dark-bg.svg' : '/riuvs-logo-horizontal.svg'}
+              alt="RiUVS, plataforma de incidencias UNAH VS"
+            />
           </Link>
 
           <nav className={`layout-nav ${menuAbierto ? 'abierto' : ''}`}>
@@ -243,7 +242,7 @@ function Layout({ children }) {
       <footer className="layout-footer">
         <div className="layout-footer-contenido">
           <div>
-            <strong>UNAH Reportes</strong>
+            <strong><img src="/riuvs-icon.svg" alt="" />RiUVS</strong>
             <span>Plataforma de incidencias para UNAH Valle de Sula.</span>
           </div>
           <div className="layout-footer-enlaces">

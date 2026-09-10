@@ -16,10 +16,8 @@
   padding: 0 24px;
 }
 
-.layout-logo { display: flex; align-items: center; gap: 10px; color: var(--color-text); text-decoration: none; }
-.layout-logo-badge { display: grid; place-items: center; width: 35px; height: 35px; border-radius: 10px; background: var(--color-primary); color: var(--color-accent); font-size: 15px; font-weight: 800; box-shadow: 0 5px 14px rgba(26, 47, 92, .24); }
-.layout-logo-title { font-size: 13px; font-weight: 800; line-height: 1.2; }
-.layout-logo-subtitle { margin-top: 2px; color: var(--color-text-secondary); font-size: 10px; }
+.layout-logo { display: flex; align-items: center; flex-shrink: 0; text-decoration: none; }
+.layout-logo img { display: block; width: 160px; height: 40px; object-fit: contain; }
 
 .layout-nav { display: flex; flex: 1; align-items: center; margin-left: 40px; }
 .layout-enlaces, .layout-acciones { display: flex; align-items: center; gap: 9px; }
@@ -55,7 +53,8 @@
 .layout-footer { border-top: 1px solid var(--color-border); color: var(--color-text-secondary); font-size: 12px; }
 .layout-footer-contenido { align-items: center; display: flex; gap: 20px; justify-content: space-between; margin: 0 auto; max-width: 1300px; padding: 20px 24px; }
 .layout-footer-contenido > div:first-child { display: flex; flex-direction: column; gap: 3px; }
-.layout-footer strong { color: var(--color-text); font-size: 13px; }
+.layout-footer strong { display: flex; align-items: center; gap: 6px; color: var(--color-text); font-size: 13px; }
+.layout-footer strong img { width: 18px; height: 18px; }
 .layout-footer-enlaces { align-items: center; display: flex; flex-wrap: wrap; gap: 10px; justify-content: flex-end; }
 .layout-footer a { color: var(--color-accent-hover); font-weight: 700; text-decoration: none; }
 .layout-footer a:hover { text-decoration: underline; }
@@ -73,8 +72,8 @@
 /* En teléfonos la barra se convierte en un panel lateral de ancho limitado. */
 @media (max-width: 760px) {
   .layout-header-contenido { padding: 0 14px; }
-  .layout-logo-subtitle, .layout-user-info, .layout-logout span { display: none; }
-  .layout-logo-title { font-size: 12px; }
+  .layout-logo img { width: 126px; height: 34px; }
+  .layout-user-info, .layout-logout span { display: none; }
   .layout-acciones { margin-left: auto; gap: 5px; }
   .layout-user { margin: 0 1px; padding: 0; border: 0; }
   .layout-theme-toggle, .layout-logout, .layout-menu-toggle { width: 34px; height: 34px; padding: 0; }

@@ -72,13 +72,11 @@ function Login() {
 
       <div className="login-contenedor">
         <section className="login-presentacion">
-          <div className="login-marca">
-            <span className="login-marca-simbolo">U</span>
-            <div>
-              <strong>UNAH Reportes</strong>
-              <span>UNAH Valle de Sula</span>
-            </div>
-          </div>
+          <img
+            className="login-marca"
+            src={tema === 'dark' ? '/riuvs-logo-dark-bg.svg' : '/riuvs-logo-horizontal.svg'}
+            alt="RiUVS, plataforma de incidencias UNAH VS"
+          />
 
           <div className="login-presentacion-texto">
             <p className="login-etiqueta">Plataforma de incidencias</p>
@@ -98,10 +96,10 @@ function Login() {
 
         <section className="login-acceso">
           <div className="login-acceso-contenido">
-            <div className="login-badge">U</div>
+            <img className="login-badge" src="/riuvs-icon.svg" alt="" />
             <p className="login-acceso-etiqueta">Bienvenido</p>
             <h2>{modoLocal === 'registro' ? 'Crea tu cuenta' : 'Inicia sesión'}</h2>
-            <p className="login-text">Accede con Microsoft o crea una cuenta local para explorar UNAH Reportes.</p>
+            <p className="login-text">Accede con Microsoft o crea una cuenta local para explorar RiUVS.</p>
 
             <button
               className="login-button"

@@ -32,36 +32,11 @@
 }
 
 .login-marca {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.login-marca-simbolo {
-  display: grid;
-  place-items: center;
-  width: 35px;
-  height: 35px;
-  border-radius: 10px;
-  background: var(--color-accent);
-  color: var(--color-primary);
-  font-size: 15px;
-  font-weight: 800;
-}
-
-.login-marca strong,
-.login-marca div > span {
   display: block;
-}
-
-.login-marca strong {
-  font-size: 14px;
-}
-
-.login-marca div > span {
-  margin-top: 2px;
-  color: rgba(238, 243, 255, .68);
-  font-size: 11px;
+  width: 200px;
+  height: 50px;
+  object-fit: contain;
+  object-position: left center;
 }
 
 .login-presentacion-texto {
@@ -130,17 +105,10 @@
 }
 
 .login-badge {
-  display: grid;
-  place-items: center;
   width: 55px;
   height: 55px;
   margin: 0 auto 24px;
-  border-radius: 16px;
-  background: var(--color-primary);
-  color: var(--color-accent);
-  font-size: 23px;
-  font-weight: 800;
-  box-shadow: 0 8px 22px rgba(26, 47, 92, .22);
+  object-fit: contain;
 }
 
 .login-acceso-etiqueta {
