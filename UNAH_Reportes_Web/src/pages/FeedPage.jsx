@@ -71,7 +71,7 @@ function FeedPage() {
   const reportesFiltrados = useMemo(() => {
     const termino = busqueda.trim().toLowerCase();
 
-    return reportes.filter((reporte) => {
+    const filtrados = reportes.filter((reporte) => {
       const coincideBusqueda =
         !termino ||
         reporte.titulo.toLowerCase().includes(termino) ||
@@ -86,6 +86,9 @@ function FeedPage() {
         && (vistaFeed === 'todos' || (vistaFeed === 'populares' && reporte.numeroLikes > 0) || (vistaFeed === 'carrera' && reporte.esDeMiCarrera) || (vistaFeed === 'otros' && !reporte.esDeMiCarrera))
       );
     });
+    return vistaFeed === 'populares'
+      ? filtrados.sort((a, b) => b.numeroLikes - a.numeroLikes || new Date(b.fechaCreacion) - new Date(a.fechaCreacion))
+      : filtrados;
   }, [reportes, busqueda, filtroEstado, filtroPrioridad, filtroCategoria, vistaFeed]);
 
   const limpiarFiltros = () => {
