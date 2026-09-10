@@ -1,0 +1,24 @@
+.servicio-preparandose {
+  position: fixed;
+  z-index: 1000;
+  right: 20px;
+  bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  max-width: min(420px, calc(100vw - 40px));
+  padding: 14px 16px;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  background: var(--color-surface);
+  color: var(--color-text);
+  box-shadow: 0 12px 30px rgba(26, 47, 92, .2);
+  font-size: 14px;
+}
+
+.servicio-preparandose strong { display: block; margin-bottom: 2px; }
+.servicio-preparandose-indicador { width: 20px; height: 20px; flex: 0 0 auto; border: 2px solid var(--color-border); border-top-color: var(--color-accent); border-radius: 50%; animation: servicio-giro .8s linear infinite; }
+
+@keyframes servicio-giro { to { transform: rotate(360deg); } }
+
+@media (prefers-reduced-motion: reduce) { .servicio-preparandose-indicador { animation-duration: 2.5s; } }

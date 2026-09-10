@@ -7,7 +7,7 @@ function LoadingPage() {
         <div className="carga-emblema" aria-hidden="true">U</div>
         <div className="carga-indicador" aria-hidden="true"><span /></div>
         <h1>UNAH Reportes</h1>
-        <p>Estamos preparando tu espacio de trabajo.</p>
+        <p>Preparando el servicio… Esto puede tomar unos segundos.</p>
       </section>
     </main>
   );

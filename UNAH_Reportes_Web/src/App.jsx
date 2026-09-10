@@ -18,22 +18,31 @@ import DashboardPage from './pages/DashboardPage.jsx';
 import ColeccionReportesPage from './pages/ColeccionReportesPage.jsx';
 import PerfilPage from './pages/PerfilPage.jsx';
 import LoadingPage from './components/LoadingPage.jsx';
+import ServicioPreparandose from './components/ServicioPreparandose.jsx';
 import './App.css';
 
 function App() {
   const { usuario, cargando } = useUser();
   if (cargando) {
-    return <LoadingPage />;
+    return <>
+      <LoadingPage />
+      <ServicioPreparandose />
+    </>;
   }
 
   if (!usuario) {
-    return <Login />;
+    return <>
+      <Login />
+      <ServicioPreparandose />
+    </>;
   }
 
   return (
-    <BrowserRouter>
-      <Layout>
-        <Routes>
+    <>
+      <ServicioPreparandose />
+      <BrowserRouter>
+        <Layout>
+          <Routes>
           <Route path="/" element={<FeedPage />} />
           <Route path="*" element={<Navigate to="/" />} />
           <Route path="/crear-reporte" element={<CrearReportePage />} />
@@ -51,9 +60,10 @@ function App() {
           <Route path="/administracion/espacios" element={<AdministracionEspaciosPage />} />
           <Route path="/administracion/estados" element={<AdministracionEstadosPage />} />
           <Route path="/administracion/usuarios" element={<AdministracionUsuariosPage />} />
-        </Routes>
-      </Layout>
-    </BrowserRouter>
+          </Routes>
+        </Layout>
+      </BrowserRouter>
+    </>
   );
 }
 
