@@ -10,8 +10,9 @@
 .perfil-page input, .perfil-page select { border: 1px solid var(--color-field-border); border-radius: 8px; background: var(--color-field); color: var(--color-text); padding: 10px; }
 .perfil-contrasena { position: relative; display: block; }
 .perfil-contrasena input { width: 100%; padding-right: 44px; }
-.perfil-contrasena button { position: absolute; top: 50%; right: 5px; width: 34px; height: 30px; transform: translateY(-50%); border: 0; border-radius: 6px; background: transparent; color: var(--color-text-secondary); cursor: pointer; }
+.perfil-contrasena button { position: absolute; inset: 1px 1px 1px auto; width: 42px; min-height: 0; border: 0; border-radius: 7px; background: transparent; color: var(--color-text-secondary); cursor: pointer; padding: 0; }
 .perfil-contrasena button:hover { background: var(--color-bg); color: var(--color-text); }
+.perfil-contrasena button:focus-visible { outline: 2px solid var(--color-accent); outline-offset: -3px; }
 .perfil-page input:disabled { opacity: .65; cursor: not-allowed; }
-.perfil-page button { justify-self: start; border: 0; border-radius: 8px; background: var(--color-primary); color: #fff; cursor: pointer; padding: 11px 16px; font-weight: 700; }
+.perfil-page form > button { justify-self: start; border: 0; border-radius: 8px; background: var(--color-primary); color: #fff; cursor: pointer; padding: 11px 16px; font-weight: 700; }
 .perfil-mensaje { margin: 0; color: var(--color-text-secondary); }
