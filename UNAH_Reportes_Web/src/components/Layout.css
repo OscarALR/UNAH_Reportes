@@ -17,7 +17,7 @@
 }
 
 .layout-logo { display: flex; align-items: center; flex-shrink: 0; text-decoration: none; }
-.layout-logo img { display: block; width: 160px; height: 40px; object-fit: contain; }
+.layout-logo svg { display: block; width: 160px; height: 40px; }
 
 .layout-nav { display: flex; flex: 1; align-items: center; margin-left: 40px; }
 .layout-enlaces, .layout-acciones { display: flex; align-items: center; gap: 9px; }
@@ -72,7 +72,7 @@
 /* En teléfonos la barra se convierte en un panel lateral de ancho limitado. */
 @media (max-width: 760px) {
   .layout-header-contenido { padding: 0 14px; }
-  .layout-logo img { width: 126px; height: 34px; }
+  .layout-logo svg { width: 126px; height: 34px; }
   .layout-user-info, .layout-logout span { display: none; }
   .layout-acciones { margin-left: auto; gap: 5px; }
   .layout-user { margin: 0 1px; padding: 0; border: 0; }

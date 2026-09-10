@@ -3,8 +3,12 @@ import { useMsal } from '@azure/msal-react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faArrowRight,
+  faBell,
+  faCamera,
   faEye,
   faEyeSlash,
+  faKey,
+  faMagnifyingGlass,
   faMoon,
   faSun,
 } from '@fortawesome/free-solid-svg-icons';
@@ -13,6 +17,7 @@ import { useTheme } from '../context/ThemeContext';
 import { useUser } from '../context/UserContext';
 import { getCarrerasRegistro, ingresarCuenta, registrarCuenta } from '../api/autenticacionApi';
 import { ordenarAlfabeticamente } from '../utils/ordenarAlfabeticamente';
+import RiuvsLogo from './RiuvsLogo';
 import './Login.css';
 
 function Login() {
@@ -72,11 +77,7 @@ function Login() {
 
       <div className="login-contenedor">
         <section className="login-presentacion">
-          <img
-            className="login-marca"
-            src={tema === 'dark' ? '/riuvs-logo-dark-bg.svg' : '/riuvs-logo-horizontal.svg'}
-            alt="RiUVS, plataforma de incidencias UNAH VS"
-          />
+          <RiuvsLogo className="login-marca" variante={tema === 'dark' ? 'oscura' : 'clara'} sinIcono mostrarSubtitulo ampliada />
 
           <div className="login-presentacion-texto">
             <p className="login-etiqueta">Plataforma de incidencias</p>
@@ -88,9 +89,9 @@ function Login() {
           </div>
 
           <div className="login-beneficios">
-            <div><span>01</span><p>Reporta incidencias con fotografías.</p></div>
-            <div><span>02</span><p>Da seguimiento a cada cambio de estado.</p></div>
-            <div><span>03</span><p>Recibe avisos sobre tus reportes.</p></div>
+            <div><div className="login-beneficio-icono"><FontAwesomeIcon icon={faCamera} /></div><span>01</span><p>Reporta incidencias con fotografías.</p></div>
+            <div><div className="login-beneficio-icono"><FontAwesomeIcon icon={faMagnifyingGlass} /></div><span>02</span><p>Da seguimiento a cada cambio de estado.</p></div>
+            <div><div className="login-beneficio-icono"><FontAwesomeIcon icon={faBell} /></div><span>03</span><p>Recibe avisos sobre tus reportes.</p></div>
           </div>
         </section>
 
@@ -125,7 +126,7 @@ function Login() {
               {modoLocal === 'registro' && <><label>Nombre completo<input required minLength="3" maxLength="150" value={formulario.nombreCompleto} onChange={(e) => setFormulario({ ...formulario, nombreCompleto: e.target.value })} /></label><label>Carrera<select required value={formulario.idCarrera} onChange={(e) => setFormulario({ ...formulario, idCarrera: e.target.value })}><option value="">Selecciona tu carrera</option>{carreras.map((carrera) => <option key={carrera.idCarrera} value={carrera.idCarrera}>{carrera.nombreCarrera}</option>)}</select></label><label>Correo de recuperación<input required type="email" maxLength="150" value={formulario.correoRecuperacion} onChange={(e) => setFormulario({ ...formulario, correoRecuperacion: e.target.value })} /></label></>}
               <label>Correo electrónico<input required type="email" maxLength="150" value={formulario.correo} onChange={(e) => setFormulario({ ...formulario, correo: e.target.value })} /></label>
               <label>Contraseña<span className="campo-contrasena"><input required type={mostrarContrasena ? 'text' : 'password'} minLength="8" value={formulario.contrasena} onChange={(e) => setFormulario({ ...formulario, contrasena: e.target.value })} /><button type="button" onClick={() => setMostrarContrasena((visible) => !visible)} aria-label={mostrarContrasena ? 'Ocultar contraseña' : 'Mostrar contraseña'}><FontAwesomeIcon icon={mostrarContrasena ? faEyeSlash : faEye} /></button></span>{modoLocal === 'registro' && <small>8+ caracteres, combinando letras, números y símbolos.</small>}</label>
-              {modoLocal === 'ingresar' && <button type="button" className="login-recuperar" onClick={() => setErrorLocal('La recuperación por correo está en preparación; contacta a soporte mientras se configura el servicio de correo.')}>¿Olvidaste tu contraseña?</button>}
+              {modoLocal === 'ingresar' && <button type="button" className="login-recuperar" onClick={() => setErrorLocal('La recuperación por correo está en preparación; contacta a soporte mientras se configura el servicio de correo.')}><FontAwesomeIcon icon={faKey} /> ¿Olvidaste tu contraseña?</button>}
               {errorLocal && <p className="login-local-error" role="alert">{errorLocal}</p>}
               <button type="submit" className="login-local-button" disabled={iniciando}>{modoLocal === 'registro' ? 'Crear cuenta' : 'Ingresar con correo'}</button>
             </form>
