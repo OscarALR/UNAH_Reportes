@@ -26,6 +26,8 @@
 .dashboard-linea { width: 100%; height: 250px; overflow: visible; margin-top: 10px; }
 .dashboard-linea text { fill: var(--color-text-secondary); font: 12px var(--font-sans); }
 .dashboard-eje { stroke: var(--color-border); stroke-width: 1; }
+.dashboard-grid line { stroke: var(--color-border); stroke-width: 1; stroke-dasharray: 3 5; }
+.dashboard-grid text { fill: var(--color-text-secondary); font-size: 11px; }
 .dashboard-linea-trazo { fill: none; stroke: var(--color-accent); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
 .dashboard-linea-punto { fill: var(--color-primary); stroke: var(--color-surface); stroke-width: 3; }
 .dashboard-cuadricula { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
@@ -65,5 +67,10 @@
 [data-theme='dark'] .dashboard-barra-relleno.serie-3, [data-theme='dark'] .dashboard-leyenda i.serie-3 { background: #d0a8ea; }
 [data-theme='dark'] .dashboard-barra-relleno.serie-4, [data-theme='dark'] .dashboard-leyenda i.serie-4 { background: #ffac85; }
 [data-theme='dark'] .dashboard-dona-contenido { --dashboard-serie-0: #9db9ff; --dashboard-serie-1: var(--color-accent); --dashboard-serie-2: #71d5a1; --dashboard-serie-3: #d0a8ea; --dashboard-serie-4: #ffac85; }
+.dashboard-dona-contenido .dashboard-leyenda i.serie-0 { background: var(--dashboard-serie-0); }
+.dashboard-dona-contenido .dashboard-leyenda i.serie-1 { background: var(--dashboard-serie-1); }
+.dashboard-dona-contenido .dashboard-leyenda i.serie-2 { background: var(--dashboard-serie-2); }
+.dashboard-dona-contenido .dashboard-leyenda i.serie-3 { background: var(--dashboard-serie-3); }
+.dashboard-dona-contenido .dashboard-leyenda i.serie-4 { background: var(--dashboard-serie-4); }
 @media (max-width: 860px) { .dashboard-encabezado { align-items: start; flex-direction: column; } .dashboard-metricas { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 620px) { .dashboard-page { padding: 20px 14px 36px; } .dashboard-metricas, .dashboard-cuadricula, .dashboard-operacion { grid-template-columns: 1fr; } .dashboard-filtros { width: 100%; } .dashboard-filtros label { flex: 1; } .dashboard-filtros input { width: 100%; } .dashboard-barra-fila { grid-template-columns: 100px 1fr 30px; } .dashboard-linea { height: 210px; } }

@@ -132,15 +132,7 @@ namespace UNAH_Reportes_API.Controllers
                         FechaCreacion = r.FechaCreacion
                     })
                     .ToList(),
-                TendenciaMensual = reportes
-                    .GroupBy(r => new { r.FechaCreacion.Year, r.FechaCreacion.Month })
-                    .OrderBy(g => g.Key.Year).ThenBy(g => g.Key.Month)
-                    .Select(g => new DashboardTendenciaDTO
-                    {
-                        Mes = new DateTime(g.Key.Year, g.Key.Month, 1).ToString("yyyy-MM"),
-                        Valor = g.Count()
-                    })
-                    .ToList()
+                TendenciaDiaria = CrearTendenciaDiaria(reportes.Select(r => r.FechaCreacion), desde, fechaHasta?.Date)
             };
 
             return Ok(resumen);
@@ -152,5 +144,24 @@ namespace UNAH_Reportes_API.Controllers
             .ThenBy(grupo => grupo.Key)
             .Select(grupo => new DashboardEtiquetaValorDTO { Etiqueta = grupo.Key, Valor = grupo.Count() })
             .ToList();
+
+        private static List<DashboardTendenciaDTO> CrearTendenciaDiaria(IEnumerable<DateTime> fechas, DateTime? desde, DateTime? hasta)
+        {
+            var porDia = fechas
+                .GroupBy(fecha => fecha.Date)
+                .ToDictionary(grupo => grupo.Key, grupo => grupo.Count());
+            if (porDia.Count == 0) return [];
+
+            var inicio = desde ?? porDia.Keys.Min();
+            var fin = hasta ?? porDia.Keys.Max();
+            return Enumerable.Range(0, (fin - inicio).Days + 1)
+                .Select(indice => inicio.AddDays(indice))
+                .Select(fecha => new DashboardTendenciaDTO
+                {
+                    Fecha = fecha.ToString("yyyy-MM-dd"),
+                    Valor = porDia.GetValueOrDefault(fecha)
+                })
+                .ToList();
+        }
     }
 }

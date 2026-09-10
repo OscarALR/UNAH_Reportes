@@ -20,7 +20,7 @@ namespace UNAH_Reportes_API.DTOs
         public List<DashboardEtiquetaValorDTO> CambiosPorResponsable { get; set; } = [];
         public List<DashboardMatrizOperacionDTO> MatrizOperacion { get; set; } = [];
         public List<DashboardReporteRecienteDTO> ReportesRecientes { get; set; } = [];
-        public List<DashboardTendenciaDTO> TendenciaMensual { get; set; } = [];
+        public List<DashboardTendenciaDTO> TendenciaDiaria { get; set; } = [];
     }
 
     public class DashboardEtiquetaValorDTO
@@ -31,7 +31,7 @@ namespace UNAH_Reportes_API.DTOs
 
     public class DashboardTendenciaDTO
     {
-        public string Mes { get; set; } = string.Empty;
+        public string Fecha { get; set; } = string.Empty;
         public int Valor { get; set; }
     }
 

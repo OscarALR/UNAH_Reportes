@@ -9,10 +9,9 @@ function formatNumero(valor) {
   return new Intl.NumberFormat('es-HN').format(valor ?? 0);
 }
 
-function formatMes(mes) {
-  const [anio, numeroMes] = mes.split('-').map(Number);
-  return new Intl.DateTimeFormat('es-HN', { month: 'short', year: 'numeric' })
-    .format(new Date(anio, numeroMes - 1, 1));
+function formatDia(fecha) {
+  return new Intl.DateTimeFormat('es-HN', { day: 'numeric', month: 'short' })
+    .format(new Date(`${fecha}T00:00:00`));
 }
 
 function Barras({ titulo, datos, limite = 6, colorido = false }) {
@@ -53,7 +52,7 @@ function Dona({ datos }) {
 }
 
 function Tendencia({ datos }) {
-  const { puntos, maximo } = useMemo(() => {
+  const { puntos, maximo, guiasHorizontales, guiasVerticales } = useMemo(() => {
     const max = Math.max(...datos.map((dato) => dato.valor), 1);
     const ancho = 600;
     const alto = 220;
@@ -65,24 +64,33 @@ function Tendencia({ datos }) {
       x: datos.length === 1 ? ancho / 2 : margenX + (indice * espacio) / (datos.length - 1),
       y: alto - margenY - (dato.valor / max) * (alto - margenY * 2),
     }));
-    return { puntos: puntosCalculados, maximo: max };
+    const indicesEtiquetas = [...new Set([0, ...Array.from({ length: Math.min(datos.length, 6) }, (_, indice) => Math.round((indice * (datos.length - 1)) / Math.max(Math.min(datos.length, 6) - 1, 1))), datos.length - 1])];
+    return {
+      puntos: puntosCalculados,
+      maximo: max,
+      guiasHorizontales: Array.from({ length: 5 }, (_, indice) => ({ valor: Math.round((max * indice) / 4), y: alto - margenY - (indice * (alto - margenY * 2)) / 4 })),
+      guiasVerticales: indicesEtiquetas.map((indice) => puntosCalculados[indice]),
+    };
   }, [datos]);
 
   if (datos.length === 0) return <p className="dashboard-vacio">No hay reportes en el periodo seleccionado.</p>;
 
   const polilinea = puntos.map((punto) => `${punto.x},${punto.y}`).join(' ');
   return (
-    <svg className="dashboard-linea" viewBox="0 0 600 220" role="img" aria-label={`Tendencia mensual; máximo ${maximo} reportes`}>
-      <title>Tendencia mensual de reportes</title>
-      <line x1="36" y1="196" x2="564" y2="196" className="dashboard-eje" />
+    <svg className="dashboard-linea" viewBox="0 0 600 220" role="img" aria-label={`Tendencia diaria; máximo ${maximo} reportes`}>
+      <title>Tendencia diaria de reportes</title>
+      <g className="dashboard-grid" aria-hidden="true">
+        {guiasHorizontales.map((guia) => <g key={guia.y}><line x1="36" y1={guia.y} x2="564" y2={guia.y} /><text x="28" y={guia.y + 4} textAnchor="end">{guia.valor}</text></g>)}
+        {guiasVerticales.map((punto) => <line key={punto.fecha} x1={punto.x} y1="24" x2={punto.x} y2="196" />)}
+      </g>
       <polyline points={polilinea} className="dashboard-linea-trazo" />
       {puntos.map((punto) => (
-        <g key={punto.mes}>
-          <circle cx={punto.x} cy={punto.y} r="5" className="dashboard-linea-punto"><title>{`${formatMes(punto.mes)}: ${punto.valor} reportes`}</title></circle>
-          <text x={punto.x} y="214" textAnchor="middle">{formatMes(punto.mes)}</text>
-          <text x={punto.x} y={Math.max(punto.y - 10, 14)} textAnchor="middle">{punto.valor}</text>
+        <g key={punto.fecha}>
+          <circle cx={punto.x} cy={punto.y} r="5" className="dashboard-linea-punto"><title>{`${formatDia(punto.fecha)}: ${punto.valor} reportes`}</title></circle>
+          {datos.length <= 31 && <text x={punto.x} y={Math.max(punto.y - 10, 14)} textAnchor="middle">{punto.valor}</text>}
         </g>
       ))}
+      {guiasVerticales.map((punto) => <text key={punto.fecha} x={punto.x} y="214" textAnchor="middle">{formatDia(punto.fecha)}</text>)}
     </svg>
   );
 }
@@ -155,8 +163,8 @@ function DashboardPage() {
 
         {vista === 'resumen' && <>
         <section className="dashboard-panel dashboard-tendencia-panel">
-          <div><h3>Tendencia de reportes</h3><p>Reportes creados por mes.</p></div>
-          <Tendencia datos={resumen.tendenciaMensual} />
+          <div><h3>Tendencia de reportes</h3><p>Reportes creados por día.</p></div>
+          <Tendencia datos={resumen.tendenciaDiaria} />
         </section>
 
         <section className="dashboard-cuadricula">
