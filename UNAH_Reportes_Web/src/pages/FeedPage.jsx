@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHeart } from '@fortawesome/free-solid-svg-icons';
+import { faThumbsUp } from '@fortawesome/free-solid-svg-icons';
 import { useMsal } from '@azure/msal-react';
 import { useUser } from '../context/UserContext';
 import { getAccessToken } from '../auth/getToken';
@@ -239,6 +239,7 @@ function FeedPage() {
                 <img src={reporte.imagenPortada || reporteSinImagen} alt={reporte.imagenPortada ? `Imagen del reporte: ${reporte.titulo}` : 'Ilustración de reporte sin fotografías'} onError={(evento) => { evento.currentTarget.onerror = null; evento.currentTarget.src = reporteSinImagen; }} />
                 <div className="reporte-card-top">
                   <span className={`badge badge-prioridad-${slugTexto(reporte.prioridad)}`}>{reporte.prioridad}</span>
+                  <button type="button" className={`reporte-like ${reporte.leGustaUsuarioActual ? 'activo' : ''}`} onClick={(evento) => darLike(evento, reporte.idReporte)} aria-label="Me gusta"><FontAwesomeIcon icon={faThumbsUp} /> {reporte.numeroLikes}</button>
                 </div>
               </div>
               <div className="reporte-card-contenido">
@@ -247,7 +248,6 @@ function FeedPage() {
                 <span className="reporte-card-carrera">{reporte.carreraUsuarioReporta ?? 'Sin carrera asignada'}</span>
                 <div className="reporte-card-footer">
                   <span>{reporte.categoria}</span>
-                  <button type="button" className={`reporte-like ${reporte.leGustaUsuarioActual ? 'activo' : ''}`} onClick={(evento) => darLike(evento, reporte.idReporte)} aria-label="Me gusta"><FontAwesomeIcon icon={faHeart} /> {reporte.numeroLikes}</button>
                   <span className={`badge badge-estado-${slugTexto(reporte.estado)}`}>{reporte.estado}</span>
                 </div>
               </div>

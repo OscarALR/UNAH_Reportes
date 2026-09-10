@@ -12,7 +12,7 @@ import {
   faTag,
   faUser,
   faUserGear,
-  faHeart,
+  faThumbsUp,
   faReply,
 } from '@fortawesome/free-solid-svg-icons';
 import { getAccessToken } from '../auth/getToken';
@@ -225,7 +225,7 @@ function ReporteDetallePage() {
         </span>
         <span className={`badge badge-estado-${slugEstado(reporte.estado)}`}>{reporte.estado}</span>
       </div>
-      <button type="button" className={`detalle-like ${reporte.leGustaUsuarioActual ? 'activo' : ''}`} onClick={darLikeReporte}><FontAwesomeIcon icon={faHeart} /> {reporte.numeroLikes ?? 0} Me gusta</button>
+      <button type="button" className={`detalle-like ${reporte.leGustaUsuarioActual ? 'activo' : ''}`} onClick={darLikeReporte}><FontAwesomeIcon icon={faThumbsUp} /> {reporte.numeroLikes ?? 0} Me gusta</button>
 
       <div className="detalle-meta">
         <div className="detalle-meta-item"><span className="detalle-etiqueta"><FontAwesomeIcon icon={faTag} />Categoría</span><span className="detalle-meta-valor">{reporte.categoria}</span></div>
@@ -317,7 +317,7 @@ function ReporteDetallePage() {
                 <strong>{c.usuario}</strong> ({fechaLocal(c.fechaComentario)})
               </div>
               <p className="comentario-texto">{c.texto}</p>
-              <div className="comentario-acciones"><button type="button" className={c.leGustaUsuarioActual ? 'activo' : ''} onClick={() => darLikeComentario(c.idComentario)}><FontAwesomeIcon icon={faHeart} /> {c.numeroLikes || 0}</button><button type="button" onClick={() => setRespondiendoA(c.idComentario)}><FontAwesomeIcon icon={faReply} /> Responder</button></div>
+              <div className="comentario-acciones"><button type="button" className={c.leGustaUsuarioActual ? 'activo' : ''} onClick={() => darLikeComentario(c.idComentario)}><FontAwesomeIcon icon={faThumbsUp} /> {c.numeroLikes || 0}</button><button type="button" onClick={() => setRespondiendoA(c.idComentario)}><FontAwesomeIcon icon={faReply} /> Responder</button></div>
             </li>
           ))}
         </ul>
