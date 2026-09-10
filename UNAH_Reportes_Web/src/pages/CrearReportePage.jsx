@@ -242,7 +242,7 @@ function CrearReportePage() {
           {tipoUbicacion === 'edificio' && (
             <div className="crear-reporte-grid">
               <div className="crear-reporte-campo">
-                <label htmlFor="edificio">Edificio</label>
+                <label htmlFor="edificio">Edificio<strong>*</strong></label>
                 <select
                   id="edificio"
                   value={idEdificioSeleccionado}
