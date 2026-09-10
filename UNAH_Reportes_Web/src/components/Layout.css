@@ -45,6 +45,13 @@
 .layout-theme-toggle:hover { border-color: var(--color-accent); background: rgba(245, 166, 35, .08); }
 .layout-logout:hover { border-color: rgba(216, 90, 48, .55); background: rgba(216, 90, 48, .08); }
 .layout-content { max-width: 1300px; min-height: calc(100vh - 66px); margin: 0 auto; padding: 28px 24px; }
+.layout-footer { border-top: 1px solid var(--color-border); color: var(--color-text-secondary); font-size: 12px; }
+.layout-footer-contenido { align-items: center; display: flex; gap: 20px; justify-content: space-between; margin: 0 auto; max-width: 1300px; padding: 20px 24px; }
+.layout-footer-contenido > div:first-child { display: flex; flex-direction: column; gap: 3px; }
+.layout-footer strong { color: var(--color-text); font-size: 13px; }
+.layout-footer-enlaces { align-items: center; display: flex; flex-wrap: wrap; gap: 10px; justify-content: flex-end; }
+.layout-footer a { color: var(--color-accent-hover); font-weight: 700; text-decoration: none; }
+.layout-footer a:hover { text-decoration: underline; }
 
 /* En laptops el menú queda visible como una barra lateral, sin ocupar el contenido. */
 @media (max-width: 1500px) {
@@ -53,6 +60,7 @@
   .layout-enlaces { flex-direction: column; align-items: stretch; gap: 5px; }
   .layout-nav-link { justify-content: flex-start; padding: 11px 12px; }
   .layout-content { max-width: none; min-height: calc(100vh - 60px); margin-left: 236px; padding: 24px 28px; }
+  .layout-footer { margin-left: 236px; }
 }
 
 /* En teléfonos la barra se convierte en un panel lateral de ancho limitado. */
@@ -67,4 +75,7 @@
   .layout-nav { display: none; top: 60px; width: min(280px, calc(100vw - 32px)); padding: 14px 10px 24px; border-radius: 0 0 12px 0; box-shadow: 8px 14px 30px rgba(0, 0, 0, .16); }
   .layout-nav.abierto { display: block; }
   .layout-content { min-height: calc(100vh - 60px); margin-left: 0; padding: 20px 16px; }
+  .layout-footer { margin-left: 0; }
+  .layout-footer-contenido { align-items: flex-start; flex-direction: column; padding: 18px 16px; }
+  .layout-footer-enlaces { justify-content: flex-start; }
 }

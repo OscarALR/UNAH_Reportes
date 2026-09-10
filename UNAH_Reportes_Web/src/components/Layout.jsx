@@ -249,6 +249,19 @@ function Layout({ children }) {
       </header>
 
       <main className="layout-content">{children}</main>
+      <footer className="layout-footer">
+        <div className="layout-footer-contenido">
+          <div>
+            <strong>UNAH Reportes</strong>
+            <span>Plataforma de incidencias para UNAH Valle de Sula.</span>
+          </div>
+          <div className="layout-footer-enlaces">
+            <span>Desarrollado por Oscar López Rodríguez</span>
+            <a href="https://github.com/OscarALR" target="_blank" rel="noreferrer">GitHub</a>
+            <span>© {new Date().getFullYear()}</span>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }

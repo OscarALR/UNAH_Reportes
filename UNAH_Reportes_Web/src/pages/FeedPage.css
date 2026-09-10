@@ -382,6 +382,20 @@
   color: var(--color-text-secondary);
 }
 
+/* Tarjetas de incidencias con imagen de portada o ilustración de respaldo. */
+.reporte-card { display: flex; flex-direction: column; overflow: hidden; padding: 0; }
+.reporte-card-imagen { aspect-ratio: 16 / 8; background: var(--color-primary); overflow: hidden; position: relative; }
+.reporte-card-imagen img { display: block; height: 100%; object-fit: cover; transition: transform .25s ease; width: 100%; }
+.reporte-card:hover .reporte-card-imagen img { transform: scale(1.035); }
+.reporte-card-top { left: 0; margin: 0; padding: 12px; position: absolute; right: 0; top: 0; }
+.reporte-card-contenido { display: flex; flex: 1; flex-direction: column; padding: 15px 16px 16px; }
+.reporte-card h3 { margin: 0 0 9px; }
+.reporte-card-ubicacion { display: flex; flex-direction: column; gap: 2px; }
+.reporte-card-ubicacion span { color: var(--color-text-secondary); font-size: 10px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
+.reporte-card-carrera { align-self: flex-start; background: rgba(26, 47, 92, .09); border-radius: 20px; color: var(--color-primary); font-size: 11px; font-weight: 700; margin-top: 8px; max-width: 100%; overflow: hidden; padding: 5px 9px; text-overflow: ellipsis; white-space: nowrap; }
+.reporte-card-footer { margin-top: auto; padding-top: 14px; }
+[data-theme='dark'] .reporte-card-carrera { background: rgba(245, 166, 35, .16); color: #ffd36f; }
+
 @media (max-width: 760px) {
   .feed-header,
   .feed-herramientas {

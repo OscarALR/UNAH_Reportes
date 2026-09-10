@@ -5,6 +5,7 @@ import { useUser } from '../context/UserContext';
 import { getAccessToken } from '../auth/getToken';
 import { getFeed } from '../api/reportesApi';
 import { ordenarAlfabeticamente } from '../utils/ordenarAlfabeticamente';
+import reporteSinImagen from '../assets/reporte-sin-imagen.svg';
 import './FeedPage.css';
 
 function slugTexto(texto = '') {
@@ -210,24 +211,21 @@ function FeedPage() {
               to={`/reporte/${reporte.idReporte}`}
               className="reporte-card"
             >
-              <div className="reporte-card-top">
-                {reporte.esRelevante && (
-                  <span className="badge badge-relevante">Relevante</span>
-                )}
-
-                <span className={`badge badge-prioridad-${slugTexto(reporte.prioridad)}`}>
-                  {reporte.prioridad}
-                </span>
+              <div className="reporte-card-imagen">
+                <img src={reporte.imagenPortada || reporteSinImagen} alt={reporte.imagenPortada ? `Imagen del reporte: ${reporte.titulo}` : 'Ilustración de reporte sin fotografías'} onError={(evento) => { evento.currentTarget.onerror = null; evento.currentTarget.src = reporteSinImagen; }} />
+                <div className="reporte-card-top">
+                  {reporte.esRelevante && <span className="badge badge-relevante">Relevante</span>}
+                  <span className={`badge badge-prioridad-${slugTexto(reporte.prioridad)}`}>{reporte.prioridad}</span>
+                </div>
               </div>
-
-              <h3>{reporte.titulo}</h3>
-              <p>{reporte.espacio}</p>
-
-              <div className="reporte-card-footer">
-                <span>{reporte.categoria}</span>
-                <span className={`badge badge-estado-${slugTexto(reporte.estado)}`}>
-                  {reporte.estado}
-                </span>
+              <div className="reporte-card-contenido">
+                <h3>{reporte.titulo}</h3>
+                <p className="reporte-card-ubicacion"><span>Ubicación</span>{reporte.ubicacion ?? reporte.espacio}</p>
+                <span className="reporte-card-carrera">{reporte.carreraUsuarioReporta ?? 'Sin carrera asignada'}</span>
+                <div className="reporte-card-footer">
+                  <span>{reporte.categoria}</span>
+                  <span className={`badge badge-estado-${slugTexto(reporte.estado)}`}>{reporte.estado}</span>
+                </div>
               </div>
             </Link>
           ))}
