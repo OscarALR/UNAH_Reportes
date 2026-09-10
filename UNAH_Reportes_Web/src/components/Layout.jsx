@@ -101,7 +101,7 @@ function Layout({ children }) {
       <header className="layout-header">
         <div className="layout-header-contenido">
           <Link to="/" className="layout-logo" onClick={cerrarMenu} aria-label="RiUVS, inicio">
-            <RiuvsLogo variante={tema === 'dark' ? 'oscura' : 'clara'} decorativo />
+            <RiuvsLogo variante={tema === 'dark' ? 'oscura' : 'clara'} mostrarSubtitulo={false} decorativo />
           </Link>
 
           <nav className={`layout-nav ${menuAbierto ? 'abierto' : ''}`}>

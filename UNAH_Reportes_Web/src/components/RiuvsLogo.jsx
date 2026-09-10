@@ -31,7 +31,7 @@ function RiuvsLogo({ className, variante = 'clara', decorativo = false, sinIcono
         <circle cx="49" cy="28" r="1.3" fill="#12213F" />
       </g>}
       <text x={posicionTexto} y={lineaMarca} fill={colorTexto} fontFamily="Sora, Arial, sans-serif" fontSize={tamanoMarca} fontWeight="800" letterSpacing="-1.1">Ri<tspan fill="#F5A623">U</tspan>VS</text>
-      {mostrarSubtitulo && <text x={posicionTexto} y={lineaSubtitulo} fill={esOscuro ? '#C7D4E9' : '#6B7280'} fontFamily="Arial, sans-serif" fontSize={ampliada ? 16 : 13}>Reporte de Incidencias UNAH VS</text>}
+      {mostrarSubtitulo && <text x={posicionTexto} y={lineaSubtitulo} fill={esOscuro ? '#C7D4E9' : '#6B7280'} fontFamily="Manrope, Arial, sans-serif" fontSize={ampliada ? 16 : 13} fontWeight="600">Reporte de Incidencias UNAH VS</text>}
     </svg>
   );
 }
