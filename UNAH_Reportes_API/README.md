@@ -10,8 +10,8 @@ API ASP.NET Core 8 para el sistema de incidencias de UNAH-VS.
 - Configura Azure Blob Storage para adjuntar imágenes mediante secretos de usuario:
 
 ```powershell
-dotnet user-secrets set "AzureBlobStorage:ConnectionString" "<cadena de conexión>"
-dotnet user-secrets set "AzureBlobStorage:ContainerName" "<contenedor>"
+dotnet user-secrets set "BlobStorage:ConnectionString" "<cadena de conexión>"
+dotnet user-secrets set "BlobStorage:ContainerName" "<contenedor>"
 ```
 
 La autenticación local de desarrollo y el usuario de prueba se controlan desde `appsettings.Development.json`. No habilites `DemoUser:Enabled` ni conserves una clave JWT de desarrollo en producción.
