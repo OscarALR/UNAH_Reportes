@@ -14,6 +14,7 @@ namespace UNAH_Reportes_API.Data
         public DbSet<Categoria> Categorias { get; set; }
         public DbSet<Estado> Estados { get; set; }
         public DbSet<Usuario> Usuarios { get; set; }
+        public DbSet<TokenRecuperacionContrasena> TokensRecuperacionContrasena { get; set; }
         public DbSet<Espacio> Espacios { get; set; }
         public DbSet<CategoriaCarrera> CategoriaCarreras { get; set; }
         public DbSet<EdificioCarrera> EdificioCarreras { get; set; }
@@ -100,6 +101,15 @@ namespace UNAH_Reportes_API.Data
                 .WithMany()
                 .HasForeignKey(r => r.IdGestorAsignado)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<TokenRecuperacionContrasena>()
+                .HasOne(t => t.Usuario)
+                .WithMany()
+                .HasForeignKey(t => t.IdUsuario)
+                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<TokenRecuperacionContrasena>()
+                .HasIndex(t => t.TokenHash)
+                .IsUnique();
 
             modelBuilder.Entity<Reporte>()
                 .HasOne(r => r.UsuarioEliminacion)

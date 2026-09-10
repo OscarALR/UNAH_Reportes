@@ -35,4 +35,15 @@ namespace UNAH_Reportes_API.DTOs
         [Required] public string ContrasenaActual { get; set; } = string.Empty;
         [Required, StringLength(100, MinimumLength = 8), RegularExpression(@"^(?=.*[A-Za-z])(?=.*\d)(?=.*[^A-Za-z\d]).+$", ErrorMessage = "La contraseña debe incluir letras, números y símbolos.")] public string NuevaContrasena { get; set; } = string.Empty;
     }
+
+    public class SolicitarRecuperacionContrasenaDTO
+    {
+        [Required, EmailAddress, StringLength(150)] public string Correo { get; set; } = string.Empty;
+    }
+
+    public class RestablecerContrasenaDTO
+    {
+        [Required] public string Token { get; set; } = string.Empty;
+        [Required, StringLength(100, MinimumLength = 8), RegularExpression(@"^(?=.*[A-Za-z])(?=.*\d)(?=.*[^A-Za-z\d]).+$", ErrorMessage = "La contraseña debe incluir letras, números y símbolos.")] public string NuevaContrasena { get; set; } = string.Empty;
+    }
 }

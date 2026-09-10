@@ -2,6 +2,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.RateLimiting;
+using System.Security.Cryptography;
+using System.Text;
 using UNAH_Reportes_API.Data;
 using UNAH_Reportes_API.DTOs;
 using UNAH_Reportes_API.Extensions;
@@ -17,9 +20,11 @@ namespace UNAH_Reportes_API.Controllers
         private readonly AppDbContext _context;
         private readonly IPasswordHasher<Usuario> _passwordHasher;
         private readonly LocalTokenService _tokens;
+        private readonly CorreoRecuperacionService _correoRecuperacion;
+        private readonly ILogger<AutenticacionController> _logger;
 
-        public AutenticacionController(AppDbContext context, IPasswordHasher<Usuario> passwordHasher, LocalTokenService tokens)
-        { _context = context; _passwordHasher = passwordHasher; _tokens = tokens; }
+        public AutenticacionController(AppDbContext context, IPasswordHasher<Usuario> passwordHasher, LocalTokenService tokens, CorreoRecuperacionService correoRecuperacion, ILogger<AutenticacionController> logger)
+        { _context = context; _passwordHasher = passwordHasher; _tokens = tokens; _correoRecuperacion = correoRecuperacion; _logger = logger; }
 
         [AllowAnonymous]
         [HttpGet("carreras")]
@@ -86,6 +91,60 @@ namespace UNAH_Reportes_API.Controllers
             await _context.SaveChangesAsync();
             return NoContent();
         }
+
+        [AllowAnonymous]
+        [EnableRateLimiting("RecuperacionContrasena")]
+        [HttpPost("recuperar-contrasena")]
+        public async Task<IActionResult> SolicitarRecuperacion(SolicitarRecuperacionContrasenaDTO dto)
+        {
+            const string respuesta = "Si existe una cuenta local asociada a ese correo, enviaremos las instrucciones de recuperación.";
+            var correo = dto.Correo.Trim().ToLowerInvariant();
+            var usuario = await _context.Usuarios.SingleOrDefaultAsync(u => u.CorreoInstitucional == correo && u.Estado == "Activo" && u.TipoAutenticacion == "Local");
+            if (usuario == null || string.IsNullOrWhiteSpace(usuario.CorreoRecuperacion)) return Ok(new { mensaje = respuesta });
+
+            var token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(32)).TrimEnd('=').Replace('+', '-').Replace('/', '_');
+            var ahora = DateTime.UtcNow;
+            await _context.TokensRecuperacionContrasena
+                .Where(t => t.IdUsuario == usuario.IdUsuario && t.UsadoEn == null && t.ExpiraEn > ahora)
+                .ExecuteUpdateAsync(s => s.SetProperty(t => t.UsadoEn, ahora));
+
+            var registro = new TokenRecuperacionContrasena
+            {
+                IdUsuario = usuario.IdUsuario,
+                TokenHash = CalcularHashToken(token),
+                CreadoEn = ahora,
+                ExpiraEn = ahora.AddMinutes(30)
+            };
+            _context.TokensRecuperacionContrasena.Add(registro);
+            await _context.SaveChangesAsync();
+
+            if (!await _correoRecuperacion.EnviarAsync(usuario.CorreoRecuperacion, usuario.NombreCompleto, token))
+            {
+                _context.TokensRecuperacionContrasena.Remove(registro);
+                await _context.SaveChangesAsync();
+                _logger.LogError("No se pudo enviar el correo de recuperación para el usuario {IdUsuario}.", usuario.IdUsuario);
+            }
+            return Ok(new { mensaje = respuesta });
+        }
+
+        [AllowAnonymous]
+        [HttpPost("restablecer-contrasena")]
+        public async Task<IActionResult> RestablecerContrasena(RestablecerContrasenaDTO dto)
+        {
+            var ahora = DateTime.UtcNow;
+            var tokenHash = CalcularHashToken(dto.Token);
+            var registro = await _context.TokensRecuperacionContrasena.Include(t => t.Usuario)
+                .SingleOrDefaultAsync(t => t.TokenHash == tokenHash && t.UsadoEn == null && t.ExpiraEn > ahora);
+            if (registro == null || registro.Usuario.Estado != "Activo" || registro.Usuario.TipoAutenticacion != "Local")
+                return BadRequest("El enlace de recuperación no es válido o ya venció.");
+
+            registro.Usuario.PasswordHash = _passwordHasher.HashPassword(registro.Usuario, dto.NuevaContrasena);
+            registro.UsadoEn = ahora;
+            await _context.SaveChangesAsync();
+            return NoContent();
+        }
+
+        private static string CalcularHashToken(string token) => Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(token)));
 
         private SesionLocalDTO CrearSesion(Usuario usuario) => new() { Token = _tokens.CrearToken(usuario), Usuario = MapearUsuario(usuario) };
         private static UsuarioDTO MapearUsuario(Usuario usuario) => new() { IdUsuario = usuario.IdUsuario, CorreoInstitucional = usuario.CorreoInstitucional, NombreCompleto = usuario.NombreCompleto, Carrera = usuario.Carrera?.NombreCarrera, Rol = usuario.Rol.NombreRol, TipoAutenticacion = usuario.TipoAutenticacion, CorreoRecuperacion = usuario.CorreoRecuperacion };

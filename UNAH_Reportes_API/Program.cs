@@ -62,6 +62,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddScoped<BlobStorageService>();
 builder.Services.AddScoped<LocalTokenService>();
+builder.Services.AddScoped<CorreoRecuperacionService>();
 builder.Services.AddScoped<IPasswordHasher<UNAH_Reportes_API.Models.Usuario>, PasswordHasher<UNAH_Reportes_API.Models.Usuario>>();
 builder.Services.AddScoped<DemoUserSeeder>();
 builder.Services.AddRateLimiter(options =>
@@ -74,6 +75,16 @@ builder.Services.AddRateLimiter(options =>
             {
                 PermitLimit = 120,
                 Window = TimeSpan.FromMinutes(1),
+                QueueLimit = 0,
+                AutoReplenishment = true
+            }));
+    options.AddPolicy("RecuperacionContrasena", context =>
+        RateLimitPartition.GetFixedWindowLimiter(
+            context.Connection.RemoteIpAddress?.ToString() ?? "sin-ip",
+            _ => new FixedWindowRateLimiterOptions
+            {
+                PermitLimit = 3,
+                Window = TimeSpan.FromMinutes(15),
                 QueueLimit = 0,
                 AutoReplenishment = true
             }));
