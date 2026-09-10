@@ -39,6 +39,8 @@
 }
 
 .badge {
+    border: 1px solid transparent;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.18);
     font-size: 11px;
     font-weight: 600;
     padding: 4px 10px;
@@ -47,23 +49,27 @@
 }
 
 .badge-relevante {
-    background: rgba(245, 166, 35, 0.15);
-    color: #c97e0f;
+    background: #fff0b8;
+    border-color: #e7b62c;
+    color: #704900;
 }
 
 .badge-prioridad-alta {
-    background: rgba(216, 90, 48, 0.15);
-    color: #a13c1a;
+    background: #fde0d6;
+    border-color: #e99c83;
+    color: #842b12;
 }
 
 .badge-prioridad-media {
-    background: rgba(217, 180, 20, 0.18);
-    color: #8a6d08;
+    background: #fff0ad;
+    border-color: #dfc454;
+    color: #655000;
 }
 
 .badge-prioridad-baja {
-    background: rgba(52, 168, 83, 0.15);
-    color: #1e7a3d;
+    background: #d9f7e2;
+    border-color: #76c991;
+    color: #135d2d;
 }
 
 .badge-estado {
@@ -96,23 +102,27 @@
 
 /* Ajustes de contraste para modo oscuro */
 [data-theme='dark'] .badge-relevante {
-    background: rgba(245, 166, 35, 0.22);
-    color: #f5b84d;
+    background: #4a3305;
+    border-color: #9c7009;
+    color: #ffd66b;
 }
 
 [data-theme='dark'] .badge-prioridad-alta {
-    background: rgba(216, 90, 48, 0.28);
-    color: #ff8a65;
+    background: #4e2017;
+    border-color: #9c4934;
+    color: #ffad91;
 }
 
 [data-theme='dark'] .badge-prioridad-media {
-    background: rgba(217, 180, 20, 0.25);
-    color: #f0d264;
+    background: #4a4006;
+    border-color: #948014;
+    color: #ffe47a;
 }
 
 [data-theme='dark'] .badge-prioridad-baja {
-    background: rgba(52, 168, 83, 0.25);
-    color: #6fe19a;
+    background: #123d24;
+    border-color: #34784b;
+    color: #8af0af;
 }
 
 [data-theme='dark'] .badge-estado-pendiente {

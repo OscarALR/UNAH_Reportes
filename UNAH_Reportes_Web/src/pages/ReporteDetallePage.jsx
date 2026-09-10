@@ -197,7 +197,7 @@ function ReporteDetallePage() {
         <div className="detalle-meta-item"><span className="detalle-etiqueta"><FontAwesomeIcon icon={faTag} />Categoría</span><span className="detalle-meta-valor">{reporte.categoria}</span></div>
         <div className="detalle-meta-item"><span className="detalle-etiqueta"><FontAwesomeIcon icon={faLocationDot} />Ubicación</span><span className="detalle-meta-valor">{reporte.ubicacion ?? reporte.espacio}</span></div>
         <div className="detalle-meta-item"><span className="detalle-etiqueta"><FontAwesomeIcon icon={faUser} />Reportado por</span><span className="detalle-meta-valor detalle-reportante"><strong>{reporte.usuarioReporta}</strong>{reporte.correoUsuarioReporta && <a href={`mailto:${reporte.correoUsuarioReporta}`}><FontAwesomeIcon icon={faEnvelope} />{reporte.correoUsuarioReporta}</a>}</span></div>
-        <div className="detalle-meta-item"><span className="detalle-etiqueta"><FontAwesomeIcon icon={faGraduationCap} />Carrera</span><span className="detalle-meta-valor"><span className="detalle-carrera">{reporte.carreraUsuarioReporta ?? 'Sin carrera asignada'}</span></span></div>
+        <div className="detalle-meta-item"><span className="detalle-etiqueta"><FontAwesomeIcon icon={faGraduationCap} />Carrera</span><span className="detalle-meta-valor">{reporte.carreraUsuarioReporta ?? 'Sin carrera asignada'}</span></div>
         <div className="detalle-meta-item"><span className="detalle-etiqueta"><FontAwesomeIcon icon={faUserGear} />Gestor asignado</span><span className="detalle-meta-valor">{reporte.gestorAsignado ?? 'Sin asignar'}</span></div>
       </div>
 
