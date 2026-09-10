@@ -34,6 +34,20 @@ function slugEstado(estado) {
     .replace(/\s+/g, '-');
 }
 
+function fechaUtc(fecha) {
+  return typeof fecha === 'string' && !/(Z|[+-]\d\d:\d\d)$/.test(fecha) ? `${fecha}Z` : fecha;
+}
+
+function ordenarComentarios(comentarios, orden) {
+  const comparar = (a, b) => orden === 'populares'
+    ? (b.numeroLikes - a.numeroLikes) || (new Date(fechaUtc(b.fechaComentario)) - new Date(fechaUtc(a.fechaComentario)))
+    : new Date(fechaUtc(b.fechaComentario)) - new Date(fechaUtc(a.fechaComentario));
+  const principales = comentarios.filter((comentario) => !comentario.idComentarioPadre).sort(comparar);
+  const idsPrincipales = new Set(principales.map((comentario) => comentario.idComentario));
+  const huerfanos = comentarios.filter((comentario) => comentario.idComentarioPadre && !idsPrincipales.has(comentario.idComentarioPadre));
+  return [...principales, ...huerfanos].flatMap((comentario) => [comentario, ...comentarios.filter((respuesta) => respuesta.idComentarioPadre === comentario.idComentario).sort(comparar)]);
+}
+
 function ReporteDetallePage() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -167,7 +181,7 @@ function ReporteDetallePage() {
     const resultado = await alternarLikeComentario(id, idComentario, token);
     setComentarios((actuales) => actuales.map((comentario) => comentario.idComentario === idComentario ? { ...comentario, leGustaUsuarioActual: resultado.leGusta, numeroLikes: resultado.numeroLikes } : comentario));
   };
-  const fechaLocal = (fecha) => new Intl.DateTimeFormat('es-HN', { dateStyle: 'short', timeStyle: 'short' }).format(new Date(fecha));
+  const fechaLocal = (fecha) => new Intl.DateTimeFormat('es-HN', { dateStyle: 'short', timeStyle: 'short' }).format(new Date(fechaUtc(fecha)));
 
   const handleArchivar = async () => {
     const motivo = window.prompt('Indica el motivo para archivar este reporte:');
@@ -196,6 +210,7 @@ function ReporteDetallePage() {
   if (!reporte) return <p>Reporte no encontrado.</p>;
 
   const tieneImagenes = imagenes.length > 0;
+  const comentariosOrdenados = ordenarComentarios(comentarios, ordenComentarios);
 
   // --- Bloques reutilizados en ambos layouts ---
 
@@ -291,11 +306,12 @@ function ReporteDetallePage() {
   const bloqueComentarios = (
     <div className="detalle-card">
       <h3><FontAwesomeIcon icon={faComments} />Comentarios</h3>
+      {comentarios.length > 5 && <div className="comentarios-controles"><select value={ordenComentarios} onChange={(e) => setOrdenComentarios(e.target.value)}><option value="recientes">Más recientes</option><option value="populares">Más populares</option></select>{comentariosVisibles < comentarios.length && <button type="button" onClick={() => setComentariosVisibles(comentarios.length)}>Ver más comentarios</button>}</div>}
       {comentarios.length === 0 ? (
         <p>Sin comentarios todavía.</p>
       ) : (
         <ul className="comentarios-lista">
-          {[...comentarios].sort((a, b) => ordenComentarios === 'populares' ? b.numeroLikes - a.numeroLikes : new Date(b.fechaComentario) - new Date(a.fechaComentario)).slice(0, comentariosVisibles).map((c) => (
+          {comentariosOrdenados.slice(0, comentariosVisibles).map((c) => (
             <li key={c.idComentario} className={`comentario-item ${c.idComentarioPadre ? 'comentario-respuesta' : ''}`}>
               <div className="comentario-cabecera">
                 <strong>{c.usuario}</strong> ({fechaLocal(c.fechaComentario)})
@@ -306,8 +322,6 @@ function ReporteDetallePage() {
           ))}
         </ul>
       )}
-      {comentarios.length > 5 && <div className="comentarios-controles"><select value={ordenComentarios} onChange={(e) => setOrdenComentarios(e.target.value)}><option value="recientes">Más recientes</option><option value="populares">Más populares</option></select>{comentariosVisibles < comentarios.length && <button type="button" onClick={() => setComentariosVisibles(comentarios.length)}>Ver más comentarios</button>}</div>}
-
       <form className="comentario-form" onSubmit={handleComentar}>
         <textarea
           value={nuevoComentario}
