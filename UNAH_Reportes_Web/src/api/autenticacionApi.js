@@ -23,3 +23,12 @@ export async function actualizarPerfil(datos, token) {
 export async function cambiarContrasena(datos, token) {
   await apiClient.put('/autenticacion/contrasena', datos, { headers: { Authorization: `Bearer ${token}` } });
 }
+
+export async function solicitarRecuperacionContrasena(correo) {
+  const response = await apiClient.post('/autenticacion/recuperar-contrasena', { correo });
+  return response.data;
+}
+
+export async function restablecerContrasena(token, nuevaContrasena) {
+  await apiClient.post('/autenticacion/restablecer-contrasena', { token, nuevaContrasena });
+}

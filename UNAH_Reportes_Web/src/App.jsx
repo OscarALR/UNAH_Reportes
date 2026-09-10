@@ -17,30 +17,26 @@ import AdministracionUsuariosPage from './pages/AdministracionUsuariosPage.jsx';
 import DashboardPage from './pages/DashboardPage.jsx';
 import ColeccionReportesPage from './pages/ColeccionReportesPage.jsx';
 import PerfilPage from './pages/PerfilPage.jsx';
+import RestablecerContrasenaPage from './pages/RestablecerContrasenaPage.jsx';
 import LoadingPage from './components/LoadingPage.jsx';
 import ServicioPreparandose from './components/ServicioPreparandose.jsx';
 import './App.css';
 
 function App() {
   const { usuario, cargando } = useUser();
-  if (cargando) {
-    return <>
-      <LoadingPage />
-      <ServicioPreparandose />
-    </>;
-  }
-
-  if (!usuario) {
-    return <>
-      <Login />
-      <ServicioPreparandose />
-    </>;
-  }
-
   return (
-    <>
+    <BrowserRouter>
+      {cargando ? <>
+        <LoadingPage />
+        <ServicioPreparandose />
+      </> : !usuario ? <>
+        <Routes>
+          <Route path="/restablecer-contrasena" element={<RestablecerContrasenaPage />} />
+          <Route path="*" element={<Login />} />
+        </Routes>
+        <ServicioPreparandose />
+      </> : <>
       <ServicioPreparandose />
-      <BrowserRouter>
         <Layout>
           <Routes>
           <Route path="/" element={<FeedPage />} />
@@ -62,8 +58,8 @@ function App() {
           <Route path="/administracion/usuarios" element={<AdministracionUsuariosPage />} />
           </Routes>
         </Layout>
-      </BrowserRouter>
-    </>
+      </>}
+    </BrowserRouter>
   );
 }
 
