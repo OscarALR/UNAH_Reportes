@@ -1,9 +1,9 @@
-function RiuvsLogo({ className, variante = 'clara', decorativo = false, sinIcono = false, mostrarSubtitulo = !['oscura'].includes(variante), ampliada = false }) {
+function RiuvsLogo({ className, variante = 'clara', decorativo = false, sinIcono = false, mostrarSubtitulo = !['oscura'].includes(variante), ampliada = false, marcaAlturaIcono = false }) {
   const esOscuro = variante === 'oscura';
   const colorTexto = esOscuro ? '#F8FAFC' : '#12213F';
   const posicionTexto = sinIcono ? 0 : 72;
-  const tamanoMarca = ampliada ? 52 : 38;
-  const lineaMarca = ampliada ? 48 : 46;
+  const tamanoMarca = ampliada ? 52 : marcaAlturaIcono ? 76 : 38;
+  const lineaMarca = ampliada ? 48 : marcaAlturaIcono ? 63 : 46;
   const lineaSubtitulo = ampliada ? 74 : 66;
 
   return (
