@@ -708,7 +708,8 @@
     position: absolute;
     z-index: 0;
     top: 48px;
-    bottom: 0;
+    /* Termina a la altura del control "Ocultar comentarios". */
+    bottom: 27px;
     left: 18px;
     width: 2px;
     background: color-mix(in srgb, var(--color-accent) 24%, var(--color-border));
@@ -723,11 +724,25 @@
 }
 
 .comentario-ocultar-rama {
+    position: relative;
     list-style: none;
     padding: 8px 0 12px 18px;
 }
 
+.comentario-ocultar-rama::before {
+    content: '';
+    position: absolute;
+    top: 23px;
+    left: -20px;
+    width: 50px;
+    height: 2px;
+    background: color-mix(in srgb, var(--color-accent) 24%, var(--color-border));
+    pointer-events: none;
+}
+
 .comentario-ocultar-rama button {
+    position: relative;
+    z-index: 1;
     display: inline-flex;
     align-items: center;
     gap: 6px;

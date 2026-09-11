@@ -105,7 +105,7 @@ function ComentarioHilo({ nodo, hilosContraidos, alternarHilo, respondiendoA, re
   const contraido = hilosContraidos.has(nodo.idComentario);
 
   return (
-    <li className={`comentario-hilo${tieneRespuestas ? ' comentario-hilo-con-respuestas' : ''}`}>
+    <li className={`comentario-hilo${tieneRespuestas && !contraido ? ' comentario-hilo-con-respuestas' : ''}`}>
       <article className="comentario-item">
         <div className="comentario-rail">
           <span className="comentario-avatar" style={{ '--tono-avatar': tonoAvatar(nodo.usuario) }} aria-label={`Avatar de ${nodo.usuario}`}>{inicialesUsuario(nodo.usuario)}</span>
