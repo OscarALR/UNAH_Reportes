@@ -56,40 +56,67 @@ function tiempoRelativo(fecha) {
   return `Hace ${anios} ${anios === 1 ? 'año' : 'años'}`;
 }
 
-function ordenarComentarios(comentarios, orden) {
+function organizarHilosComentarios(comentarios, orden) {
   const compararPrincipales = (a, b) => orden === 'populares'
     ? (b.numeroLikes - a.numeroLikes) || (new Date(fechaUtc(b.fechaComentario)) - new Date(fechaUtc(a.fechaComentario)))
     : new Date(fechaUtc(b.fechaComentario)) - new Date(fechaUtc(a.fechaComentario));
   const compararRespuestas = (a, b) => new Date(fechaUtc(a.fechaComentario)) - new Date(fechaUtc(b.fechaComentario));
-  const idsComentarios = new Set(comentarios.map((comentario) => comentario.idComentario));
-  const respuestasPorPadre = new Map();
+  const nodosPorId = new Map(comentarios.map((comentario) => [comentario.idComentario, { ...comentario, respuestas: [] }]));
+  const raices = [];
 
-  comentarios.forEach((comentario) => {
-    const idPadre = comentario.idComentarioPadre && idsComentarios.has(comentario.idComentarioPadre)
-      ? comentario.idComentarioPadre
-      : null;
-    const respuestas = respuestasPorPadre.get(idPadre) ?? [];
-    respuestas.push(comentario);
-    respuestasPorPadre.set(idPadre, respuestas);
+  nodosPorId.forEach((nodo) => {
+    const padre = nodo.idComentarioPadre ? nodosPorId.get(nodo.idComentarioPadre) : null;
+    if (padre) padre.respuestas.push(nodo);
+    else raices.push(nodo);
   });
 
-  const ordenados = [];
-  const visitados = new Set();
-  const agregarHilo = (idPadre, nivel, comparador) => {
-    const respuestas = [...(respuestasPorPadre.get(idPadre) ?? [])].sort(comparador);
-    respuestas.forEach((comentario) => {
-      if (visitados.has(comentario.idComentario)) return;
-      visitados.add(comentario.idComentario);
-      ordenados.push({ ...comentario, nivelRespuesta: nivel });
-      agregarHilo(comentario.idComentario, nivel + 1, compararRespuestas);
-    });
+  const ordenarRespuestas = (nodos) => {
+    nodos.sort(compararRespuestas);
+    nodos.forEach((nodo) => ordenarRespuestas(nodo.respuestas));
   };
 
-  agregarHilo(null, 0, compararPrincipales);
-  comentarios.filter((comentario) => !visitados.has(comentario.idComentario)).sort(compararPrincipales)
-    .forEach((comentario) => agregarHilo(comentario.idComentarioPadre, 0, compararPrincipales));
+  raices.sort(compararPrincipales);
+  raices.forEach((raiz) => ordenarRespuestas(raiz.respuestas));
+  return raices;
+}
 
-  return ordenados;
+function limitarHilos(hilos, limite) {
+  let mostrados = 0;
+  const limitar = (nodos) => nodos.reduce((visibles, nodo) => {
+    if (mostrados >= limite) return visibles;
+    mostrados += 1;
+    visibles.push({ ...nodo, respuestas: limitar(nodo.respuestas) });
+    return visibles;
+  }, []);
+
+  return limitar(hilos);
+}
+
+function ComentarioHilo({ nodo, hilosContraidos, alternarHilo, respondiendoA, responder, darLike, fechaLocal, formularioRespuesta }) {
+  const tieneRespuestas = nodo.respuestas.length > 0;
+  const contraido = hilosContraidos.has(nodo.idComentario);
+
+  return (
+    <li className="comentario-hilo">
+      <article className="comentario-item">
+        <div className="comentario-cabecera">
+          <strong>{nodo.usuario}</strong> ({fechaLocal(nodo.fechaComentario)} · <time dateTime={fechaUtc(nodo.fechaComentario)} title={fechaLocal(nodo.fechaComentario)}>{tiempoRelativo(nodo.fechaComentario)}</time>)
+        </div>
+        <p className="comentario-texto">{nodo.texto}</p>
+        <div className="comentario-acciones">
+          <button type="button" className={nodo.leGustaUsuarioActual ? 'activo' : ''} onClick={() => darLike(nodo.idComentario)}><FontAwesomeIcon icon={faThumbsUp} /> {nodo.numeroLikes || 0}</button>
+          <button type="button" onClick={() => responder(nodo.idComentario)}><FontAwesomeIcon icon={faReply} /> Responder</button>
+          {tieneRespuestas && <button type="button" className="hilo-toggle" onClick={() => alternarHilo(nodo.idComentario)} aria-expanded={!contraido} aria-label={contraido ? 'Mostrar respuestas' : 'Ocultar respuestas'}>{contraido ? '+' : '−'}</button>}
+        </div>
+        {respondiendoA === nodo.idComentario && formularioRespuesta()}
+      </article>
+      {tieneRespuestas && !contraido && (
+        <ul className="comentario-respuestas">
+          {nodo.respuestas.map((respuesta) => <ComentarioHilo key={respuesta.idComentario} nodo={respuesta} hilosContraidos={hilosContraidos} alternarHilo={alternarHilo} respondiendoA={respondiendoA} responder={responder} darLike={darLike} fechaLocal={fechaLocal} formularioRespuesta={formularioRespuesta} />)}
+        </ul>
+      )}
+    </li>
+  );
 }
 
 function ReporteDetallePage() {
@@ -119,6 +146,7 @@ function ReporteDetallePage() {
   const [comentariosVisibles, setComentariosVisibles] = useState(5);
   const [ordenComentarios, setOrdenComentarios] = useState('recientes');
   const [respondiendoA, setRespondiendoA] = useState(null);
+  const [hilosContraidos, setHilosContraidos] = useState(() => new Set());
 
   const [lightboxAbierto, setLightboxAbierto] = useState(false);
   const [zoomActivo, setZoomActivo] = useState(false);
@@ -258,8 +286,18 @@ function ReporteDetallePage() {
   if (!reporte) return <p>Reporte no encontrado.</p>;
 
   const tieneImagenes = imagenes.length > 0;
-  const comentariosOrdenados = ordenarComentarios(comentarios, ordenComentarios);
+  const hilosComentarios = organizarHilosComentarios(comentarios, ordenComentarios);
+  const hilosVisibles = limitarHilos(hilosComentarios, comentariosVisibles);
   const comentarioRespondido = comentarios.find((comentario) => comentario.idComentario === respondiendoA);
+
+  const alternarHilo = (idComentario) => {
+    setHilosContraidos((actuales) => {
+      const siguientes = new Set(actuales);
+      if (siguientes.has(idComentario)) siguientes.delete(idComentario);
+      else siguientes.add(idComentario);
+      return siguientes;
+    });
+  };
 
   const formularioComentario = (esRespuesta = false) => (
     <form className={`comentario-form ${esRespuesta ? 'comentario-form-respuesta' : ''}`} onSubmit={handleComentar}>
@@ -384,16 +422,7 @@ function ReporteDetallePage() {
         <p>Sin comentarios todavía.</p>
       ) : (
         <ul className="comentarios-lista">
-          {comentariosOrdenados.slice(0, comentariosVisibles).map((c) => (
-            <li key={c.idComentario} className={`comentario-item ${c.nivelRespuesta ? 'comentario-respuesta' : ''}`} style={c.nivelRespuesta ? { '--nivel-comentario': Math.min(c.nivelRespuesta, 3) } : undefined}>
-              <div className="comentario-cabecera">
-                <strong>{c.usuario}</strong> ({fechaLocal(c.fechaComentario)} · <time dateTime={fechaUtc(c.fechaComentario)} title={fechaLocal(c.fechaComentario)}>{tiempoRelativo(c.fechaComentario)}</time>)
-              </div>
-              <p className="comentario-texto">{c.texto}</p>
-              <div className="comentario-acciones"><button type="button" className={c.leGustaUsuarioActual ? 'activo' : ''} onClick={() => darLikeComentario(c.idComentario)}><FontAwesomeIcon icon={faThumbsUp} /> {c.numeroLikes || 0}</button><button type="button" onClick={() => setRespondiendoA(c.idComentario)}><FontAwesomeIcon icon={faReply} /> Responder</button></div>
-              {respondiendoA === c.idComentario && formularioComentario(true)}
-            </li>
-          ))}
+          {hilosVisibles.map((hilo) => <ComentarioHilo key={hilo.idComentario} nodo={hilo} hilosContraidos={hilosContraidos} alternarHilo={alternarHilo} respondiendoA={respondiendoA} responder={setRespondiendoA} darLike={darLikeComentario} fechaLocal={fechaLocal} formularioRespuesta={() => formularioComentario(true)} />)}
         </ul>
       )}
       {!respondiendoA && formularioComentario()}
