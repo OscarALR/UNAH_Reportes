@@ -725,6 +725,40 @@
     pointer-events: none;
 }
 
+.comentario-ocultar-rama {
+    list-style: none;
+    padding: 8px 0 12px 18px;
+}
+
+.comentario-ocultar-rama button {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    border: 0;
+    background: transparent;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    font: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 4px 0;
+}
+
+.comentario-ocultar-rama button:hover {
+    color: var(--color-accent-hover);
+}
+
+.comentario-ocultar-rama span {
+    display: grid;
+    width: 22px;
+    height: 22px;
+    place-items: center;
+    border: 1px solid currentColor;
+    border-radius: 50%;
+    font-size: 16px;
+    line-height: 1;
+}
+
 .hilo-toggle {
     display: grid;
     width: 24px;

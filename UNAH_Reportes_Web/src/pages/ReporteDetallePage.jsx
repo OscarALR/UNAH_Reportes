@@ -126,6 +126,7 @@ function ComentarioHilo({ nodo, hilosContraidos, alternarHilo, respondiendoA, re
       {tieneRespuestas && !contraido && (
         <ul className="comentario-respuestas">
           {nodo.respuestas.map((respuesta) => <ComentarioHilo key={respuesta.idComentario} nodo={respuesta} hilosContraidos={hilosContraidos} alternarHilo={alternarHilo} respondiendoA={respondiendoA} responder={responder} darLike={darLike} fechaLocal={fechaLocal} formularioRespuesta={formularioRespuesta} />)}
+          <li className="comentario-ocultar-rama"><button type="button" onClick={() => alternarHilo(nodo.idComentario)}><span aria-hidden="true">−</span> Ocultar comentarios</button></li>
         </ul>
       )}
     </li>
