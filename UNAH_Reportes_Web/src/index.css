@@ -63,6 +63,11 @@ button, input, select, textarea {
   animation: aparecer-desde-abajo .28s ease both;
 }
 
+/* Se reinicia al cambiar de ruta para que cada apartado entre suavemente. */
+.ui-ruta-entrada {
+  animation: aparecer-desde-abajo .28s ease both;
+}
+
 /* Las transiciones de color y borde dan respuesta inmediata a controles comunes
    sin interferir con los transform específicos de cada componente. */
 button,

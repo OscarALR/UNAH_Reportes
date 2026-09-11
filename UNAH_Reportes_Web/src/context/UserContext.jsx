@@ -1,12 +1,13 @@
 import { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import { useMsal } from '@azure/msal-react';
+import { InteractionStatus } from '@azure/msal-browser';
 import { getAccessToken } from '../auth/getToken.js';
 import apiClient from '../api/axiosConfig.js';
 
 const UserContext = createContext(null);
 
 export function UserProvider({ children }) { 
-    const { instance, accounts } = useMsal();
+    const { instance, accounts, inProgress } = useMsal();
     const [usuario, setUsuario] = useState(null);
     const [cargando, setCargando] = useState(true);
 
@@ -51,6 +52,10 @@ export function UserProvider({ children }) {
     }, []);
 
     useEffect(() => { 
+        // MSAL carga las cuentas guardadas de forma asíncrona. Esperar a que
+        // termine evita mostrar el login brevemente durante una recarga.
+        if (inProgress !== InteractionStatus.None) return;
+
         if (sessionStorage.getItem('unah_local_usuario')) {
             cargarUsuario();
         } else if (accounts.length > 0) { 
@@ -58,7 +63,7 @@ export function UserProvider({ children }) {
         } else { 
             setCargando(false);
         }
-    }, [accounts.length, cargarUsuario]);
+    }, [accounts.length, cargarUsuario, inProgress]);
 
     return (
         <UserContext.Provider value={{ usuario, cargando, recargarUsuario: cargarUsuario, iniciarSesionLocal, cerrarSesionLocal, actualizarUsuario }}>

@@ -10,10 +10,12 @@ import App from './App.jsx'
 
 const msalInstance = new PublicClientApplication(msalConfig)
 
-msalInstance.initialize().then(() => {
-  msalInstance.handleRedirectPromise().catch((error) => {
+msalInstance.initialize().then(async () => {
+  try {
+    await msalInstance.handleRedirectPromise()
+  } catch (error) {
     console.error('Error procesando redirect:', error)
-  })
+  }
 
   createRoot(document.getElementById('root')).render(
     <StrictMode>

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Link, NavLink } from 'react-router-dom';
+import { Link, NavLink, useLocation } from 'react-router-dom';
 import { useMsal } from '@azure/msal-react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -27,6 +27,7 @@ function Layout({ children }) {
   const { instance, accounts } = useMsal();
   const { usuario, cerrarSesionLocal } = useUser();
   const { tema, alternarTema } = useTheme();
+  const ubicacion = useLocation();
 
   const [menuAbierto, setMenuAbierto] = useState(false);
   const [menuUsuarioAbierto, setMenuUsuarioAbierto] = useState(false);
@@ -235,7 +236,7 @@ function Layout({ children }) {
         </div>
       </header>
 
-      <main className="layout-content">{children}</main>
+      <main key={ubicacion.key} className="layout-content ui-ruta-entrada">{children}</main>
       {aviso && <div className="layout-toast ui-entrada" role="status">{aviso}</div>}
       <footer className="layout-footer">
         <div className="layout-footer-contenido">
