@@ -57,13 +57,39 @@ function tiempoRelativo(fecha) {
 }
 
 function ordenarComentarios(comentarios, orden) {
-  const comparar = (a, b) => orden === 'populares'
+  const compararPrincipales = (a, b) => orden === 'populares'
     ? (b.numeroLikes - a.numeroLikes) || (new Date(fechaUtc(b.fechaComentario)) - new Date(fechaUtc(a.fechaComentario)))
     : new Date(fechaUtc(b.fechaComentario)) - new Date(fechaUtc(a.fechaComentario));
-  const principales = comentarios.filter((comentario) => !comentario.idComentarioPadre).sort(comparar);
-  const idsPrincipales = new Set(principales.map((comentario) => comentario.idComentario));
-  const huerfanos = comentarios.filter((comentario) => comentario.idComentarioPadre && !idsPrincipales.has(comentario.idComentarioPadre));
-  return [...principales, ...huerfanos].flatMap((comentario) => [comentario, ...comentarios.filter((respuesta) => respuesta.idComentarioPadre === comentario.idComentario).sort(comparar)]);
+  const compararRespuestas = (a, b) => new Date(fechaUtc(a.fechaComentario)) - new Date(fechaUtc(b.fechaComentario));
+  const idsComentarios = new Set(comentarios.map((comentario) => comentario.idComentario));
+  const respuestasPorPadre = new Map();
+
+  comentarios.forEach((comentario) => {
+    const idPadre = comentario.idComentarioPadre && idsComentarios.has(comentario.idComentarioPadre)
+      ? comentario.idComentarioPadre
+      : null;
+    const respuestas = respuestasPorPadre.get(idPadre) ?? [];
+    respuestas.push(comentario);
+    respuestasPorPadre.set(idPadre, respuestas);
+  });
+
+  const ordenados = [];
+  const visitados = new Set();
+  const agregarHilo = (idPadre, nivel, comparador) => {
+    const respuestas = [...(respuestasPorPadre.get(idPadre) ?? [])].sort(comparador);
+    respuestas.forEach((comentario) => {
+      if (visitados.has(comentario.idComentario)) return;
+      visitados.add(comentario.idComentario);
+      ordenados.push({ ...comentario, nivelRespuesta: nivel });
+      agregarHilo(comentario.idComentario, nivel + 1, compararRespuestas);
+    });
+  };
+
+  agregarHilo(null, 0, compararPrincipales);
+  comentarios.filter((comentario) => !visitados.has(comentario.idComentario)).sort(compararPrincipales)
+    .forEach((comentario) => agregarHilo(comentario.idComentarioPadre, 0, compararPrincipales));
+
+  return ordenados;
 }
 
 function ReporteDetallePage() {
@@ -359,7 +385,7 @@ function ReporteDetallePage() {
       ) : (
         <ul className="comentarios-lista">
           {comentariosOrdenados.slice(0, comentariosVisibles).map((c) => (
-            <li key={c.idComentario} className={`comentario-item ${c.idComentarioPadre ? 'comentario-respuesta' : ''}`}>
+            <li key={c.idComentario} className={`comentario-item ${c.nivelRespuesta ? 'comentario-respuesta' : ''}`} style={c.nivelRespuesta ? { '--nivel-comentario': Math.min(c.nivelRespuesta, 3) } : undefined}>
               <div className="comentario-cabecera">
                 <strong>{c.usuario}</strong> ({fechaLocal(c.fechaComentario)} · <time dateTime={fechaUtc(c.fechaComentario)} title={fechaLocal(c.fechaComentario)}>{tiempoRelativo(c.fechaComentario)}</time>)
               </div>
