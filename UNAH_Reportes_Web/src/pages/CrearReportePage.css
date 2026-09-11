@@ -168,6 +168,11 @@
   font-size: 22px;
 }
 
+@media (max-width: 640px) {
+  .crear-reporte-archivo { min-height: 82px; padding: 18px; }
+  .crear-reporte-archivo-icono { width: 44px; height: 44px; border-radius: 11px; font-size: 28px; }
+}
+
 .crear-reporte-archivo strong,
 .crear-reporte-archivo small {
   display: block;

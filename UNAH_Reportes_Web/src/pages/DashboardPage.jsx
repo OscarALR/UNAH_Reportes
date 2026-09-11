@@ -133,6 +133,11 @@ function DashboardPage() {
     ['Alta prioridad', resumen.reportesAltaPrioridad, 'Atención prioritaria'],
   ];
 
+  const cambiarVista = (nuevaVista) => {
+    setVista(nuevaVista);
+    window.scrollTo(0, 0);
+  };
+
   return (
     <div className="dashboard-page">
       <header className="dashboard-encabezado">
@@ -156,9 +161,9 @@ function DashboardPage() {
         </section>
 
         <nav className="dashboard-pestanas" aria-label="Secciones del dashboard">
-          <button type="button" className={vista === 'resumen' ? 'activa' : ''} onClick={() => setVista('resumen')}>Resumen</button>
-          <button type="button" className={vista === 'operacion' ? 'activa' : ''} onClick={() => setVista('operacion')}>Operación</button>
-          <button type="button" className={vista === 'infraestructura' ? 'activa' : ''} onClick={() => setVista('infraestructura')}>Infraestructura</button>
+          <button type="button" className={vista === 'resumen' ? 'activa' : ''} onClick={() => cambiarVista('resumen')}>Resumen</button>
+          <button type="button" className={vista === 'operacion' ? 'activa' : ''} onClick={() => cambiarVista('operacion')}>Operación</button>
+          <button type="button" className={vista === 'infraestructura' ? 'activa' : ''} onClick={() => cambiarVista('infraestructura')}>Infraestructura</button>
         </nav>
 
         {vista === 'resumen' && <>

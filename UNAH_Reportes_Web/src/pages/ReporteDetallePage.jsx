@@ -15,6 +15,7 @@ import {
   faUserGear,
   faThumbsUp,
   faReply,
+  faArrowLeft,
 } from '@fortawesome/free-solid-svg-icons';
 import { getAccessToken } from '../auth/getToken';
 import { getReportePorId, alternarLikeReporte } from '../api/reportesApi';
@@ -79,6 +80,7 @@ function ReporteDetallePage() {
 
   const [lightboxAbierto, setLightboxAbierto] = useState(false);
   const [zoomActivo, setZoomActivo] = useState(false);
+  const [likeAnimado, setLikeAnimado] = useState(false);
 
   const cargarTodo = useCallback(async () => {
     setCargando(true);
@@ -176,6 +178,9 @@ function ReporteDetallePage() {
     const token = await getAccessToken(instance, accounts);
     const resultado = await alternarLikeReporte(id, token);
     setReporte((actual) => ({ ...actual, leGustaUsuarioActual: resultado.leGusta, numeroLikes: resultado.numeroLikes }));
+    setLikeAnimado(false);
+    window.requestAnimationFrame(() => setLikeAnimado(true));
+    window.setTimeout(() => setLikeAnimado(false), 350);
   };
   const darLikeComentario = async (idComentario) => {
     const token = await getAccessToken(instance, accounts);
@@ -225,8 +230,8 @@ function ReporteDetallePage() {
           {reporte.prioridad}
         </span>
         <span className={`badge badge-estado-${slugEstado(reporte.estado)}`}>{reporte.estado}</span>
+        <button type="button" className={`detalle-like ${reporte.leGustaUsuarioActual ? 'activo' : ''} ${likeAnimado ? 'animando' : ''}`} onClick={darLikeReporte}><FontAwesomeIcon icon={faThumbsUp} /> {reporte.numeroLikes ?? 0} Me gusta</button>
       </div>
-      <button type="button" className={`detalle-like ${reporte.leGustaUsuarioActual ? 'activo' : ''}`} onClick={darLikeReporte}><FontAwesomeIcon icon={faThumbsUp} /> {reporte.numeroLikes ?? 0} Me gusta</button>
 
       <div className="detalle-meta">
         <div className="detalle-meta-item"><span className="detalle-etiqueta"><FontAwesomeIcon icon={faTag} />Categoría</span><span className="detalle-meta-valor">{reporte.categoria}</span></div>
@@ -342,7 +347,7 @@ function ReporteDetallePage() {
   if (tieneImagenes) {
     return (
       <div>
-        <Link to="/" className="detalle-volver">← Volver al feed</Link>
+        <Link to="/" className="detalle-volver"><FontAwesomeIcon icon={faArrowLeft} /> Volver al feed</Link>
 
         <div className="detalle-con-imagen">
           <div className="detalle-visor">
@@ -432,7 +437,7 @@ function ReporteDetallePage() {
   // --- Layout SIN imágenes: una columna, tarjetas apiladas (como ya lo teníamos) ---
   return (
     <div>
-      <Link to="/" className="detalle-volver">← Volver al feed</Link>
+      <Link to="/" className="detalle-volver"><FontAwesomeIcon icon={faArrowLeft} /> Volver al feed</Link>
 
       {bloqueInfo}
       {bloqueGestion}

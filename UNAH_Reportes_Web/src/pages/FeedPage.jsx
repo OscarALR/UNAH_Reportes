@@ -32,6 +32,7 @@ function FeedPage() {
   const [filtroPrioridad, setFiltroPrioridad] = useState('');
   const [filtroCategoria, setFiltroCategoria] = useState('');
   const [vistaFeed, setVistaFeed] = useState('todos');
+  const [filtrosAbiertos, setFiltrosAbiertos] = useState(false);
 
   const idUsuario = usuario?.idUsuario;
   const reporteCreado = searchParams.get('creado') === '1';
@@ -152,6 +153,10 @@ function FeedPage() {
       )}
 
       <section className="feed-herramientas">
+        <button type="button" className="feed-filtros-toggle" onClick={() => setFiltrosAbiertos((abiertos) => !abiertos)} aria-expanded={filtrosAbiertos}>
+          Filtros <span aria-hidden="true">{filtrosAbiertos ? '▴' : '▾'}</span>
+        </button>
+        <div className={`feed-filtros-contenido ${filtrosAbiertos ? 'abierto' : ''}`}>
         <label className="feed-busqueda">
           <span>Buscar reportes</span>
           <input
@@ -199,6 +204,7 @@ function FeedPage() {
           <button className="feed-limpiar" type="button" onClick={limpiarFiltros}>
             Limpiar
           </button>
+        </div>
         </div>
       </section>
 

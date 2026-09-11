@@ -168,6 +168,8 @@
   background: rgba(245, 166, 35, .035);
 }
 
+.gestion-filtros-toggle { display: none; }
+
 .gestion-filtros select {
   min-width: 165px;
 }
@@ -341,6 +343,12 @@
 }
 
 @media (max-width: 760px) {
+  .gestion-listado-cabecera { align-items: stretch; }
+  .gestion-filtros-toggle { display: flex; align-items: center; justify-content: space-between; width: 100%; border: 1px solid var(--color-border); border-radius: 8px; padding: 10px 12px; background: var(--color-bg); color: var(--color-text); cursor: pointer; font: inherit; font-size: 13px; font-weight: 700; }
+  .gestion-filtros-toggle span { color: var(--color-accent-hover); }
+  .gestion-listado:not(.filtros-abiertos) .gestion-busqueda,
+  .gestion-listado:not(.filtros-abiertos) .gestion-filtros { display: none; }
+  .gestion-listado.filtros-abiertos .gestion-filtros { animation: aparecer-desde-abajo .28s ease both; }
   .gestion-encabezado,
   .gestion-listado-cabecera {
     flex-direction: column;

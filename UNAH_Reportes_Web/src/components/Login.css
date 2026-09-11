@@ -233,6 +233,9 @@
     max-width: 520px;
   }
 
+  .login-acceso { order: 1; }
+  .login-presentacion { order: 2; }
+
   .login-presentacion {
     min-height: 300px;
     padding: 32px;

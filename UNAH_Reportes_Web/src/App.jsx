@@ -1,4 +1,5 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { useLayoutEffect } from 'react';
 import { useUser } from './context/UserContext.jsx';
 import Layout from './components/Layout.jsx';
 import Login from './components/Login.jsx';
@@ -22,10 +23,21 @@ import LoadingPage from './components/LoadingPage.jsx';
 import ServicioPreparandose from './components/ServicioPreparandose.jsx';
 import './App.css';
 
+function RestaurarScroll() {
+  const { pathname } = useLocation();
+
+  useLayoutEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+
+  return null;
+}
+
 function App() {
   const { usuario, cargando } = useUser();
   return (
     <BrowserRouter>
+      <RestaurarScroll />
       {cargando ? <>
         <LoadingPage />
         <ServicioPreparandose />

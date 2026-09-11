@@ -27,6 +27,7 @@ function GestionPage() {
   const [filtroEstado, setFiltroEstado] = useState('');
   const [filtroPrioridad, setFiltroPrioridad] = useState('');
   const [filtroCategoria, setFiltroCategoria] = useState('');
+  const [filtrosAbiertos, setFiltrosAbiertos] = useState(false);
 
   const esGestorOAdmin =
     usuario?.rol === 'Gestor' || usuario?.rol === 'Administrador';
@@ -169,7 +170,7 @@ function GestionPage() {
         </div>
       </section>
 
-      <section className="gestion-listado">
+      <section className={`gestion-listado ${filtrosAbiertos ? 'filtros-abiertos' : ''}`}>
         <div className="gestion-listado-cabecera">
           <div>
             <h3>Reportes</h3>
@@ -187,6 +188,9 @@ function GestionPage() {
               placeholder="Título, espacio o responsable..."
             />
           </label>
+          <button type="button" className="gestion-filtros-toggle" onClick={() => setFiltrosAbiertos((abiertos) => !abiertos)} aria-expanded={filtrosAbiertos}>
+            Filtros <span aria-hidden="true">{filtrosAbiertos ? '▴' : '▾'}</span>
+          </button>
         </div>
 
         <div className="gestion-filtros">
