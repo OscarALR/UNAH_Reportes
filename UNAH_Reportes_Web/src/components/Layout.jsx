@@ -219,7 +219,7 @@ function Layout({ children }) {
                   <span className="layout-user-role">{usuario?.rol}</span>
                 </div>
               </button>
-              {menuUsuarioAbierto && <div className="layout-user-dropdown"><NavLink to="/perfil" onClick={() => setMenuUsuarioAbierto(false)}>Mi perfil</NavLink><button type="button" onClick={handleLogout}><FontAwesomeIcon icon={faRightFromBracket} /> Cerrar sesión</button></div>}
+              {menuUsuarioAbierto && <div className="layout-user-dropdown ui-entrada"><NavLink to="/perfil" onClick={() => setMenuUsuarioAbierto(false)}>Mi perfil</NavLink><button type="button" onClick={handleLogout}><FontAwesomeIcon icon={faRightFromBracket} /> Cerrar sesión</button></div>}
               </div>
           </div>
 
@@ -236,7 +236,7 @@ function Layout({ children }) {
       </header>
 
       <main className="layout-content">{children}</main>
-      {aviso && <div className="layout-toast" role="status">{aviso}</div>}
+      {aviso && <div className="layout-toast ui-entrada" role="status">{aviso}</div>}
       <footer className="layout-footer">
         <div className="layout-footer-contenido">
           <div>

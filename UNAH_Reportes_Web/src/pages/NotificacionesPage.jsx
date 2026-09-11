@@ -183,7 +183,7 @@ function NotificacionesPage() {
             {notificacionesFiltradas.map((notificacion) => (
               <article
                 key={notificacion.idNotificacion}
-                className={`notificacion-item ${notificacion.leida ? 'leida' : 'no-leida'}`}
+                className={`notificacion-item ui-entrada ${notificacion.leida ? 'leida' : 'no-leida'}`}
               >
                 <div className="notificacion-icono">
                   {obtenerSiglas(notificacion.tipo)}

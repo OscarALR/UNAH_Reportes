@@ -79,7 +79,7 @@
   .layout-theme-toggle, .layout-logout, .layout-menu-toggle { width: 34px; height: 34px; padding: 0; }
   .layout-menu-toggle { display: grid; place-items: center; margin-left: 6px; }
   .layout-nav { display: none; top: 60px; width: min(280px, calc(100vw - 32px)); padding: 14px 10px 24px; border-radius: 0 0 12px 0; box-shadow: 8px 14px 30px rgba(0, 0, 0, .16); }
-  .layout-nav.abierto { display: block; }
+  .layout-nav.abierto { display: block; animation: aparecer-desde-abajo .28s ease both; }
   .layout-content { min-height: calc(100vh - 60px); margin-left: 0; padding: 20px 16px; }
   .layout-footer { margin-left: 0; }
   .layout-footer-contenido { align-items: flex-start; flex-direction: column; padding: 18px 16px; }

@@ -140,7 +140,7 @@ function FeedPage() {
       </div>
 
       {reporteCreado && (
-        <div className="feed-confirmacion" role="status">
+        <div className="feed-confirmacion ui-entrada" role="status">
           <div>
             <strong>Reporte creado correctamente</strong>
             <span>Tu incidencia ya está disponible para seguimiento.</span>

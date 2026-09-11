@@ -329,7 +329,7 @@ function ReporteDetallePage() {
           placeholder="Escribe un comentario de seguimiento..."
           maxLength={500}
         />
-        {respondiendoA && <button type="button" className="btn" onClick={() => setRespondiendoA(null)}>Cancelar respuesta</button>}
+        {respondiendoA && <button type="button" className="btn ui-entrada" onClick={() => setRespondiendoA(null)}>Cancelar respuesta</button>}
         <button className="btn btn-primary" type="submit" disabled={enviandoComentario}>
           {enviandoComentario ? 'Enviando...' : 'Comentar'}
         </button>
@@ -384,7 +384,7 @@ function ReporteDetallePage() {
           </div>
         </div>
         {lightboxAbierto && (
-          <div className="lightbox-overlay" onClick={() => setLightboxAbierto(false)}>
+          <div className="lightbox-overlay ui-entrada" onClick={() => setLightboxAbierto(false)}>
             <button className="lightbox-cerrar" onClick={() => setLightboxAbierto(false)} aria-label="Cerrar">
               ✕
             </button>

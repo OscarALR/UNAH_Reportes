@@ -46,6 +46,34 @@ button, input, select, textarea {
   font-size: 14px;
 }
 
+/* Patrón compartido para contenido que aparece tras una acción del usuario. */
+@keyframes aparecer-desde-abajo {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.ui-entrada {
+  animation: aparecer-desde-abajo .28s ease both;
+}
+
+/* Las transiciones de color y borde dan respuesta inmediata a controles comunes
+   sin interferir con los transform específicos de cada componente. */
+button,
+a,
+input,
+select,
+textarea {
+  transition: background-color .15s ease, border-color .15s ease, color .15s ease,
+    box-shadow .15s ease, opacity .15s ease;
+}
+
 a {
   color: var(--color-accent);
 }
@@ -55,4 +83,15 @@ h2,
 h3 {
   font-family: var(--font-heading);
   letter-spacing: -0.025em;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: .01ms !important;
+  }
 }
