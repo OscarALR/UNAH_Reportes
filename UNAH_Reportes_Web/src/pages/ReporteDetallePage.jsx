@@ -379,7 +379,7 @@ function ReporteDetallePage() {
   const bloqueComentarios = (
     <div className="detalle-card">
       <h3><FontAwesomeIcon icon={faComments} />Comentarios</h3>
-      {comentarios.length > 5 && <div className="comentarios-controles"><select value={ordenComentarios} onChange={(e) => setOrdenComentarios(e.target.value)}><option value="recientes">Más recientes</option><option value="populares">Más populares</option></select>{comentariosVisibles < comentarios.length && <button type="button" onClick={() => setComentariosVisibles(comentarios.length)}>Ver más comentarios</button>}</div>}
+      {comentarios.length > 5 && <div className="comentarios-controles"><select value={ordenComentarios} onChange={(e) => setOrdenComentarios(e.target.value)}><option value="recientes">Más recientes</option><option value="populares">Más populares</option></select>{comentariosVisibles < comentarios.length ? <button type="button" onClick={() => setComentariosVisibles(comentarios.length)}>Ver más comentarios</button> : <button type="button" onClick={() => setComentariosVisibles(5)}>Ver menos comentarios</button>}</div>}
       {comentarios.length === 0 ? (
         <p>Sin comentarios todavía.</p>
       ) : (
