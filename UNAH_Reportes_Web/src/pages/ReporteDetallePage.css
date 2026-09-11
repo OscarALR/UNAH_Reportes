@@ -744,6 +744,25 @@
     list-style: none;
 }
 
+/* Une el tronco de un hilo con cada comentario hijo, a la altura de su avatar. */
+.comentario-conector-padre {
+    position: absolute;
+    z-index: 0;
+    top: 16px;
+    left: -20px;
+    width: 22px;
+    height: 16px;
+    pointer-events: none;
+}
+
+.comentario-conector-padre path {
+    fill: none;
+    stroke: var(--color-hilo);
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
 .comentario-ocultar-rama {
     position: relative;
     list-style: none;

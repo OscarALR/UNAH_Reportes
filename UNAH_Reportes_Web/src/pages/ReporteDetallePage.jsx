@@ -100,7 +100,7 @@ function tonoAvatar(nombre = '') {
   return [...nombre].reduce((total, caracter) => total + caracter.charCodeAt(0), 0) % 360;
 }
 
-function ComentarioHilo({ nodo, hilosContraidos, alternarHilo, respondiendoA, responder, darLike, fechaLocal, formularioRespuesta, avatarRef }) {
+function ComentarioHilo({ nodo, hilosContraidos, alternarHilo, respondiendoA, responder, darLike, fechaLocal, formularioRespuesta, avatarRef, esRespuesta = false }) {
   const tieneRespuestas = nodo.respuestas.length > 0;
   const esComentarioPrincipal = !nodo.idComentarioPadre;
   const puedeContraer = tieneRespuestas && (esComentarioPrincipal || nodo.respuestas.length >= 5);
@@ -140,6 +140,7 @@ function ComentarioHilo({ nodo, hilosContraidos, alternarHilo, respondiendoA, re
 
   return (
     <li ref={hiloRef} className={`comentario-hilo${tieneRespuestas && !contraido ? ' comentario-hilo-con-respuestas' : ''}${tieneRespuestas && !puedeContraer ? ' comentario-hilo-sin-control' : ''}`} style={alturaRiel === null ? undefined : { '--altura-riel': `${alturaRiel}px` }}>
+      {esRespuesta && <svg className="comentario-conector-padre" viewBox="0 0 22 16" preserveAspectRatio="none" aria-hidden="true"><path d="M1 0v7c0 4 3 7 7 7h14" /></svg>}
       <article className="comentario-item">
         <div className="comentario-rail">
           <span ref={avatarRef} className="comentario-avatar" style={{ '--tono-avatar': tonoAvatar(nodo.usuario) }} aria-label={`Avatar de ${nodo.usuario}`}>{inicialesUsuario(nodo.usuario)}</span>
@@ -159,7 +160,7 @@ function ComentarioHilo({ nodo, hilosContraidos, alternarHilo, respondiendoA, re
       </article>
       {tieneRespuestas && !contraido && (
         <ul className="comentario-respuestas">
-          {nodo.respuestas.map((respuesta, indice) => <ComentarioHilo key={respuesta.idComentario} nodo={respuesta} hilosContraidos={hilosContraidos} alternarHilo={alternarHilo} respondiendoA={respondiendoA} responder={responder} darLike={darLike} fechaLocal={fechaLocal} formularioRespuesta={formularioRespuesta} avatarRef={!puedeContraer && indice === nodo.respuestas.length - 1 ? ultimoAvatarRef : undefined} />)}
+          {nodo.respuestas.map((respuesta, indice) => <ComentarioHilo key={respuesta.idComentario} nodo={respuesta} hilosContraidos={hilosContraidos} alternarHilo={alternarHilo} respondiendoA={respondiendoA} responder={responder} darLike={darLike} fechaLocal={fechaLocal} formularioRespuesta={formularioRespuesta} avatarRef={!puedeContraer && indice === nodo.respuestas.length - 1 ? ultimoAvatarRef : undefined} esRespuesta />)}
           {puedeContraer && <li className="comentario-ocultar-rama"><button type="button" onClick={() => alternarHilo(nodo.idComentario)}><span aria-hidden="true">−</span> Ocultar comentarios</button></li>}
         </ul>
       )}
