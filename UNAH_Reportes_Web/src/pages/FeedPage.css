@@ -411,9 +411,10 @@
 .reporte-card h3 { margin: 0 0 9px; }
 .reporte-card-ubicacion { display: flex; flex-direction: column; gap: 2px; }
 .reporte-card-ubicacion span { color: var(--color-text-secondary); font-size: 10px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
-.reporte-card-carrera { align-self: flex-start; background: rgba(26, 47, 92, .09); border-radius: 20px; color: var(--color-primary); font-size: 11px; font-weight: 700; margin-top: 8px; max-width: 100%; overflow: hidden; padding: 5px 9px; text-overflow: ellipsis; white-space: nowrap; }
+.reporte-card-carrera { color: var(--color-text-secondary); font-size: 11px; font-weight: 650; margin-top: 8px; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.reporte-card-categoria { background: rgba(245, 166, 35, .16); border: 1px solid rgba(245, 166, 35, .38); border-radius: 20px; color: #8b5700; font-size: 11px; font-weight: 750; max-width: 62%; overflow: hidden; padding: 5px 9px; text-overflow: ellipsis; white-space: nowrap; }
 .reporte-card-footer { margin-top: auto; padding-top: 14px; }
-[data-theme='dark'] .reporte-card-carrera { background: rgba(245, 166, 35, .16); color: #ffd36f; }
+[data-theme='dark'] .reporte-card-categoria { background: rgba(245, 166, 35, .18); border-color: rgba(255, 211, 111, .42); color: #ffd36f; }
 
 @media (max-width: 760px) {
   .feed-header,

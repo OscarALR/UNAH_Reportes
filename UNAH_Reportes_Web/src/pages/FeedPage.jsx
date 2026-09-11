@@ -31,6 +31,7 @@ function FeedPage() {
   const [filtroEstado, setFiltroEstado] = useState('');
   const [filtroPrioridad, setFiltroPrioridad] = useState('');
   const [filtroCategoria, setFiltroCategoria] = useState('');
+  const [filtroUbicacion, setFiltroUbicacion] = useState('');
   const [vistaFeed, setVistaFeed] = useState('todos');
   const [filtrosAbiertos, setFiltrosAbiertos] = useState(false);
 
@@ -69,6 +70,11 @@ function FeedPage() {
     [reportes]
   );
 
+  const ubicaciones = useMemo(
+    () => ordenarAlfabeticamente([...new Set(reportes.map((reporte) => reporte.ubicacion ?? reporte.espacio).filter(Boolean))]),
+    [reportes]
+  );
+
   const reportesFiltrados = useMemo(() => {
     const termino = busqueda.trim().toLowerCase();
 
@@ -77,26 +83,29 @@ function FeedPage() {
         !termino ||
         reporte.titulo.toLowerCase().includes(termino) ||
         reporte.descripcion.toLowerCase().includes(termino) ||
-        reporte.espacio.toLowerCase().includes(termino);
+        reporte.espacio.toLowerCase().includes(termino) ||
+        (reporte.ubicacion ?? '').toLowerCase().includes(termino);
 
       return (
         coincideBusqueda &&
         (!filtroEstado || reporte.estado === filtroEstado) &&
         (!filtroPrioridad || reporte.prioridad === filtroPrioridad) &&
-        (!filtroCategoria || reporte.categoria === filtroCategoria)
+        (!filtroCategoria || reporte.categoria === filtroCategoria) &&
+        (!filtroUbicacion || (reporte.ubicacion ?? reporte.espacio) === filtroUbicacion)
         && (vistaFeed === 'todos' || (vistaFeed === 'populares' && reporte.numeroLikes > 0) || (vistaFeed === 'carrera' && reporte.esDeMiCarrera) || (vistaFeed === 'otros' && !reporte.esDeMiCarrera))
       );
     });
     return vistaFeed === 'populares'
       ? filtrados.sort((a, b) => b.numeroLikes - a.numeroLikes || new Date(b.fechaCreacion) - new Date(a.fechaCreacion))
       : filtrados;
-  }, [reportes, busqueda, filtroEstado, filtroPrioridad, filtroCategoria, vistaFeed]);
+  }, [reportes, busqueda, filtroEstado, filtroPrioridad, filtroCategoria, filtroUbicacion, vistaFeed]);
 
   const limpiarFiltros = () => {
     setBusqueda('');
     setFiltroEstado('');
     setFiltroPrioridad('');
     setFiltroCategoria('');
+    setFiltroUbicacion('');
   };
 
   const cerrarConfirmacion = () => {
@@ -201,6 +210,17 @@ function FeedPage() {
             ))}
           </select>
 
+          <select
+            value={filtroUbicacion}
+            onChange={(e) => setFiltroUbicacion(e.target.value)}
+            aria-label="Filtrar por ubicación"
+          >
+            <option value="">Todas las ubicaciones</option>
+            {ubicaciones.map((ubicacion) => (
+              <option key={ubicacion} value={ubicacion}>{ubicacion}</option>
+            ))}
+          </select>
+
           <button className="feed-limpiar" type="button" onClick={limpiarFiltros}>
             Limpiar
           </button>
@@ -253,7 +273,7 @@ function FeedPage() {
                 <p className="reporte-card-ubicacion"><span>Ubicación</span>{reporte.ubicacion ?? reporte.espacio}</p>
                 <span className="reporte-card-carrera">{reporte.carreraUsuarioReporta ?? 'Sin carrera asignada'}</span>
                 <div className="reporte-card-footer">
-                  <span>{reporte.categoria}</span>
+                  <span className="reporte-card-categoria">{reporte.categoria}</span>
                   <span className={`badge badge-estado-${slugTexto(reporte.estado)}`}>{reporte.estado}</span>
                 </div>
               </div>
