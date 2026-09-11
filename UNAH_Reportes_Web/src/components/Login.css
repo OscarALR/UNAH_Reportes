@@ -114,11 +114,38 @@
   place-items: center;
   padding: 42px;
   background: var(--color-surface);
+  transition: padding .25s ease;
 }
 
 .login-acceso-contenido {
   width: min(100%, 330px);
   text-align: center;
+}
+
+.login-registro-contenido {
+  animation: mostrar-registro .28s ease both;
+}
+
+.login-registro-titulo {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-size: 28px;
+  text-align: left;
+}
+
+.registro-activo .login-local-form {
+  margin-top: 18px;
+  animation: mostrar-registro .32s ease both;
+}
+
+.login-registro-volver {
+  justify-self: center;
+  margin-top: 4px;
+}
+
+@keyframes mostrar-registro {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .login-badge {

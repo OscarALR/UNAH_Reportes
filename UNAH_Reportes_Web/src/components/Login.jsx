@@ -33,6 +33,7 @@ function Login() {
   const [mensajeLocal, setMensajeLocal] = useState('');
   const [formulario, setFormulario] = useState({ correo: '', contrasena: '', confirmarContrasena: '', correoRecuperacion: '', nombreCompleto: '', idCarrera: '' });
   const [mostrarContrasena, setMostrarContrasena] = useState(false);
+  const esRegistro = modoLocal === 'registro';
 
   useEffect(() => {
     getCarrerasRegistro().then((datos) => setCarreras(ordenarAlfabeticamente(datos, (carrera) => carrera.nombreCarrera))).catch(() => setErrorLocal('No se pudieron cargar las carreras.'));
@@ -119,14 +120,16 @@ function Login() {
           </div>
         </section>
 
-        <section className="login-acceso">
-          <div className="login-acceso-contenido">
-            <img className="login-badge" src="/riuvs-icon.svg" alt="" />
-            <p className="login-acceso-etiqueta">Bienvenido</p>
-            <h2>{modoLocal === 'registro' ? 'Crea tu cuenta' : modoLocal === 'recuperar' ? 'Recupera tu acceso' : 'Inicia sesión'}</h2>
-            <p className="login-text">{modoLocal === 'recuperar' ? 'Te enviaremos un enlace al correo de recuperación registrado.' : 'Accede con Microsoft o crea una cuenta local para explorar RiUVS.'}</p>
+        <section className={`login-acceso${esRegistro ? ' registro-activo' : ''}`}>
+          <div className={`login-acceso-contenido${esRegistro ? ' login-registro-contenido' : ''}`}>
+            {esRegistro ? <h2 className="login-registro-titulo">Crear cuenta</h2> : <>
+              <img className="login-badge" src="/riuvs-icon.svg" alt="" />
+              <p className="login-acceso-etiqueta">Bienvenido</p>
+              <h2>{modoLocal === 'recuperar' ? 'Recupera tu acceso' : 'Inicia sesión'}</h2>
+              <p className="login-text">{modoLocal === 'recuperar' ? 'Te enviaremos un enlace al correo de recuperación registrado.' : 'Accede con Microsoft o crea una cuenta local para explorar RiUVS.'}</p>
+            </>}
 
-            {modoLocal !== 'recuperar' && <button
+            {!esRegistro && modoLocal !== 'recuperar' && <button
               className="login-button"
               type="button"
               onClick={handleLogin}
@@ -139,9 +142,9 @@ function Login() {
               <FontAwesomeIcon icon={faArrowRight} />
             </button>}
 
-            {modoLocal !== 'recuperar' && <div className="login-separador"><span>o usa una cuenta local</span></div>}
+            {!esRegistro && modoLocal !== 'recuperar' && <div className="login-separador"><span>o usa una cuenta local</span></div>}
 
-            {modoLocal !== 'recuperar' && <div className="login-local-tabs">
+            {!esRegistro && modoLocal !== 'recuperar' && <div className="login-local-tabs">
               <button type="button" className={modoLocal === 'ingresar' ? 'activo' : ''} onClick={() => setModoLocal('ingresar')}>Ingresar</button>
               <button type="button" className={modoLocal === 'registro' ? 'activo' : ''} onClick={() => setModoLocal('registro')}>Registrarme</button>
             </div>}
@@ -156,9 +159,10 @@ function Login() {
               {mensajeLocal && <p className="login-local-success" role="status">{mensajeLocal}</p>}
               <button type="submit" className="login-local-button" disabled={iniciando}>{modoLocal === 'registro' ? 'Crear cuenta' : modoLocal === 'recuperar' ? 'Enviar enlace' : 'Ingresar con correo'}</button>
               {modoLocal === 'recuperar' && <button type="button" className="login-recuperar" onClick={() => { setModoLocal('ingresar'); setErrorLocal(''); setMensajeLocal(''); }}>Volver a iniciar sesión</button>}
+              {esRegistro && <button type="button" className="login-recuperar login-registro-volver" onClick={() => { setModoLocal('ingresar'); setErrorLocal(''); }}>Volver a iniciar sesión</button>}
             </form>
 
-            {import.meta.env.DEV && <p className="login-nota">
+            {!esRegistro && import.meta.env.DEV && <p className="login-nota">
               Usuario de prueba: prueba@unahreportes.local · Contraseña: PruebaUNAH2026!
             </p>}
           </div>
