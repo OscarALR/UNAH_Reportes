@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
+import { createPortal } from 'react-dom';
 import { useMsal } from '@azure/msal-react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -383,22 +384,25 @@ function ReporteDetallePage() {
             {bloqueComentarios}
           </div>
         </div>
-        {lightboxAbierto && (
-          <div className="lightbox-overlay ui-entrada" onClick={() => setLightboxAbierto(false)}>
-            <button className="lightbox-cerrar" onClick={() => setLightboxAbierto(false)} aria-label="Cerrar">
+        {lightboxAbierto && createPortal(
+          <div className="lightbox-overlay" onClick={() => setLightboxAbierto(false)} role="dialog" aria-modal="true" aria-label={`Vista ampliada de la imagen ${imagenActiva + 1}`}>
+            <div className="lightbox-dialog ui-entrada" onClick={(e) => e.stopPropagation()}>
+            <button className="lightbox-cerrar" type="button" onClick={() => setLightboxAbierto(false)} aria-label="Cerrar imagen ampliada">
               ✕
             </button>
 
             {imagenes.length > 1 && (
               <button
                 className="lightbox-flecha izq"
-                onClick={(e) => { e.stopPropagation(); imagenAnterior(); setZoomActivo(false); }}
+                type="button"
+                onClick={() => { imagenAnterior(); setZoomActivo(false); }}
+                aria-label="Imagen anterior"
               >
                 ‹
               </button>
             )}
 
-            <div className="lightbox-imagen-wrap" onClick={(e) => e.stopPropagation()}>
+            <div className="lightbox-imagen-wrap">
               <img
                 src={imagenes[imagenActiva]}
                 alt={`Imagen ${imagenActiva + 1}`}
@@ -407,16 +411,20 @@ function ReporteDetallePage() {
               />
             </div>
           
-            {imagenes.length > 1 && (
+            {imagenes.length > 1 && <>
+              <span className="lightbox-contador">{imagenActiva + 1} / {imagenes.length}</span>
               <button
                 className="lightbox-flecha der"
-                onClick={(e) => { e.stopPropagation(); imagenSiguiente(); setZoomActivo(false); }}
+                type="button"
+                onClick={() => { imagenSiguiente(); setZoomActivo(false); }}
+                aria-label="Imagen siguiente"
               >
                 ›
               </button>
-            )}
+            </>}
+            </div>
           </div>
-        )}
+        , document.body)}
       </div>
     );
   }
