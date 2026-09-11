@@ -92,23 +92,36 @@ function limitarHilos(hilos, limite) {
   return limitar(hilos);
 }
 
+function inicialesUsuario(nombre = '') {
+  return nombre.split(' ').filter(Boolean).slice(0, 2).map((parte) => parte[0]).join('').toUpperCase() || 'U';
+}
+
+function tonoAvatar(nombre = '') {
+  return [...nombre].reduce((total, caracter) => total + caracter.charCodeAt(0), 0) % 360;
+}
+
 function ComentarioHilo({ nodo, hilosContraidos, alternarHilo, respondiendoA, responder, darLike, fechaLocal, formularioRespuesta }) {
   const tieneRespuestas = nodo.respuestas.length > 0;
   const contraido = hilosContraidos.has(nodo.idComentario);
 
   return (
-    <li className="comentario-hilo">
+    <li className={`comentario-hilo ${tieneRespuestas ? 'comentario-hilo-con-respuestas' : ''}`}>
       <article className="comentario-item">
-        <div className="comentario-cabecera">
-          <strong>{nodo.usuario}</strong> ({fechaLocal(nodo.fechaComentario)} · <time dateTime={fechaUtc(nodo.fechaComentario)} title={fechaLocal(nodo.fechaComentario)}>{tiempoRelativo(nodo.fechaComentario)}</time>)
-        </div>
-        <p className="comentario-texto">{nodo.texto}</p>
-        <div className="comentario-acciones">
+        <div className="comentario-rail">
+          <span className="comentario-avatar" style={{ '--tono-avatar': tonoAvatar(nodo.usuario) }} aria-label={`Avatar de ${nodo.usuario}`}>{inicialesUsuario(nodo.usuario)}</span>
           {tieneRespuestas && <button type="button" className="hilo-toggle" onClick={() => alternarHilo(nodo.idComentario)} aria-expanded={!contraido} aria-label={contraido ? 'Mostrar respuestas' : 'Ocultar respuestas'}>{contraido ? '+' : '−'}</button>}
-          <button type="button" className={nodo.leGustaUsuarioActual ? 'activo' : ''} onClick={() => darLike(nodo.idComentario)}><FontAwesomeIcon icon={faThumbsUp} /> {nodo.numeroLikes || 0}</button>
-          <button type="button" onClick={() => responder(nodo.idComentario)}><FontAwesomeIcon icon={faReply} /> Responder</button>
         </div>
-        {respondiendoA === nodo.idComentario && formularioRespuesta()}
+        <div className="comentario-contenido">
+          <div className="comentario-cabecera">
+            <strong>{nodo.usuario}</strong> ({fechaLocal(nodo.fechaComentario)} · <time dateTime={fechaUtc(nodo.fechaComentario)} title={fechaLocal(nodo.fechaComentario)}>{tiempoRelativo(nodo.fechaComentario)}</time>)
+          </div>
+          <p className="comentario-texto">{nodo.texto}</p>
+          <div className="comentario-acciones">
+            <button type="button" className={nodo.leGustaUsuarioActual ? 'activo' : ''} onClick={() => darLike(nodo.idComentario)}><FontAwesomeIcon icon={faThumbsUp} /> {nodo.numeroLikes || 0}</button>
+            <button type="button" onClick={() => responder(nodo.idComentario)}><FontAwesomeIcon icon={faReply} /> Responder</button>
+          </div>
+          {respondiendoA === nodo.idComentario && formularioRespuesta()}
+        </div>
       </article>
       {tieneRespuestas && !contraido && (
         <ul className="comentario-respuestas">
