@@ -104,9 +104,9 @@ function ComentarioHilo({ nodo, hilosContraidos, alternarHilo, respondiendoA, re
         </div>
         <p className="comentario-texto">{nodo.texto}</p>
         <div className="comentario-acciones">
+          {tieneRespuestas && <button type="button" className="hilo-toggle" onClick={() => alternarHilo(nodo.idComentario)} aria-expanded={!contraido} aria-label={contraido ? 'Mostrar respuestas' : 'Ocultar respuestas'}>{contraido ? '+' : '−'}</button>}
           <button type="button" className={nodo.leGustaUsuarioActual ? 'activo' : ''} onClick={() => darLike(nodo.idComentario)}><FontAwesomeIcon icon={faThumbsUp} /> {nodo.numeroLikes || 0}</button>
           <button type="button" onClick={() => responder(nodo.idComentario)}><FontAwesomeIcon icon={faReply} /> Responder</button>
-          {tieneRespuestas && <button type="button" className="hilo-toggle" onClick={() => alternarHilo(nodo.idComentario)} aria-expanded={!contraido} aria-label={contraido ? 'Mostrar respuestas' : 'Ocultar respuestas'}>{contraido ? '+' : '−'}</button>}
         </div>
         {respondiendoA === nodo.idComentario && formularioRespuesta()}
       </article>
