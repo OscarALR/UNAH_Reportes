@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { createPortal } from 'react-dom';
 import { useMsal } from '@azure/msal-react';
@@ -100,17 +100,49 @@ function tonoAvatar(nombre = '') {
   return [...nombre].reduce((total, caracter) => total + caracter.charCodeAt(0), 0) % 360;
 }
 
-function ComentarioHilo({ nodo, hilosContraidos, alternarHilo, respondiendoA, responder, darLike, fechaLocal, formularioRespuesta }) {
+function ComentarioHilo({ nodo, hilosContraidos, alternarHilo, respondiendoA, responder, darLike, fechaLocal, formularioRespuesta, avatarRef }) {
   const tieneRespuestas = nodo.respuestas.length > 0;
   const esComentarioPrincipal = !nodo.idComentarioPadre;
   const puedeContraer = tieneRespuestas && (esComentarioPrincipal || nodo.respuestas.length >= 5);
   const contraido = puedeContraer && hilosContraidos.has(nodo.idComentario);
+  const hiloRef = useRef(null);
+  const ultimoAvatarRef = useRef(null);
+  const [alturaRiel, setAlturaRiel] = useState(null);
+
+  useLayoutEffect(() => {
+    if (!tieneRespuestas || contraido || puedeContraer) {
+      setAlturaRiel(null);
+      return undefined;
+    }
+
+    const actualizarAltura = () => {
+      const hilo = hiloRef.current;
+      const ultimoAvatar = ultimoAvatarRef.current;
+      if (!hilo || !ultimoAvatar) return;
+
+      const destino = ultimoAvatar.getBoundingClientRect().top + (ultimoAvatar.offsetHeight / 2);
+      const inicio = hilo.getBoundingClientRect().top + 48;
+      const siguienteAltura = Math.max(0, Math.round(destino - inicio));
+      setAlturaRiel((actual) => actual === siguienteAltura ? actual : siguienteAltura);
+    };
+
+    actualizarAltura();
+    const observador = new ResizeObserver(actualizarAltura);
+    observador.observe(hiloRef.current);
+    observador.observe(ultimoAvatarRef.current);
+    window.addEventListener('resize', actualizarAltura);
+
+    return () => {
+      observador.disconnect();
+      window.removeEventListener('resize', actualizarAltura);
+    };
+  }, [tieneRespuestas, contraido, puedeContraer, nodo.respuestas.length]);
 
   return (
-    <li className={`comentario-hilo${tieneRespuestas && !contraido ? ' comentario-hilo-con-respuestas' : ''}${tieneRespuestas && !puedeContraer ? ' comentario-hilo-sin-control' : ''}`}>
+    <li ref={hiloRef} className={`comentario-hilo${tieneRespuestas && !contraido ? ' comentario-hilo-con-respuestas' : ''}${tieneRespuestas && !puedeContraer ? ' comentario-hilo-sin-control' : ''}`} style={alturaRiel === null ? undefined : { '--altura-riel': `${alturaRiel}px` }}>
       <article className="comentario-item">
         <div className="comentario-rail">
-          <span className="comentario-avatar" style={{ '--tono-avatar': tonoAvatar(nodo.usuario) }} aria-label={`Avatar de ${nodo.usuario}`}>{inicialesUsuario(nodo.usuario)}</span>
+          <span ref={avatarRef} className="comentario-avatar" style={{ '--tono-avatar': tonoAvatar(nodo.usuario) }} aria-label={`Avatar de ${nodo.usuario}`}>{inicialesUsuario(nodo.usuario)}</span>
           {puedeContraer && <button type="button" className="hilo-toggle" onClick={() => alternarHilo(nodo.idComentario)} aria-expanded={!contraido} aria-label={contraido ? 'Mostrar respuestas' : 'Ocultar respuestas'}>{contraido ? '+' : '−'}</button>}
         </div>
         <div className="comentario-contenido">
@@ -127,7 +159,7 @@ function ComentarioHilo({ nodo, hilosContraidos, alternarHilo, respondiendoA, re
       </article>
       {tieneRespuestas && !contraido && (
         <ul className="comentario-respuestas">
-          {nodo.respuestas.map((respuesta) => <ComentarioHilo key={respuesta.idComentario} nodo={respuesta} hilosContraidos={hilosContraidos} alternarHilo={alternarHilo} respondiendoA={respondiendoA} responder={responder} darLike={darLike} fechaLocal={fechaLocal} formularioRespuesta={formularioRespuesta} />)}
+          {nodo.respuestas.map((respuesta, indice) => <ComentarioHilo key={respuesta.idComentario} nodo={respuesta} hilosContraidos={hilosContraidos} alternarHilo={alternarHilo} respondiendoA={respondiendoA} responder={responder} darLike={darLike} fechaLocal={fechaLocal} formularioRespuesta={formularioRespuesta} avatarRef={!puedeContraer && indice === nodo.respuestas.length - 1 ? ultimoAvatarRef : undefined} />)}
           {puedeContraer && <li className="comentario-ocultar-rama"><button type="button" onClick={() => alternarHilo(nodo.idComentario)}><span aria-hidden="true">−</span> Ocultar comentarios</button></li>}
         </ul>
       )}

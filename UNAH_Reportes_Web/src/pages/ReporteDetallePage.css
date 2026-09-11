@@ -719,19 +719,18 @@
 
 /* En ramas cortas el riel finaliza con una curva, sin mostrar controles extra. */
 .comentario-hilo-sin-control::before {
-    bottom: 16px;
-    border-radius: 0 0 0 12px;
+    bottom: auto;
+    height: var(--altura-riel, 0px);
 }
 
 .comentario-hilo-sin-control::after {
     content: '';
     position: absolute;
     z-index: 0;
-    right: auto;
-    bottom: 16px;
+    top: calc(48px + var(--altura-riel, 0px) - 14px);
     left: 18px;
-    width: 38px;
-    height: 16px;
+    width: 20px;
+    height: 14px;
     border-bottom: 2px solid var(--color-hilo);
     border-left: 2px solid var(--color-hilo);
     border-bottom-left-radius: 14px;
