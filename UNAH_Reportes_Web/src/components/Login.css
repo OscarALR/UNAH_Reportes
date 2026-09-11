@@ -79,6 +79,16 @@
 }
 
 .login-beneficio-icono {
+  grid-row: 2;
+  align-self: start;
+  padding-top: 13px;
+  border-top: 1px solid rgba(255, 255, 255, .18);
+  color: var(--color-accent);
+  font-size: 11px;
+}
+
+.login-beneficios span {
+  grid-row: 1;
   display: grid;
   place-items: center;
   width: 64px;
@@ -89,16 +99,7 @@
   border-radius: 18px;
   background: rgba(245, 166, 35, .12);
   color: var(--color-accent);
-  font-size: 31px;
-  filter: drop-shadow(0 5px 8px rgba(0, 0, 0, .13));
-}
-
-.login-beneficios span {
-  display: block;
-  padding-top: 13px;
-  border-top: 1px solid rgba(255, 255, 255, .18);
-  color: var(--color-accent);
-  font-size: 11px;
+  font-size: 28px;
   font-weight: 800;
 }
 
@@ -364,6 +365,15 @@
 
 [data-theme='light'] .login-beneficios > div {
   border-top-color: var(--color-border);
+}
+
+[data-theme='light'] .login-beneficio-icono {
+  border-top-color: var(--color-border);
+  color: var(--color-primary);
+}
+
+[data-theme='light'] .login-beneficios span {
+  color: var(--color-primary);
 }
 
 [data-theme='light'] .login-theme-toggle {
