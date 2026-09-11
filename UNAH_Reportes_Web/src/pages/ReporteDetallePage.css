@@ -340,6 +340,7 @@
 
 .comentario-form {
     display: flex;
+    flex-wrap: wrap;
     gap: 10px;
     align-items: flex-end;
 }
@@ -354,6 +355,51 @@
     color: var(--color-text);
     resize: vertical;
     font-family: inherit;
+}
+
+.comentario-form-acciones {
+    display: flex;
+    gap: 8px;
+}
+
+.comentario-form-respuesta {
+    margin-top: 12px;
+    padding: 12px;
+    border: 1px solid rgba(245, 166, 35, .38);
+    border-radius: 10px;
+    background: rgba(245, 166, 35, .07);
+}
+
+.respuesta-activa {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    color: var(--color-text-secondary);
+    font-size: 12px;
+}
+
+.respuesta-activa strong {
+    color: var(--color-text);
+}
+
+.respuesta-activa button {
+    display: grid;
+    width: 24px;
+    height: 24px;
+    place-items: center;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    font-size: 20px;
+    line-height: 1;
+}
+
+.respuesta-activa button:hover {
+    background: var(--color-bg);
+    color: var(--color-text);
 }
 
 /* --- Layout con imagen protagonista (solo cuando el reporte tiene imágenes) --- */

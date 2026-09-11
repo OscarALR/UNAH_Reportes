@@ -40,6 +40,22 @@ function fechaUtc(fecha) {
   return typeof fecha === 'string' && !/(Z|[+-]\d\d:\d\d)$/.test(fecha) ? `${fecha}Z` : fecha;
 }
 
+function tiempoRelativo(fecha) {
+  const diferenciaMs = Math.max(0, Date.now() - new Date(fechaUtc(fecha)).getTime());
+  const minutos = Math.floor(diferenciaMs / 60000);
+  const horas = Math.floor(diferenciaMs / 3600000);
+  const dias = Math.floor(diferenciaMs / 86400000);
+  const meses = Math.floor(dias / 30);
+  const anios = Math.floor(dias / 365);
+
+  if (minutos < 1) return 'Hace unos momentos';
+  if (minutos < 60) return `Hace ${minutos} ${minutos === 1 ? 'minuto' : 'minutos'}`;
+  if (horas < 24) return `Hace ${horas} ${horas === 1 ? 'hora' : 'horas'}`;
+  if (dias < 30) return `Hace ${dias} ${dias === 1 ? 'día' : 'días'}`;
+  if (meses < 12) return `Hace ${meses} ${meses === 1 ? 'mes' : 'meses'}`;
+  return `Hace ${anios} ${anios === 1 ? 'año' : 'años'}`;
+}
+
 function ordenarComentarios(comentarios, orden) {
   const comparar = (a, b) => orden === 'populares'
     ? (b.numeroLikes - a.numeroLikes) || (new Date(fechaUtc(b.fechaComentario)) - new Date(fechaUtc(a.fechaComentario)))
@@ -217,6 +233,31 @@ function ReporteDetallePage() {
 
   const tieneImagenes = imagenes.length > 0;
   const comentariosOrdenados = ordenarComentarios(comentarios, ordenComentarios);
+  const comentarioRespondido = comentarios.find((comentario) => comentario.idComentario === respondiendoA);
+
+  const formularioComentario = (esRespuesta = false) => (
+    <form className={`comentario-form ${esRespuesta ? 'comentario-form-respuesta' : ''}`} onSubmit={handleComentar}>
+      {esRespuesta && comentarioRespondido && (
+        <div className="respuesta-activa">
+          <span>Respondiendo a <strong>{comentarioRespondido.usuario}</strong></span>
+          <button type="button" onClick={() => setRespondiendoA(null)} aria-label="Cancelar respuesta">×</button>
+        </div>
+      )}
+      <textarea
+        value={nuevoComentario}
+        onChange={(e) => setNuevoComentario(e.target.value)}
+        placeholder={comentarioRespondido ? `Responde a ${comentarioRespondido.usuario}...` : 'Escribe un comentario de seguimiento...'}
+        maxLength={500}
+        autoFocus={esRespuesta}
+      />
+      <div className="comentario-form-acciones">
+        {esRespuesta && <button type="button" className="btn" onClick={() => setRespondiendoA(null)}>Cancelar</button>}
+        <button className="btn btn-primary" type="submit" disabled={enviandoComentario}>
+          {enviandoComentario ? 'Enviando...' : esRespuesta ? 'Responder' : 'Comentar'}
+        </button>
+      </div>
+    </form>
+  );
 
   // --- Bloques reutilizados en ambos layouts ---
 
@@ -299,7 +340,7 @@ function ReporteDetallePage() {
           {historial.map((h) => (
             <li key={h.idHistorial} className="historial-item">
               <div className="historial-cabecera">
-                <strong>{h.estado}</strong> — {h.usuario} ({fechaLocal(h.fechaCambio)})
+                <strong>{h.estado}</strong> — {h.usuario} ({fechaLocal(h.fechaCambio)} · <time dateTime={fechaUtc(h.fechaCambio)} title={fechaLocal(h.fechaCambio)}>{tiempoRelativo(h.fechaCambio)}</time>)
               </div>
               {h.comentario && <p className="historial-comentario">{h.comentario}</p>}
             </li>
@@ -320,26 +361,16 @@ function ReporteDetallePage() {
           {comentariosOrdenados.slice(0, comentariosVisibles).map((c) => (
             <li key={c.idComentario} className={`comentario-item ${c.idComentarioPadre ? 'comentario-respuesta' : ''}`}>
               <div className="comentario-cabecera">
-                <strong>{c.usuario}</strong> ({fechaLocal(c.fechaComentario)})
+                <strong>{c.usuario}</strong> ({fechaLocal(c.fechaComentario)} · <time dateTime={fechaUtc(c.fechaComentario)} title={fechaLocal(c.fechaComentario)}>{tiempoRelativo(c.fechaComentario)}</time>)
               </div>
               <p className="comentario-texto">{c.texto}</p>
               <div className="comentario-acciones"><button type="button" className={c.leGustaUsuarioActual ? 'activo' : ''} onClick={() => darLikeComentario(c.idComentario)}><FontAwesomeIcon icon={faThumbsUp} /> {c.numeroLikes || 0}</button><button type="button" onClick={() => setRespondiendoA(c.idComentario)}><FontAwesomeIcon icon={faReply} /> Responder</button></div>
+              {respondiendoA === c.idComentario && formularioComentario(true)}
             </li>
           ))}
         </ul>
       )}
-      <form className="comentario-form" onSubmit={handleComentar}>
-        <textarea
-          value={nuevoComentario}
-          onChange={(e) => setNuevoComentario(e.target.value)}
-          placeholder="Escribe un comentario de seguimiento..."
-          maxLength={500}
-        />
-        {respondiendoA && <button type="button" className="btn ui-entrada" onClick={() => setRespondiendoA(null)}>Cancelar respuesta</button>}
-        <button className="btn btn-primary" type="submit" disabled={enviandoComentario}>
-          {enviandoComentario ? 'Enviando...' : 'Comentar'}
-        </button>
-      </form>
+      {!respondiendoA && formularioComentario()}
     </div>
   );
 
