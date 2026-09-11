@@ -8,6 +8,7 @@ namespace UNAH_Reportes_API.DTOs
         [Required, StringLength(150, MinimumLength = 5), RegularExpression(@"^[\p{L}\p{M}]+(?: [\p{L}\p{M}]+)*$", ErrorMessage = "El nombre completo solo puede contener letras y espacios.")] public string NombreCompleto { get; set; } = string.Empty;
         [Range(1, int.MaxValue)] public int IdCarrera { get; set; }
         [Required, StringLength(100, MinimumLength = 8), RegularExpression(@"^(?=.*[A-Za-z])(?=.*\d)(?=.*[^A-Za-z\d]).+$", ErrorMessage = "La contraseña debe incluir letras, números y símbolos.")] public string Contrasena { get; set; } = string.Empty;
+        [Required, Compare(nameof(Contrasena), ErrorMessage = "Las contraseñas no coinciden.")] public string ConfirmarContrasena { get; set; } = string.Empty;
         [Required, EmailAddress, StringLength(150)] public string CorreoRecuperacion { get; set; } = string.Empty;
     }
 

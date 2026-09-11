@@ -299,12 +299,15 @@
 .login-local-button { border: 1px solid var(--color-primary); border-radius: 8px; background: transparent; color: var(--color-primary); cursor: pointer; padding: 10px; font-size: 13px; font-weight: 750; }
 .login-local-button:hover:not(:disabled) { background: rgba(26, 47, 92, .08); }
 .login-local-button:disabled { cursor: wait; opacity: .7; }
-.login-local-error { margin: 0; color: #b33b21; font-size: 12px; }
+.login-local-error, .login-local-success { margin: 0; font-size: 12px; }
+.login-local-error { color: #b33b21; }
+.login-local-success { color: #24753f; }
 .login-recuperar { justify-self: start; display: inline-flex; align-items: center; gap: 6px; margin: 1px 0 2px; padding: 0; border: 0; background: transparent; color: var(--color-text-secondary); cursor: pointer; font: inherit; font-size: 12px; font-weight: 700; text-decoration: underline; text-decoration-color: transparent; text-underline-offset: 4px; transition: color .15s, text-decoration-color .15s; }
 .login-recuperar:hover { color: var(--color-accent-hover); text-decoration-color: currentColor; }
 .login-recuperar:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; border-radius: 3px; }
 [data-theme='dark'] .login-local-button { border-color: var(--color-accent); color: var(--color-accent); }
 [data-theme='dark'] .login-local-error { color: #ffb09a; }
+[data-theme='dark'] .login-local-success { color: #9ee9b2; }
 
 [data-theme='light'] .login-page {
   background:

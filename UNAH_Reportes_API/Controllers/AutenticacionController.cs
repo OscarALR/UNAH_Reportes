@@ -32,7 +32,7 @@ namespace UNAH_Reportes_API.Controllers
 
         [AllowAnonymous]
         [HttpPost("registro")]
-        public async Task<ActionResult<SesionLocalDTO>> Registro(RegistroLocalDTO dto)
+        public async Task<IActionResult> Registro(RegistroLocalDTO dto)
         {
             var correo = dto.Correo.Trim().ToLowerInvariant();
             if (await _context.Usuarios.AnyAsync(u => u.CorreoInstitucional == correo)) return Conflict("Ya existe una cuenta con ese correo.");
@@ -43,9 +43,7 @@ namespace UNAH_Reportes_API.Controllers
             usuario.PasswordHash = _passwordHasher.HashPassword(usuario, dto.Contrasena);
             _context.Usuarios.Add(usuario);
             await _context.SaveChangesAsync();
-            await _context.Entry(usuario).Reference(u => u.Carrera).LoadAsync();
-            await _context.Entry(usuario).Reference(u => u.Rol).LoadAsync();
-            return Ok(CrearSesion(usuario));
+            return StatusCode(StatusCodes.Status201Created, new { mensaje = "Cuenta creada exitosamente, Inicie sesión para continuar" });
         }
 
         [AllowAnonymous]

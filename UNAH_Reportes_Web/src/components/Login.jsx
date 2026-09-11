@@ -31,7 +31,7 @@ function Login() {
   const [carreras, setCarreras] = useState([]);
   const [errorLocal, setErrorLocal] = useState('');
   const [mensajeLocal, setMensajeLocal] = useState('');
-  const [formulario, setFormulario] = useState({ correo: '', contrasena: '', correoRecuperacion: '', nombreCompleto: '', idCarrera: '' });
+  const [formulario, setFormulario] = useState({ correo: '', contrasena: '', confirmarContrasena: '', correoRecuperacion: '', nombreCompleto: '', idCarrera: '' });
   const [mostrarContrasena, setMostrarContrasena] = useState(false);
 
   useEffect(() => {
@@ -66,14 +66,22 @@ function Login() {
     }
     if (modoLocal === 'registro' && (formulario.nombreCompleto.trim().length < 5 || !nombreCompletoValido(formulario.nombreCompleto))) { setErrorLocal('El nombre completo debe tener al menos 5 caracteres y contener solo letras y espacios.'); return; }
     if (modoLocal === 'registro' && !/^(?=.*[A-Za-z])(?=.*\d)(?=.*[^A-Za-z\d]).{8,}$/.test(formulario.contrasena)) { setErrorLocal('La contraseña debe tener al menos 8 caracteres e incluir letras, números y símbolos.'); return; }
+    if (modoLocal === 'registro' && formulario.contrasena !== formulario.confirmarContrasena) { setErrorLocal('Las contraseñas no coinciden.'); return; }
     setIniciando(true);
     try {
-      const sesion = modoLocal === 'registro'
-        ? await registrarCuenta({ ...formulario, idCarrera: Number(formulario.idCarrera) })
-        : await ingresarCuenta(formulario.correo, formulario.contrasena);
-      iniciarSesionLocal(sesion);
+      if (modoLocal === 'registro') {
+        const respuesta = await registrarCuenta({ ...formulario, idCarrera: Number(formulario.idCarrera) });
+        setMensajeLocal(respuesta.mensaje);
+        setFormulario({ correo: '', contrasena: '', confirmarContrasena: '', correoRecuperacion: '', nombreCompleto: '', idCarrera: '' });
+        setModoLocal('ingresar');
+      } else {
+        const sesion = await ingresarCuenta(formulario.correo, formulario.contrasena);
+        iniciarSesionLocal(sesion);
+      }
     } catch (error) {
-      setErrorLocal(error.response?.data || 'No fue posible iniciar sesión.');
+      const detalle = error.response?.data;
+      const erroresValidacion = detalle?.errors ? Object.values(detalle.errors).flat().join(' ') : '';
+      setErrorLocal(typeof detalle === 'string' ? detalle : erroresValidacion || 'No fue posible procesar la solicitud.');
     } finally {
       setIniciando(false);
     }
@@ -139,9 +147,10 @@ function Login() {
             </div>}
 
             <form className="login-local-form" onSubmit={enviarFormularioLocal}>
-              {modoLocal === 'registro' && <><label>Nombre completo<input required minLength="5" maxLength="150" value={formulario.nombreCompleto} onChange={(e) => setFormulario({ ...formulario, nombreCompleto: e.target.value })} /></label><label>Carrera<select required value={formulario.idCarrera} onChange={(e) => setFormulario({ ...formulario, idCarrera: e.target.value })}><option value="">Selecciona tu carrera</option>{carreras.map((carrera) => <option key={carrera.idCarrera} value={carrera.idCarrera}>{carrera.nombreCarrera}</option>)}</select></label><label>Correo de recuperación<input required type="email" maxLength="150" value={formulario.correoRecuperacion} onChange={(e) => setFormulario({ ...formulario, correoRecuperacion: e.target.value })} /></label></>}
-              <label>Correo electrónico<input required type="email" maxLength="150" value={formulario.correo} onChange={(e) => setFormulario({ ...formulario, correo: e.target.value })} /></label>
-              {modoLocal !== 'recuperar' && <label>Contraseña<span className="campo-contrasena"><input required type={mostrarContrasena ? 'text' : 'password'} minLength="8" value={formulario.contrasena} onChange={(e) => setFormulario({ ...formulario, contrasena: e.target.value })} /><button type="button" onClick={() => setMostrarContrasena((visible) => !visible)} aria-label={mostrarContrasena ? 'Ocultar contraseña' : 'Mostrar contraseña'}><FontAwesomeIcon icon={mostrarContrasena ? faEyeSlash : faEye} /></button></span>{modoLocal === 'registro' && <small>8+ caracteres, combinando letras, números y símbolos.</small>}</label>}
+              {modoLocal === 'registro' && <><label>Nombre completo<input required minLength="5" maxLength="150" placeholder="Ingresa tu nombre completo" value={formulario.nombreCompleto} onChange={(e) => setFormulario({ ...formulario, nombreCompleto: e.target.value })} /></label><label>Carrera<select required value={formulario.idCarrera} onChange={(e) => setFormulario({ ...formulario, idCarrera: e.target.value })}><option value="">Selecciona tu carrera</option>{carreras.map((carrera) => <option key={carrera.idCarrera} value={carrera.idCarrera}>{carrera.nombreCarrera}</option>)}</select></label></>}
+              <label>Correo electrónico<input required type="email" maxLength="150" placeholder="nombre@ejemplo.com" value={formulario.correo} onChange={(e) => setFormulario({ ...formulario, correo: e.target.value })} /></label>
+              {modoLocal !== 'recuperar' && <label>Contraseña<span className="campo-contrasena"><input required type={mostrarContrasena ? 'text' : 'password'} minLength="8" placeholder="Crea una contraseña segura" value={formulario.contrasena} onChange={(e) => setFormulario({ ...formulario, contrasena: e.target.value })} /><button type="button" onClick={() => setMostrarContrasena((visible) => !visible)} aria-label={mostrarContrasena ? 'Ocultar contraseña' : 'Mostrar contraseña'}><FontAwesomeIcon icon={mostrarContrasena ? faEyeSlash : faEye} /></button></span>{modoLocal === 'registro' && <small>8+ caracteres, combinando letras, números y símbolos.</small>}</label>}
+              {modoLocal === 'registro' && <><label>Confirmar contraseña<span className="campo-contrasena"><input required type={mostrarContrasena ? 'text' : 'password'} minLength="8" placeholder="Vuelve a escribir tu contraseña" value={formulario.confirmarContrasena} onChange={(e) => setFormulario({ ...formulario, confirmarContrasena: e.target.value })} /><button type="button" onClick={() => setMostrarContrasena((visible) => !visible)} aria-label={mostrarContrasena ? 'Ocultar contraseña' : 'Mostrar contraseña'}><FontAwesomeIcon icon={mostrarContrasena ? faEyeSlash : faEye} /></button></span></label><label>Correo de recuperación<input required type="email" maxLength="150" placeholder="correo.alterno@ejemplo.com" value={formulario.correoRecuperacion} onChange={(e) => setFormulario({ ...formulario, correoRecuperacion: e.target.value })} /></label></>}
               {modoLocal === 'ingresar' && <button type="button" className="login-recuperar" onClick={() => { setModoLocal('recuperar'); setErrorLocal(''); setMensajeLocal(''); }}><FontAwesomeIcon icon={faKey} /> ¿Olvidaste tu contraseña?</button>}
               {errorLocal && <p className="login-local-error" role="alert">{errorLocal}</p>}
               {mensajeLocal && <p className="login-local-success" role="status">{mensajeLocal}</p>}
