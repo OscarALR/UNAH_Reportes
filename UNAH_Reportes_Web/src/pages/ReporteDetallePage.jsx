@@ -102,14 +102,16 @@ function tonoAvatar(nombre = '') {
 
 function ComentarioHilo({ nodo, hilosContraidos, alternarHilo, respondiendoA, responder, darLike, fechaLocal, formularioRespuesta }) {
   const tieneRespuestas = nodo.respuestas.length > 0;
-  const contraido = hilosContraidos.has(nodo.idComentario);
+  const esComentarioPrincipal = !nodo.idComentarioPadre;
+  const puedeContraer = tieneRespuestas && (esComentarioPrincipal || nodo.respuestas.length >= 5);
+  const contraido = puedeContraer && hilosContraidos.has(nodo.idComentario);
 
   return (
-    <li className={`comentario-hilo${tieneRespuestas && !contraido ? ' comentario-hilo-con-respuestas' : ''}`}>
+    <li className={`comentario-hilo${tieneRespuestas && !contraido ? ' comentario-hilo-con-respuestas' : ''}${tieneRespuestas && !puedeContraer ? ' comentario-hilo-sin-control' : ''}`}>
       <article className="comentario-item">
         <div className="comentario-rail">
           <span className="comentario-avatar" style={{ '--tono-avatar': tonoAvatar(nodo.usuario) }} aria-label={`Avatar de ${nodo.usuario}`}>{inicialesUsuario(nodo.usuario)}</span>
-          {tieneRespuestas && <button type="button" className="hilo-toggle" onClick={() => alternarHilo(nodo.idComentario)} aria-expanded={!contraido} aria-label={contraido ? 'Mostrar respuestas' : 'Ocultar respuestas'}>{contraido ? '+' : '−'}</button>}
+          {puedeContraer && <button type="button" className="hilo-toggle" onClick={() => alternarHilo(nodo.idComentario)} aria-expanded={!contraido} aria-label={contraido ? 'Mostrar respuestas' : 'Ocultar respuestas'}>{contraido ? '+' : '−'}</button>}
         </div>
         <div className="comentario-contenido">
           <div className="comentario-cabecera">
@@ -126,7 +128,7 @@ function ComentarioHilo({ nodo, hilosContraidos, alternarHilo, respondiendoA, re
       {tieneRespuestas && !contraido && (
         <ul className="comentario-respuestas">
           {nodo.respuestas.map((respuesta) => <ComentarioHilo key={respuesta.idComentario} nodo={respuesta} hilosContraidos={hilosContraidos} alternarHilo={alternarHilo} respondiendoA={respondiendoA} responder={responder} darLike={darLike} fechaLocal={fechaLocal} formularioRespuesta={formularioRespuesta} />)}
-          <li className="comentario-ocultar-rama"><button type="button" onClick={() => alternarHilo(nodo.idComentario)}><span aria-hidden="true">−</span> Ocultar comentarios</button></li>
+          {puedeContraer && <li className="comentario-ocultar-rama"><button type="button" onClick={() => alternarHilo(nodo.idComentario)}><span aria-hidden="true">−</span> Ocultar comentarios</button></li>}
         </ul>
       )}
     </li>

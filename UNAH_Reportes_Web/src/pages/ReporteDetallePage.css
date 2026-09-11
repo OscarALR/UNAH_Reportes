@@ -699,6 +699,7 @@
     }
 }
 .comentario-hilo {
+    --color-hilo: color-mix(in srgb, var(--color-accent) 24%, var(--color-border));
     position: relative;
     list-style: none;
 }
@@ -708,11 +709,32 @@
     position: absolute;
     z-index: 0;
     top: 48px;
-    /* Termina a la altura del control "Ocultar comentarios". */
+    /* El riel termina junto al control de contraer, si existe. */
     bottom: 27px;
     left: 18px;
     width: 2px;
-    background: color-mix(in srgb, var(--color-accent) 24%, var(--color-border));
+    background: var(--color-hilo);
+    pointer-events: none;
+}
+
+/* En ramas cortas el riel finaliza con una curva, sin mostrar controles extra. */
+.comentario-hilo-sin-control::before {
+    bottom: 16px;
+    border-radius: 0 0 0 12px;
+}
+
+.comentario-hilo-sin-control::after {
+    content: '';
+    position: absolute;
+    z-index: 0;
+    right: auto;
+    bottom: 16px;
+    left: 18px;
+    width: 38px;
+    height: 16px;
+    border-bottom: 2px solid var(--color-hilo);
+    border-left: 2px solid var(--color-hilo);
+    border-bottom-left-radius: 14px;
     pointer-events: none;
 }
 
@@ -732,11 +754,13 @@
 .comentario-ocultar-rama::before {
     content: '';
     position: absolute;
-    top: 23px;
+    top: 7px;
     left: -20px;
     width: 50px;
-    height: 2px;
-    background: color-mix(in srgb, var(--color-accent) 24%, var(--color-border));
+    height: 16px;
+    border-bottom: 2px solid var(--color-hilo);
+    border-left: 2px solid var(--color-hilo);
+    border-bottom-left-radius: 14px;
     pointer-events: none;
 }
 
