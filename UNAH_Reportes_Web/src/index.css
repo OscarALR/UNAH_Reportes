@@ -68,6 +68,13 @@ button, input, select, textarea {
   animation: aparecer-desde-abajo .28s ease both;
 }
 
+/* Cambio de tema: un fundido breve sobre toda la interfaz. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: .26s;
+  animation-timing-function: ease;
+}
+
 /* Las transiciones de color y borde dan respuesta inmediata a controles comunes
    sin interferir con los transform específicos de cada componente. */
 button,
@@ -98,5 +105,10 @@ h3 {
     animation-iteration-count: 1 !important;
     scroll-behavior: auto !important;
     transition-duration: .01ms !important;
+  }
+
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: .01ms;
   }
 }
