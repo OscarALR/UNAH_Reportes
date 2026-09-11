@@ -417,7 +417,7 @@ function ReporteDetallePage() {
   const bloqueComentarios = (
     <div className="detalle-card">
       <h3><FontAwesomeIcon icon={faComments} />Comentarios</h3>
-      {comentarios.length > 5 && <div className="comentarios-controles"><select value={ordenComentarios} onChange={(e) => setOrdenComentarios(e.target.value)}><option value="recientes">Más recientes</option><option value="populares">Más populares</option></select>{comentariosVisibles < comentarios.length ? <button type="button" onClick={() => setComentariosVisibles(comentarios.length)}>Ver más comentarios</button> : <button type="button" onClick={() => setComentariosVisibles(5)}>Ver menos comentarios</button>}</div>}
+      {comentarios.length > 5 && <div className="comentarios-controles"><select value={ordenComentarios} onChange={(e) => setOrdenComentarios(e.target.value)}><option value="recientes">Más recientes</option><option value="populares">Más populares</option></select></div>}
       {comentarios.length === 0 ? (
         <p>Sin comentarios todavía.</p>
       ) : (
@@ -425,6 +425,7 @@ function ReporteDetallePage() {
           {hilosVisibles.map((hilo) => <ComentarioHilo key={hilo.idComentario} nodo={hilo} hilosContraidos={hilosContraidos} alternarHilo={alternarHilo} respondiendoA={respondiendoA} responder={setRespondiendoA} darLike={darLikeComentario} fechaLocal={fechaLocal} formularioRespuesta={() => formularioComentario(true)} />)}
         </ul>
       )}
+      {comentarios.length > 5 && <div className="comentarios-paginacion">{comentariosVisibles < comentarios.length ? <button type="button" onClick={() => setComentariosVisibles(comentarios.length)}>Ver más comentarios</button> : <button type="button" onClick={() => setComentariosVisibles(5)}>Ver menos comentarios</button>}</div>}
       {!respondiendoA && formularioComentario()}
     </div>
   );

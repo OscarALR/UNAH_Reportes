@@ -686,7 +686,7 @@
 
 .comentario-respuestas::before {
     top: 0;
-    bottom: 14px;
+    bottom: 34px;
     left: 0;
     width: 2px;
     border-radius: 0 0 0 12px;
@@ -723,6 +723,26 @@
 .hilo-toggle:hover {
     border-color: var(--color-accent) !important;
     background: rgba(245, 166, 35, .12) !important;
+}
+
+.comentarios-paginacion {
+    display: flex;
+    margin: 4px 0 16px;
+}
+
+.comentarios-paginacion button {
+    border: 1px solid var(--color-border);
+    border-radius: 7px;
+    background: var(--color-bg);
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    font-size: 12px;
+    padding: 6px 9px;
+}
+
+.comentarios-paginacion button:hover {
+    border-color: var(--color-accent);
+    color: var(--color-text);
 }
 
 @media (max-width: 640px) {
