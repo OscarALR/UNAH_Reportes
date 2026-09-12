@@ -414,6 +414,7 @@
 .perfil-publico-ficha dl { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin: 0; }
 .perfil-publico-ficha dl div { padding: 10px 6px; border-radius: 8px; background: var(--color-bg); }
 .perfil-publico-ficha dl div:first-child { grid-column: 1 / -1; }
+.perfil-publico-ficha dl div:last-child:nth-child(4) { grid-column: 1 / -1; }
 .perfil-publico-ficha dt { color: var(--color-text-secondary); font-size: 11px; }
 .perfil-publico-ficha dd { margin: 4px 0 0; color: var(--color-text); font-size: 14px; font-weight: 800; }
 .perfil-publico-cerrar { position: absolute; top: 9px; right: 10px; width: 30px; height: 30px; border: 0; border-radius: 50%; background: transparent; color: var(--color-text-secondary); cursor: pointer; font-size: 22px; line-height: 1; }

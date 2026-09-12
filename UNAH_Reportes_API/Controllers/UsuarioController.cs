@@ -51,6 +51,8 @@ namespace UNAH_Reportes_API.Controllers
         [HttpGet("{idUsuario:int}/perfil")]
         public async Task<ActionResult<PerfilPublicoUsuarioDTO>> GetPerfilPublico(int idUsuario)
         {
+            var correoToken = User.GetCorreoInstitucional();
+            var puedeVerCorreo = await _context.Usuarios.AnyAsync(u => u.CorreoInstitucional == correoToken && (u.Rol.NombreRol == "Administrador" || u.Rol.NombreRol == "Gestor"));
             var perfil = await _context.Usuarios
                 .AsNoTracking()
                 .Where(u => u.IdUsuario == idUsuario)
@@ -58,6 +60,7 @@ namespace UNAH_Reportes_API.Controllers
                 {
                     IdUsuario = u.IdUsuario,
                     NombreCompleto = u.NombreCompleto,
+                    CorreoInstitucional = puedeVerCorreo ? u.CorreoInstitucional : null,
                     Carrera = u.Carrera == null ? null : u.Carrera.NombreCarrera,
                     Rol = u.Rol.NombreRol,
                     NumeroReportes = _context.Reportes.Count(r => r.IdUsuario == u.IdUsuario && !r.Eliminado),

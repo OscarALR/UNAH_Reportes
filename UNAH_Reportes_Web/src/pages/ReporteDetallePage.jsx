@@ -170,6 +170,7 @@ function FichaPerfilUsuario({ perfil, cargando, error, cerrar }) {
             <div><dt>Carrera</dt><dd>{perfil.carrera ?? 'Sin carrera asignada'}</dd></div>
             <div><dt>Reportes creados</dt><dd>{perfil.numeroReportes}</dd></div>
             <div><dt>Comentarios</dt><dd>{perfil.numeroComentarios}</dd></div>
+            {perfil.correoInstitucional && <div><dt>Correo institucional</dt><dd>{perfil.correoInstitucional}</dd></div>}
           </dl>
         </>}
       </section>

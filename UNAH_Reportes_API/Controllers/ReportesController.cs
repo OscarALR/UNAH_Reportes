@@ -65,7 +65,7 @@ namespace UNAH_Reportes_API.Controllers
         public async Task<ActionResult<ReporteDTO>> GetReporte(int id) 
         {
             var correo = User.GetCorreoInstitucional();
-            var usuarioActual = await _context.Usuarios.SingleOrDefaultAsync(u => u.CorreoInstitucional == correo);
+            var usuarioActual = await _context.Usuarios.Include(u => u.Rol).SingleOrDefaultAsync(u => u.CorreoInstitucional == correo);
             if (usuarioActual == null) return Unauthorized();
             var reporte = await _context.Reportes
                 .Include(r => r.Categoria)
@@ -86,7 +86,7 @@ namespace UNAH_Reportes_API.Controllers
                     Prioridad = r.Prioridad,
                     IdUsuarioReporta = r.IdUsuario,
                     UsuarioReporta = r.Usuario.NombreCompleto,
-                    CorreoUsuarioReporta = r.Usuario.CorreoInstitucional,
+                    CorreoUsuarioReporta = usuarioActual.Rol.NombreRol == "Administrador" || usuarioActual.Rol.NombreRol == "Gestor" ? r.Usuario.CorreoInstitucional : string.Empty,
                     CarreraUsuarioReporta = r.Usuario.Carrera == null ? "Sin carrera asignada" : r.Usuario.Carrera.NombreCarrera,
                     GestorAsignado = r.GestorAsignado != null ? r.GestorAsignado.NombreCompleto : null,
                     FechaCreacion = r.FechaCreacion,
