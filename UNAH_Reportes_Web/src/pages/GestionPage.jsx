@@ -70,7 +70,7 @@ function GestionPage() {
       total: reportes.length,
       pendientes: contarEstados(['pendiente']),
       enProceso: contarEstados(['en-proceso', 'en-revision']),
-      resueltos: contarEstados(['resuelto', 'cerrado']),
+      resueltos: contarEstados(['resuelto']),
     };
   }, [reportes]);
 
@@ -166,7 +166,7 @@ function GestionPage() {
         <div className="gestion-resumen-tarjeta resuelto">
           <span className="gestion-resumen-label">Resueltos</span>
           <strong>{resumen.resueltos}</strong>
-          <small>Finalizados o cerrados</small>
+          <small>Atendidos satisfactoriamente</small>
         </div>
       </section>
 

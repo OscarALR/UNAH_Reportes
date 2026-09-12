@@ -26,6 +26,8 @@ namespace UNAH_Reportes_API.Controllers
         public async Task<ActionResult<Estado>> CrearEstado(EstadoGuardarDTO dto)
         {
             var nombre = dto.NombreEstado.Trim();
+            if (nombre.Equals("Cerrado", StringComparison.OrdinalIgnoreCase))
+                return BadRequest("\"Cerrado\" ya no es un estado válido. Usa \"Resuelto\" o archiva el reporte según corresponda.");
             if (await _context.Estados.AnyAsync(estado => estado.NombreEstado == nombre))
                 return Conflict("Ya existe un estado con ese nombre.");
 
@@ -42,6 +44,8 @@ namespace UNAH_Reportes_API.Controllers
             if (estado == null) return NotFound("El estado no existe.");
 
             var nombre = dto.NombreEstado.Trim();
+            if (nombre.Equals("Cerrado", StringComparison.OrdinalIgnoreCase))
+                return BadRequest("\"Cerrado\" ya no es un estado válido. Usa \"Resuelto\" o archiva el reporte según corresponda.");
             if (await _context.Estados.AnyAsync(e => e.IdEstado != idEstado && e.NombreEstado == nombre))
                 return Conflict("Ya existe un estado con ese nombre.");
 

@@ -45,7 +45,7 @@ OUTER APPLY (
     FROM dbo.HistorialEstados h
     INNER JOIN dbo.Estados estadoHistorial ON estadoHistorial.IdEstado = h.IdEstado
     WHERE h.IdReporte = r.IdReporte
-      AND estadoHistorial.NombreEstado IN ('Resuelto', 'Cerrado')
+      AND estadoHistorial.NombreEstado = 'Resuelto'
 ) resolucion;
 GO
 

@@ -129,7 +129,7 @@ function DashboardPage() {
   const metricas = resumen && [
     ['Reportes totales', resumen.totalReportes, 'En el periodo seleccionado'],
     ['Abiertos', resumen.reportesAbiertos, 'Requieren seguimiento'],
-    ['Cerrados', resumen.reportesCerrados, 'Resueltos o cerrados'],
+    ['Resueltos', resumen.reportesCerrados, 'Atendidos satisfactoriamente'],
     ['Alta prioridad', resumen.reportesAltaPrioridad, 'Atención prioritaria'],
   ];
 

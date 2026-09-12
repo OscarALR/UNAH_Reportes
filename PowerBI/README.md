@@ -12,7 +12,7 @@ Este material acompaña un único archivo `UNAH_Reportes_Dashboard.pbix`. El inf
    - `Categorias`, `Edificios`, `Espacios`, `TiposEspacio`, `Estados`, `Carreras`
 4. En Power Query verifica los tipos `FechaCreacionDia`, `FechaUltimaActualizacionDia` y `FechaCambioDia` como **Fecha**; los campos con hora deben conservarse como **Fecha/Hora**.
 
-> La vista toma como fecha de resolución el primer cambio a `Resuelto` o `Cerrado`. Si se usan otros nombres de estados, actualiza esa lista antes de cargarla.
+> La vista toma como fecha de resolución el primer cambio a `Resuelto`. Si se usan otros nombres de estados, actualiza esa condición antes de cargarla.
 
 ## 2. Modelo de datos
 
@@ -48,7 +48,7 @@ Ordena `DimFecha[Mes]` por `DimFecha[Mes número]` y relaciónala con `vw_PBI_Re
 
 ## 3. Medidas DAX
 
-Crea una tabla vacía llamada `Medidas` y agrega estas medidas. Ajusta los nombres `Resuelto` y `Cerrado` si tu catálogo de estados utiliza otros.
+Crea una tabla vacía llamada `Medidas` y agrega estas medidas. Ajusta el nombre `Resuelto` si tu catálogo de estados utiliza otro.
 
 ```DAX
 Reportes totales = COUNTROWS('vw_PBI_Reportes')
@@ -56,7 +56,7 @@ Reportes totales = COUNTROWS('vw_PBI_Reportes')
 Reportes cerrados =
 CALCULATE(
     [Reportes totales],
-    FILTER('vw_PBI_Reportes', 'vw_PBI_Reportes'[EstadoActual] IN { "Resuelto", "Cerrado" })
+    FILTER('vw_PBI_Reportes', 'vw_PBI_Reportes'[EstadoActual] = "Resuelto")
 )
 
 Reportes abiertos = [Reportes totales] - [Reportes cerrados]

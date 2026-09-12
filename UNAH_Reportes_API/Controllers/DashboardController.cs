@@ -12,7 +12,7 @@ namespace UNAH_Reportes_API.Controllers
     [Authorize]
     public class DashboardController : ControllerBase
     {
-        private static readonly string[] EstadosFinales = ["Resuelto", "Cerrado"];
+        private static readonly string[] EstadosFinales = ["Resuelto"];
         private readonly AppDbContext _context;
 
         public DashboardController(AppDbContext context) => _context = context;

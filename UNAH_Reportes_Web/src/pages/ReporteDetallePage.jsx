@@ -413,6 +413,7 @@ function ReporteDetallePage() {
           {reporte.prioridad}
         </span>
         <span className={`badge badge-estado-${slugEstado(reporte.estado)}`}>{reporte.estado}</span>
+        {reporte.eliminado && <span className="badge badge-archivado">Archivado</span>}
         <button type="button" className={`detalle-like ${reporte.leGustaUsuarioActual ? 'activo' : ''} ${likeAnimado ? 'animando' : ''}`} onClick={darLikeReporte}><FontAwesomeIcon icon={faThumbsUp} /> {reporte.numeroLikes ?? 0} Me gusta</button>
       </div>
 
