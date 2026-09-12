@@ -57,9 +57,7 @@ function tiempoRelativo(fecha) {
 }
 
 function organizarHilosComentarios(comentarios, orden) {
-  const compararPrincipales = (a, b) => orden === 'populares'
-    ? (b.numeroLikes - a.numeroLikes) || (new Date(fechaUtc(b.fechaComentario)) - new Date(fechaUtc(a.fechaComentario)))
-    : new Date(fechaUtc(b.fechaComentario)) - new Date(fechaUtc(a.fechaComentario));
+  const marcaTiempo = (comentario) => new Date(fechaUtc(comentario.fechaComentario)).getTime();
   const compararRespuestas = (a, b) => new Date(fechaUtc(a.fechaComentario)) - new Date(fechaUtc(b.fechaComentario));
   const nodosPorId = new Map(comentarios.map((comentario) => [comentario.idComentario, { ...comentario, respuestas: [] }]));
   const raices = [];
@@ -75,8 +73,16 @@ function organizarHilosComentarios(comentarios, orden) {
     nodos.forEach((nodo) => ordenarRespuestas(nodo.respuestas));
   };
 
-  raices.sort(compararPrincipales);
   raices.forEach((raiz) => ordenarRespuestas(raiz.respuestas));
+  const ultimaActividad = (nodo) => nodo.respuestas.reduce(
+    (masReciente, respuesta) => Math.max(masReciente, ultimaActividad(respuesta)),
+    marcaTiempo(nodo),
+  );
+  const compararPrincipales = (a, b) => orden === 'populares'
+    ? (b.numeroLikes - a.numeroLikes) || (ultimaActividad(b) - ultimaActividad(a))
+    : ultimaActividad(b) - ultimaActividad(a);
+
+  raices.sort(compararPrincipales);
   return raices;
 }
 
@@ -138,7 +144,7 @@ function HiloComentariosPlano({ nodo, hilosContraidos, alternarHilo, respondiend
   const etiquetaRespuestas = `${respuestas.length} ${respuestas.length === 1 ? 'respuesta' : 'respuestas'}`;
 
   return (
-    <li className="comentario-hilo-plano">
+    <li className={`comentario-hilo-plano ${tieneRespuestas && !contraido ? 'con-respuestas-visibles' : ''}`}>
       <ComentarioPlano comentario={nodo} respondiendoA={respondiendoA} responder={responder} darLike={darLike} fechaLocal={fechaLocal} formularioRespuesta={formularioRespuesta} />
       {tieneRespuestas && (contraido ? (
         <button type="button" className="comentario-respuestas-toggle mostrar" onClick={() => alternarHilo(nodo.idComentario)}>Mostrar {etiquetaRespuestas}</button>

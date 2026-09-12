@@ -327,6 +327,22 @@
     border-top: 1px solid var(--color-border);
 }
 
+.comentario-hilo-plano {
+    position: relative;
+}
+
+/* La línea comienza en el borde inferior del avatar del comentario padre. */
+.comentario-hilo-plano.con-respuestas-visibles::before {
+    position: absolute;
+    z-index: 0;
+    top: 36px;
+    bottom: 12px;
+    left: 18px;
+    width: 2px;
+    content: '';
+    background: color-mix(in srgb, var(--color-accent) 28%, var(--color-border));
+}
+
 .comentario-cabecera {
     font-size: 13px;
     color: var(--color-text-secondary);
@@ -363,9 +379,9 @@
 
 .comentario-respuestas-plano {
     position: relative;
-    margin: 0 0 4px 18px;
-    padding-left: 20px;
-    border-left: 2px solid color-mix(in srgb, var(--color-accent) 28%, var(--color-border));
+    z-index: 1;
+    margin: 0 0 4px 40px;
+    padding-left: 0;
 }
 
 .comentario-respuestas-plano ul {
@@ -756,7 +772,6 @@
 
 @media (max-width: 640px) {
     .comentario-respuestas-plano {
-        margin-left: 8px;
-        padding-left: 12px;
+        margin-left: 40px;
     }
 }
