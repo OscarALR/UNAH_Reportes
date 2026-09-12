@@ -475,18 +475,18 @@ function ReporteDetallePage() {
   if (tieneImagenes) {
     return (
       <div>
-        <Link to="/" className="detalle-volver"><FontAwesomeIcon icon={faArrowLeft} /> Volver al feed</Link>
-
         <div className="detalle-con-imagen">
           <div className="detalle-visor">
             <div className="detalle-visor-imagen-wrap" onClick={() => { setLightboxAbierto(true); setZoomActivo(false); }}>
+              <img className="detalle-visor-fondo" src={imagenes[imagenActiva]} alt="" aria-hidden="true" />
+              <Link to="/" className="detalle-volver detalle-volver-visor" onClick={(e) => e.stopPropagation()}><FontAwesomeIcon icon={faArrowLeft} /> Volver al feed</Link>
               {imagenes.length > 1 && (
                 <button className="detalle-visor-flecha izq" 
                 onClick={(e) => { e.stopPropagation(); imagenAnterior(); }} aria-label="Imagen anterior">
                   ‹
                 </button>
               )}
-              <img src={imagenes[imagenActiva]} alt={`Imagen ${imagenActiva + 1}`} />
+              <img className="detalle-visor-imagen-principal" src={imagenes[imagenActiva]} alt={`Imagen ${imagenActiva + 1}`} />
               {imagenes.length > 1 && (
                 <button className="detalle-visor-flecha der" 
                 onClick={(e) => { e.stopPropagation(); imagenSiguiente(); }} aria-label="Imagen siguiente">
