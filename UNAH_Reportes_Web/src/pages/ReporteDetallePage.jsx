@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { createPortal } from 'react-dom';
 import { useMsal } from '@azure/msal-react';
@@ -100,120 +100,57 @@ function tonoAvatar(nombre = '') {
   return [...nombre].reduce((total, caracter) => total + caracter.charCodeAt(0), 0) % 360;
 }
 
-function puedeContraerComentario(nodo) {
-  return nodo.respuestas.length > 0 && (!nodo.idComentarioPadre || nodo.respuestas.length >= 5);
+function aplanarHilosComentarios(hilos, usuarioPadre = null) {
+  return hilos.flatMap((nodo) => [
+    { ...nodo, usuarioPadre },
+    ...aplanarHilosComentarios(nodo.respuestas, nodo.usuario),
+  ]);
 }
 
-function ComentarioHilo({ nodo, hilosContraidos, alternarHilo, respondiendoA, responder, darLike, fechaLocal, formularioRespuesta, registrarAvatar, registrarControl }) {
-  const tieneRespuestas = nodo.respuestas.length > 0;
-  const puedeContraer = puedeContraerComentario(nodo);
-  const contraido = puedeContraer && hilosContraidos.has(nodo.idComentario);
-
+function ComentarioPlano({ comentario, respondiendoA, responder, darLike, fechaLocal, formularioRespuesta }) {
   return (
-    <li className="comentario-hilo">
+    <li className="comentario-plano">
       <article className="comentario-item">
-        <div className="comentario-rail">
-          <span ref={(elemento) => registrarAvatar(nodo.idComentario, elemento)} className="comentario-avatar" style={{ '--tono-avatar': tonoAvatar(nodo.usuario) }} aria-label={`Avatar de ${nodo.usuario}`}>{inicialesUsuario(nodo.usuario)}</span>
-          {puedeContraer && <button type="button" className="hilo-toggle" onClick={() => alternarHilo(nodo.idComentario)} aria-expanded={!contraido} aria-label={contraido ? 'Mostrar respuestas' : 'Ocultar respuestas'}>{contraido ? '+' : '−'}</button>}
-        </div>
+        <span className="comentario-avatar" style={{ '--tono-avatar': tonoAvatar(comentario.usuario) }} aria-label={`Avatar de ${comentario.usuario}`}>{inicialesUsuario(comentario.usuario)}</span>
         <div className="comentario-contenido">
           <div className="comentario-cabecera">
-            <strong>{nodo.usuario}</strong> ({fechaLocal(nodo.fechaComentario)} · <time dateTime={fechaUtc(nodo.fechaComentario)} title={fechaLocal(nodo.fechaComentario)}>{tiempoRelativo(nodo.fechaComentario)}</time>)
+            <strong>{comentario.usuario}</strong> ({fechaLocal(comentario.fechaComentario)} · <time dateTime={fechaUtc(comentario.fechaComentario)} title={fechaLocal(comentario.fechaComentario)}>{tiempoRelativo(comentario.fechaComentario)}</time>)
           </div>
-          <p className="comentario-texto">{nodo.texto}</p>
+          <p className="comentario-texto">
+            {comentario.usuarioPadre && <><span className="comentario-mencion">{comentario.usuarioPadre}</span>{' '}</>}
+            {comentario.texto}
+          </p>
           <div className="comentario-acciones">
-            <button type="button" className={nodo.leGustaUsuarioActual ? 'activo' : ''} onClick={() => darLike(nodo.idComentario)}><FontAwesomeIcon icon={faThumbsUp} /> {nodo.numeroLikes || 0}</button>
-            <button type="button" onClick={() => responder(nodo.idComentario)}><FontAwesomeIcon icon={faReply} /> Responder</button>
+            <button type="button" className={comentario.leGustaUsuarioActual ? 'activo' : ''} onClick={() => darLike(comentario.idComentario)}><FontAwesomeIcon icon={faThumbsUp} /> {comentario.numeroLikes || 0}</button>
+            <button type="button" onClick={() => responder(comentario.idComentario)}><FontAwesomeIcon icon={faReply} /> Responder</button>
           </div>
-          {respondiendoA === nodo.idComentario && formularioRespuesta()}
+          {respondiendoA === comentario.idComentario && formularioRespuesta()}
         </div>
       </article>
-      {tieneRespuestas && !contraido && (
-        <ul className="comentario-respuestas">
-          {nodo.respuestas.map((respuesta) => <ComentarioHilo key={respuesta.idComentario} nodo={respuesta} hilosContraidos={hilosContraidos} alternarHilo={alternarHilo} respondiendoA={respondiendoA} responder={responder} darLike={darLike} fechaLocal={fechaLocal} formularioRespuesta={formularioRespuesta} registrarAvatar={registrarAvatar} registrarControl={registrarControl} />)}
-          {puedeContraer && <li className="comentario-ocultar-rama"><button type="button" onClick={() => alternarHilo(nodo.idComentario)}><span ref={(elemento) => registrarControl(nodo.idComentario, elemento)} aria-hidden="true">−</span> Ocultar comentarios</button></li>}
-        </ul>
-      )}
     </li>
   );
 }
 
-function ComentariosArbol({ hilos, hilosContraidos, alternarHilo, respondiendoA, responder, darLike, fechaLocal, formularioRespuesta }) {
-  const contenedorRef = useRef(null);
-  const avataresRef = useRef(new Map());
-  const controlesRef = useRef(new Map());
-  const [lineas, setLineas] = useState({ ancho: 0, alto: 0, troncos: [], ramas: [] });
-  const registrarAvatar = useCallback((idComentario, elemento) => {
-    if (elemento) avataresRef.current.set(idComentario, elemento);
-    else avataresRef.current.delete(idComentario);
-  }, []);
-  const registrarControl = useCallback((idComentario, elemento) => {
-    if (elemento) controlesRef.current.set(idComentario, elemento);
-    else controlesRef.current.delete(idComentario);
-  }, []);
-
-  const actualizarLineas = useCallback(() => {
-    const contenedor = contenedorRef.current;
-    if (!contenedor) return;
-    const rectanguloContenedor = contenedor.getBoundingClientRect();
-    const posicion = (elemento) => {
-      if (!elemento) return null;
-      const rectangulo = elemento.getBoundingClientRect();
-      return {
-        x: rectangulo.left - rectanguloContenedor.left + (rectangulo.width / 2),
-        left: rectangulo.left - rectanguloContenedor.left,
-        bottom: rectangulo.bottom - rectanguloContenedor.top,
-        centroY: rectangulo.top - rectanguloContenedor.top + (rectangulo.height / 2),
-      };
-    };
-    const troncos = [];
-    const ramas = [];
-    const dibujarRama = (origen, destino) => {
-      const inicioCurva = destino.centroY - 14;
-      ramas.push(`M ${origen.x} ${inicioCurva} V ${destino.centroY - 8} Q ${origen.x} ${destino.centroY} ${origen.x + 9} ${destino.centroY} H ${destino.left}`);
-    };
-    const recorrer = (nodo) => {
-      const contraido = puedeContraerComentario(nodo) && hilosContraidos.has(nodo.idComentario);
-      const hijosVisibles = contraido ? [] : nodo.respuestas;
-      const origen = posicion(avataresRef.current.get(nodo.idComentario));
-      if (!origen || hijosVisibles.length === 0) return;
-      const hijos = hijosVisibles.map((hijo) => ({ nodo: hijo, posicion: posicion(avataresRef.current.get(hijo.idComentario)) })).filter((hijo) => hijo.posicion);
-      if (hijos.length === 0) return;
-      const puedeContraer = puedeContraerComentario(nodo);
-      const destinoFinal = puedeContraer
-        ? posicion(controlesRef.current.get(nodo.idComentario))
-        : hijos[hijos.length - 1].posicion;
-      if (destinoFinal) troncos.push(`M ${origen.x} ${origen.bottom} V ${destinoFinal.centroY}`);
-      hijos.forEach((hijo) => dibujarRama(origen, hijo.posicion));
-      hijosVisibles.forEach(recorrer);
-    };
-
-    hilos.forEach(recorrer);
-    const siguientes = { ancho: Math.round(rectanguloContenedor.width), alto: Math.round(rectanguloContenedor.height), troncos, ramas };
-    setLineas((actuales) => JSON.stringify(actuales) === JSON.stringify(siguientes) ? actuales : siguientes);
-  }, [hilos, hilosContraidos]);
-
-  useLayoutEffect(() => {
-    actualizarLineas();
-    const observador = new ResizeObserver(actualizarLineas);
-    if (contenedorRef.current) observador.observe(contenedorRef.current);
-    window.addEventListener('resize', actualizarLineas);
-    return () => {
-      observador.disconnect();
-      window.removeEventListener('resize', actualizarLineas);
-    };
-  }, [actualizarLineas]);
+function HiloComentariosPlano({ nodo, hilosContraidos, alternarHilo, respondiendoA, responder, darLike, fechaLocal, formularioRespuesta }) {
+  const respuestas = aplanarHilosComentarios(nodo.respuestas, nodo.usuario);
+  const tieneRespuestas = respuestas.length > 0;
+  const contraido = hilosContraidos.has(nodo.idComentario);
+  const etiquetaRespuestas = `${respuestas.length} ${respuestas.length === 1 ? 'respuesta' : 'respuestas'}`;
 
   return (
-    <div ref={contenedorRef} className="comentarios-arbol">
-      <svg className="comentarios-lineas" viewBox={`0 0 ${lineas.ancho} ${lineas.alto}`} aria-hidden="true">
-        {lineas.troncos.map((d, indice) => <path key={`tronco-${indice}`} className="comentario-linea" d={d} />)}
-        {lineas.ramas.map((d, indice) => <path key={`rama-${indice}`} className="comentario-linea" d={d} />)}
-      </svg>
-      <ul className="comentarios-lista">
-        {hilos.map((hilo) => <ComentarioHilo key={hilo.idComentario} nodo={hilo} hilosContraidos={hilosContraidos} alternarHilo={alternarHilo} respondiendoA={respondiendoA} responder={responder} darLike={darLike} fechaLocal={fechaLocal} formularioRespuesta={formularioRespuesta} registrarAvatar={registrarAvatar} registrarControl={registrarControl} />)}
-      </ul>
-    </div>
+    <li className="comentario-hilo-plano">
+      <ComentarioPlano comentario={nodo} respondiendoA={respondiendoA} responder={responder} darLike={darLike} fechaLocal={fechaLocal} formularioRespuesta={formularioRespuesta} />
+      {tieneRespuestas && (contraido ? (
+        <button type="button" className="comentario-respuestas-toggle mostrar" onClick={() => alternarHilo(nodo.idComentario)}>Mostrar {etiquetaRespuestas}</button>
+      ) : (
+        <div className="comentario-respuestas-plano">
+          <ul>
+            {respuestas.map((respuesta) => <ComentarioPlano key={respuesta.idComentario} comentario={respuesta} respondiendoA={respondiendoA} responder={responder} darLike={darLike} fechaLocal={fechaLocal} formularioRespuesta={formularioRespuesta} />)}
+          </ul>
+          <button type="button" className="comentario-respuestas-toggle" onClick={() => alternarHilo(nodo.idComentario)}>Contraer respuestas</button>
+        </div>
+      ))}
+    </li>
   );
 }
 
@@ -519,7 +456,9 @@ function ReporteDetallePage() {
       {comentarios.length === 0 ? (
         <p>Sin comentarios todavía.</p>
       ) : (
-        <ComentariosArbol hilos={hilosVisibles} hilosContraidos={hilosContraidos} alternarHilo={alternarHilo} respondiendoA={respondiendoA} responder={setRespondiendoA} darLike={darLikeComentario} fechaLocal={fechaLocal} formularioRespuesta={() => formularioComentario(true)} />
+        <ul className="comentarios-lista comentarios-planos">
+          {hilosVisibles.map((hilo) => <HiloComentariosPlano key={hilo.idComentario} nodo={hilo} hilosContraidos={hilosContraidos} alternarHilo={alternarHilo} respondiendoA={respondiendoA} responder={setRespondiendoA} darLike={darLikeComentario} fechaLocal={fechaLocal} formularioRespuesta={() => formularioComentario(true)} />)}
+        </ul>
       )}
       {comentarios.length > 5 && <div className="comentarios-paginacion">{comentariosVisibles < comentarios.length ? <button type="button" onClick={() => setComentariosVisibles(comentarios.length)}>Ver más comentarios</button> : <button type="button" onClick={() => setComentariosVisibles(5)}>Ver menos comentarios</button>}</div>}
       {!respondiendoA && formularioComentario()}

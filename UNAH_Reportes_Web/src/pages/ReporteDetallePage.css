@@ -323,7 +323,7 @@
     z-index: 1;
 }
 
-.comentarios-lista > .comentario-hilo + .comentario-hilo {
+.comentarios-planos > .comentario-hilo-plano + .comentario-hilo-plano {
     border-top: 1px solid var(--color-border);
 }
 
@@ -335,15 +335,6 @@
 
 .comentario-cabecera strong {
     color: var(--color-text);
-}
-
-.comentario-rail {
-    display: flex;
-    position: relative;
-    z-index: 2;
-    align-items: center;
-    flex-direction: column;
-    gap: 13px;
 }
 
 .comentario-avatar {
@@ -363,6 +354,48 @@
 .comentario-texto {
     margin: 0;
     font-size: 14px;
+}
+
+.comentario-mencion {
+    color: var(--color-accent-hover);
+    font-weight: 700;
+}
+
+.comentario-respuestas-plano {
+    position: relative;
+    margin: 0 0 4px 18px;
+    padding-left: 20px;
+    border-left: 2px solid color-mix(in srgb, var(--color-accent) 28%, var(--color-border));
+}
+
+.comentario-respuestas-plano ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.comentario-respuestas-plano .comentario-item {
+    padding-top: 10px;
+}
+
+.comentario-respuestas-toggle {
+    margin: 0 0 10px 58px;
+    padding: 3px 0;
+    border: 0;
+    background: transparent;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    font: inherit;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.comentario-respuestas-plano .comentario-respuestas-toggle {
+    margin: 0 0 10px;
+}
+
+.comentario-respuestas-toggle:hover {
+    color: var(--color-accent-hover);
 }
 
 .comentario-form {
@@ -698,106 +731,6 @@
         position: static;
     }
 }
-.comentario-hilo {
-    position: relative;
-    list-style: none;
-}
-
-.comentarios-arbol {
-    z-index: 0;
-    position: relative;
-}
-
-.comentarios-lineas {
-    position: absolute;
-    inset: 0;
-    z-index: 0;
-    width: 100%;
-    height: 100%;
-    overflow: visible;
-    pointer-events: none;
-}
-
-.comentario-linea {
-    fill: none;
-    stroke: color-mix(in srgb, var(--color-accent) 24%, var(--color-border));
-    stroke-width: 2;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-}
-
-.comentarios-arbol .comentarios-lista {
-    position: relative;
-    z-index: 1;
-}
-
-.comentario-respuestas {
-    position: relative;
-    margin: 0 0 0 18px;
-    padding: 0 0 0 20px;
-    list-style: none;
-}
-
-.comentario-ocultar-rama {
-    position: relative;
-    list-style: none;
-    padding: 8px 0 12px 18px;
-}
-
-.comentario-ocultar-rama button {
-    position: relative;
-    z-index: 1;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    border: 0;
-    background: transparent;
-    color: var(--color-text-secondary);
-    cursor: pointer;
-    font: inherit;
-    font-size: 12px;
-    font-weight: 700;
-    padding: 4px 0;
-}
-
-.comentario-ocultar-rama button:hover {
-    color: var(--color-accent-hover);
-}
-
-.comentario-ocultar-rama span {
-    display: grid;
-    width: 22px;
-    height: 22px;
-    place-items: center;
-    border: 1px solid currentColor;
-    border-radius: 50%;
-    font-size: 16px;
-    line-height: 1;
-}
-
-.hilo-toggle {
-    display: grid;
-    width: 24px;
-    height: 24px;
-    padding: 0 !important;
-    place-items: center;
-    border: 1px solid var(--color-border);
-    border-radius: 50% !important;
-    position: relative;
-    z-index: 2;
-    background: var(--color-bg) !important;
-    color: var(--color-accent-hover) !important;
-    font-size: 18px !important;
-    font-weight: 700;
-    line-height: 1;
-    cursor: pointer;
-}
-
-.hilo-toggle:hover {
-    border-color: var(--color-accent) !important;
-    background: rgba(245, 166, 35, .12) !important;
-}
-
 .comentarios-paginacion {
     display: flex;
     margin: 4px 0 16px;
@@ -818,15 +751,12 @@
     color: var(--color-text);
 }
 
-@media (max-width: 640px) {
-    .comentario-respuestas {
-        margin-left: 16px;
-        padding-left: 18px;
-    }
-
-    .comentario-hilo-con-respuestas::before {
-        left: 18px;
-    }
-}
 .comentario-acciones, .comentarios-controles { display: flex; align-items: center; flex-wrap: wrap; gap: 9px; margin-top: 8px; }
 .comentario-acciones button, .comentarios-controles button, .comentarios-controles select { border: 1px solid var(--color-border); border-radius: 7px; background: var(--color-bg); color: var(--color-text-secondary); cursor: pointer; font-size: 12px; padding: 5px 8px; }
+
+@media (max-width: 640px) {
+    .comentario-respuestas-plano {
+        margin-left: 8px;
+        padding-left: 12px;
+    }
+}
