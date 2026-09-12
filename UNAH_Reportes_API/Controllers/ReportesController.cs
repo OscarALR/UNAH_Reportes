@@ -175,6 +175,7 @@ namespace UNAH_Reportes_API.Controllers
             reporte.FechaEliminacion = DateTime.Now;
             reporte.MotivoEliminacion = dto.Motivo.Trim();
             reporte.IdUsuarioEliminacion = usuario.IdUsuario;
+            reporte.IdGestorAsignado = usuario.IdUsuario;
             reporte.FechaUltimaActualizacion = DateTime.Now;
             _context.Notificaciones.Add(new Notificacion
             {
