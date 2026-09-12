@@ -1,0 +1,13 @@
+.avatar-usuario {
+  display: grid;
+  width: 36px;
+  height: 36px;
+  place-items: center;
+  border: 2px solid var(--color-surface);
+  border-radius: 50%;
+  background: hsl(var(--tono-avatar) 52% 42%);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--color-accent) 28%, var(--color-border));
+  color: #fff;
+  font-size: 11px;
+  font-weight: 800;
+}

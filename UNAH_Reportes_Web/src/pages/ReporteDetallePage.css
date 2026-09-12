@@ -349,23 +349,15 @@
     margin-bottom: 4px;
 }
 
-.comentario-cabecera strong {
-    color: var(--color-text);
-}
+.comentario-cabecera strong,
+.comentario-nombre { color: var(--color-text); }
 
-.comentario-avatar {
-    display: grid;
-    width: 36px;
-    height: 36px;
-    place-items: center;
-    border: 2px solid var(--color-surface);
-    border-radius: 50%;
-    background: hsl(var(--tono-avatar) 52% 42%);
-    box-shadow: 0 0 0 1px color-mix(in srgb, var(--color-accent) 28%, var(--color-border));
-    color: #fff;
-    font-size: 11px;
-    font-weight: 800;
-}
+.comentario-perfil-trigger { width: 36px; height: 36px; padding: 0; border: 0; border-radius: 50%; background: transparent; cursor: pointer; }
+.comentario-perfil-trigger:hover .comentario-avatar { box-shadow: 0 0 0 2px var(--color-accent); }
+.comentario-nombre,
+.perfil-enlace { padding: 0; border: 0; background: transparent; color: var(--color-text); cursor: pointer; font: inherit; font-weight: 700; text-align: left; }
+.comentario-nombre:hover,
+.perfil-enlace:hover { color: var(--color-accent-hover); text-decoration: underline; }
 
 .comentario-texto {
     margin: 0;
@@ -413,6 +405,19 @@
 .comentario-respuestas-toggle:hover {
     color: var(--color-accent-hover);
 }
+
+.perfil-publico-overlay { position: fixed; z-index: 1250; inset: 0; display: grid; place-items: center; padding: 20px; background: rgba(5, 10, 20, .54); backdrop-filter: blur(3px); }
+.perfil-publico-ficha { position: relative; width: min(390px, 100%); padding: 28px; border: 1px solid var(--color-border); border-radius: var(--radius); background: var(--color-surface); box-shadow: 0 22px 60px rgba(0, 0, 0, .3); text-align: center; }
+.perfil-publico-avatar { width: 68px; height: 68px; margin: 0 auto 12px; font-size: 18px; }
+.perfil-publico-ficha h2 { margin: 0; font-size: 20px; }
+.perfil-publico-rol { margin: 5px 0 20px; color: var(--color-text-secondary); font-size: 13px; }
+.perfil-publico-ficha dl { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin: 0; }
+.perfil-publico-ficha dl div { padding: 10px 6px; border-radius: 8px; background: var(--color-bg); }
+.perfil-publico-ficha dl div:first-child { grid-column: 1 / -1; }
+.perfil-publico-ficha dt { color: var(--color-text-secondary); font-size: 11px; }
+.perfil-publico-ficha dd { margin: 4px 0 0; color: var(--color-text); font-size: 14px; font-weight: 800; }
+.perfil-publico-cerrar { position: absolute; top: 9px; right: 10px; width: 30px; height: 30px; border: 0; border-radius: 50%; background: transparent; color: var(--color-text-secondary); cursor: pointer; font-size: 22px; line-height: 1; }
+.perfil-publico-cerrar:hover { background: var(--color-bg); color: var(--color-text); }
 
 .comentario-form {
     display: flex;

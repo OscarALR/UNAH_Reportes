@@ -25,7 +25,9 @@ import { getImagenes } from '../api/imagenesApi';
 import { useUser } from '../context/UserContext';
 import { archivarReporte, cambiarEstado, asignarGestor } from '../api/reportesApi';
 import { getEstados } from '../api/catalogosApi';
+import { getPerfilPublicoUsuario } from '../api/usuariosApi';
 import { ordenarAlfabeticamente } from '../utils/ordenarAlfabeticamente';
+import AvatarUsuario from '../components/AvatarUsuario';
 import './ReporteDetallePage.css';
 
 function slugEstado(estado) {
@@ -98,14 +100,6 @@ function limitarHilos(hilos, limite) {
   return limitar(hilos);
 }
 
-function inicialesUsuario(nombre = '') {
-  return nombre.split(' ').filter(Boolean).slice(0, 2).map((parte) => parte[0]).join('').toUpperCase() || 'U';
-}
-
-function tonoAvatar(nombre = '') {
-  return [...nombre].reduce((total, caracter) => total + caracter.charCodeAt(0), 0) % 360;
-}
-
 function aplanarHilosComentarios(hilos, usuarioPadre = null) {
   return hilos.flatMap((nodo) => [
     { ...nodo, usuarioPadre },
@@ -113,14 +107,14 @@ function aplanarHilosComentarios(hilos, usuarioPadre = null) {
   ]);
 }
 
-function ComentarioPlano({ comentario, respondiendoA, responder, darLike, fechaLocal, formularioRespuesta }) {
+function ComentarioPlano({ comentario, respondiendoA, responder, darLike, fechaLocal, formularioRespuesta, abrirPerfil }) {
   return (
     <li className="comentario-plano">
       <article className="comentario-item">
-        <span className="comentario-avatar" style={{ '--tono-avatar': tonoAvatar(comentario.usuario) }} aria-label={`Avatar de ${comentario.usuario}`}>{inicialesUsuario(comentario.usuario)}</span>
+        <button type="button" className="comentario-perfil-trigger" onClick={() => abrirPerfil(comentario.idUsuario)} aria-label={`Ver perfil de ${comentario.usuario}`}><AvatarUsuario nombre={comentario.usuario} className="comentario-avatar" /></button>
         <div className="comentario-contenido">
           <div className="comentario-cabecera">
-            <strong>{comentario.usuario}</strong> ({fechaLocal(comentario.fechaComentario)} · <time dateTime={fechaUtc(comentario.fechaComentario)} title={fechaLocal(comentario.fechaComentario)}>{tiempoRelativo(comentario.fechaComentario)}</time>)
+            <button type="button" className="comentario-nombre" onClick={() => abrirPerfil(comentario.idUsuario)}>{comentario.usuario}</button> ({fechaLocal(comentario.fechaComentario)} · <time dateTime={fechaUtc(comentario.fechaComentario)} title={fechaLocal(comentario.fechaComentario)}>{tiempoRelativo(comentario.fechaComentario)}</time>)
           </div>
           <p className="comentario-texto">
             {comentario.usuarioPadre && <><span className="comentario-mencion">{comentario.usuarioPadre}</span>{' '}</>}
@@ -137,7 +131,7 @@ function ComentarioPlano({ comentario, respondiendoA, responder, darLike, fechaL
   );
 }
 
-function HiloComentariosPlano({ nodo, hilosContraidos, alternarHilo, respondiendoA, responder, darLike, fechaLocal, formularioRespuesta }) {
+function HiloComentariosPlano({ nodo, hilosContraidos, alternarHilo, respondiendoA, responder, darLike, fechaLocal, formularioRespuesta, abrirPerfil }) {
   const respuestas = aplanarHilosComentarios(nodo.respuestas, nodo.usuario);
   const tieneRespuestas = respuestas.length > 0;
   const contraido = hilosContraidos.has(nodo.idComentario);
@@ -145,18 +139,42 @@ function HiloComentariosPlano({ nodo, hilosContraidos, alternarHilo, respondiend
 
   return (
     <li className={`comentario-hilo-plano ${tieneRespuestas && !contraido ? 'con-respuestas-visibles' : ''}`}>
-      <ComentarioPlano comentario={nodo} respondiendoA={respondiendoA} responder={responder} darLike={darLike} fechaLocal={fechaLocal} formularioRespuesta={formularioRespuesta} />
+      <ComentarioPlano comentario={nodo} respondiendoA={respondiendoA} responder={responder} darLike={darLike} fechaLocal={fechaLocal} formularioRespuesta={formularioRespuesta} abrirPerfil={abrirPerfil} />
       {tieneRespuestas && (contraido ? (
         <button type="button" className="comentario-respuestas-toggle mostrar" onClick={() => alternarHilo(nodo.idComentario)}>Mostrar {etiquetaRespuestas}</button>
       ) : (
         <div className="comentario-respuestas-plano">
           <ul>
-            {respuestas.map((respuesta) => <ComentarioPlano key={respuesta.idComentario} comentario={respuesta} respondiendoA={respondiendoA} responder={responder} darLike={darLike} fechaLocal={fechaLocal} formularioRespuesta={formularioRespuesta} />)}
+            {respuestas.map((respuesta) => <ComentarioPlano key={respuesta.idComentario} comentario={respuesta} respondiendoA={respondiendoA} responder={responder} darLike={darLike} fechaLocal={fechaLocal} formularioRespuesta={formularioRespuesta} abrirPerfil={abrirPerfil} />)}
           </ul>
           <button type="button" className="comentario-respuestas-toggle" onClick={() => alternarHilo(nodo.idComentario)}>Contraer respuestas</button>
         </div>
       ))}
     </li>
+  );
+}
+
+function FichaPerfilUsuario({ perfil, cargando, error, cerrar }) {
+  if (!perfil && !cargando && !error) return null;
+  const nombre = perfil?.nombreCompleto ?? 'Usuario';
+
+  return createPortal(
+    <div className="perfil-publico-overlay" onClick={cerrar} role="presentation">
+      <section className="perfil-publico-ficha ui-entrada" role="dialog" aria-modal="true" aria-label={`Perfil de ${nombre}`} onClick={(e) => e.stopPropagation()}>
+        <button type="button" className="perfil-publico-cerrar" onClick={cerrar} aria-label="Cerrar perfil">×</button>
+        {cargando ? <p>Cargando perfil...</p> : error ? <p>{error}</p> : <>
+          <AvatarUsuario nombre={nombre} className="perfil-publico-avatar" />
+          <h2>{nombre}</h2>
+          <p className="perfil-publico-rol">{perfil.rol}</p>
+          <dl>
+            <div><dt>Carrera</dt><dd>{perfil.carrera ?? 'Sin carrera asignada'}</dd></div>
+            <div><dt>Reportes creados</dt><dd>{perfil.numeroReportes}</dd></div>
+            <div><dt>Comentarios</dt><dd>{perfil.numeroComentarios}</dd></div>
+          </dl>
+        </>}
+      </section>
+    </div>,
+    document.body,
   );
 }
 
@@ -188,6 +206,9 @@ function ReporteDetallePage() {
   const [ordenComentarios, setOrdenComentarios] = useState('recientes');
   const [respondiendoA, setRespondiendoA] = useState(null);
   const [hilosContraidos, setHilosContraidos] = useState(() => new Set());
+  const [perfil, setPerfil] = useState(null);
+  const [cargandoPerfil, setCargandoPerfil] = useState(false);
+  const [errorPerfil, setErrorPerfil] = useState('');
 
   const [lightboxAbierto, setLightboxAbierto] = useState(false);
   const [zoomActivo, setZoomActivo] = useState(false);
@@ -298,6 +319,21 @@ function ReporteDetallePage() {
     const resultado = await alternarLikeComentario(id, idComentario, token);
     setComentarios((actuales) => actuales.map((comentario) => comentario.idComentario === idComentario ? { ...comentario, leGustaUsuarioActual: resultado.leGusta, numeroLikes: resultado.numeroLikes } : comentario));
   };
+  const abrirPerfil = async (idUsuario) => {
+    if (!idUsuario) return;
+    setPerfil(null);
+    setErrorPerfil('');
+    setCargandoPerfil(true);
+    try {
+      const token = await getAccessToken(instance, accounts);
+      setPerfil(await getPerfilPublicoUsuario(idUsuario, token));
+    } catch (err) {
+      console.error('Error cargando perfil público:', err);
+      setErrorPerfil('No se pudo cargar el perfil.');
+    } finally {
+      setCargandoPerfil(false);
+    }
+  };
   const fechaLocal = (fecha) => new Intl.DateTimeFormat('es-HN', { dateStyle: 'short', timeStyle: 'short' }).format(new Date(fechaUtc(fecha)));
 
   const handleArchivar = async () => {
@@ -382,7 +418,7 @@ function ReporteDetallePage() {
       <div className="detalle-meta">
         <div className="detalle-meta-item"><span className="detalle-etiqueta"><FontAwesomeIcon icon={faTag} />Categoría</span><span className="detalle-meta-valor">{reporte.categoria}</span></div>
         <div className="detalle-meta-item"><span className="detalle-etiqueta"><FontAwesomeIcon icon={faLocationDot} />Ubicación</span><span className="detalle-meta-valor">{reporte.ubicacion ?? reporte.espacio}</span></div>
-        <div className="detalle-meta-item"><span className="detalle-etiqueta"><FontAwesomeIcon icon={faUser} />Reportado por</span><span className="detalle-meta-valor detalle-reportante"><strong>{reporte.usuarioReporta}</strong>{reporte.correoUsuarioReporta && <a href={`mailto:${reporte.correoUsuarioReporta}`}><FontAwesomeIcon icon={faEnvelope} />{reporte.correoUsuarioReporta}</a>}</span></div>
+        <div className="detalle-meta-item"><span className="detalle-etiqueta"><FontAwesomeIcon icon={faUser} />Reportado por</span><span className="detalle-meta-valor detalle-reportante"><button type="button" className="perfil-enlace" onClick={() => abrirPerfil(reporte.idUsuarioReporta)}>{reporte.usuarioReporta}</button>{reporte.correoUsuarioReporta && <a href={`mailto:${reporte.correoUsuarioReporta}`}><FontAwesomeIcon icon={faEnvelope} />{reporte.correoUsuarioReporta}</a>}</span></div>
         <div className="detalle-meta-item"><span className="detalle-etiqueta"><FontAwesomeIcon icon={faGraduationCap} />Carrera</span><span className="detalle-meta-valor">{reporte.carreraUsuarioReporta ?? 'Sin carrera asignada'}</span></div>
         <div className="detalle-meta-item"><span className="detalle-etiqueta"><FontAwesomeIcon icon={faUserGear} />Gestor asignado</span><span className="detalle-meta-valor">{reporte.gestorAsignado ?? 'Sin asignar'}</span></div>
       </div>
@@ -463,7 +499,7 @@ function ReporteDetallePage() {
         <p>Sin comentarios todavía.</p>
       ) : (
         <ul className="comentarios-lista comentarios-planos">
-          {hilosVisibles.map((hilo) => <HiloComentariosPlano key={hilo.idComentario} nodo={hilo} hilosContraidos={hilosContraidos} alternarHilo={alternarHilo} respondiendoA={respondiendoA} responder={setRespondiendoA} darLike={darLikeComentario} fechaLocal={fechaLocal} formularioRespuesta={() => formularioComentario(true)} />)}
+          {hilosVisibles.map((hilo) => <HiloComentariosPlano key={hilo.idComentario} nodo={hilo} hilosContraidos={hilosContraidos} alternarHilo={alternarHilo} respondiendoA={respondiendoA} responder={setRespondiendoA} darLike={darLikeComentario} fechaLocal={fechaLocal} formularioRespuesta={() => formularioComentario(true)} abrirPerfil={abrirPerfil} />)}
         </ul>
       )}
       {comentarios.length > 5 && <div className="comentarios-paginacion">{comentariosVisibles < comentarios.length ? <button type="button" onClick={() => setComentariosVisibles(comentarios.length)}>Ver más comentarios</button> : <button type="button" onClick={() => setComentariosVisibles(5)}>Ver menos comentarios</button>}</div>}
@@ -558,6 +594,7 @@ function ReporteDetallePage() {
             </div>
           </div>
         , document.body)}
+        <FichaPerfilUsuario perfil={perfil} cargando={cargandoPerfil} error={errorPerfil} cerrar={() => { setPerfil(null); setErrorPerfil(''); setCargandoPerfil(false); }} />
       </div>
     );
   }
@@ -577,6 +614,7 @@ function ReporteDetallePage() {
 
       {bloqueHistorial}
       {bloqueComentarios}
+      <FichaPerfilUsuario perfil={perfil} cargando={cargandoPerfil} error={errorPerfil} cerrar={() => { setPerfil(null); setErrorPerfil(''); setCargandoPerfil(false); }} />
     </div>
   );
 }

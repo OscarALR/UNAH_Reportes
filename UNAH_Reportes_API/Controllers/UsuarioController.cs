@@ -46,5 +46,26 @@ namespace UNAH_Reportes_API.Controllers
 
             return Ok(usuario);
         }
+
+        // GET: api/usuarios/5/perfil
+        [HttpGet("{idUsuario:int}/perfil")]
+        public async Task<ActionResult<PerfilPublicoUsuarioDTO>> GetPerfilPublico(int idUsuario)
+        {
+            var perfil = await _context.Usuarios
+                .AsNoTracking()
+                .Where(u => u.IdUsuario == idUsuario)
+                .Select(u => new PerfilPublicoUsuarioDTO
+                {
+                    IdUsuario = u.IdUsuario,
+                    NombreCompleto = u.NombreCompleto,
+                    Carrera = u.Carrera == null ? null : u.Carrera.NombreCarrera,
+                    Rol = u.Rol.NombreRol,
+                    NumeroReportes = _context.Reportes.Count(r => r.IdUsuario == u.IdUsuario && !r.Eliminado),
+                    NumeroComentarios = _context.Comentarios.Count(c => c.IdUsuario == u.IdUsuario)
+                })
+                .FirstOrDefaultAsync();
+
+            return perfil == null ? NotFound() : Ok(perfil);
+        }
     }
 }

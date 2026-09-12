@@ -3,6 +3,7 @@
     public class ComentarioDTO
     {
         public int IdComentario { get; set; }
+        public int IdUsuario { get; set; }
         public string Texto { get; set; } = string.Empty;
         public string Usuario {  get; set; } = string.Empty;
         public DateTime FechaComentario { get; set; }

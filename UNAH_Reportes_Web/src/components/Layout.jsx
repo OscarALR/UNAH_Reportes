@@ -21,6 +21,7 @@ import { useTheme } from '../context/ThemeContext';
 import { getAccessToken } from '../auth/getToken';
 import { getNotificaciones } from '../api/notificacionesApi';
 import RiuvsLogo from './RiuvsLogo';
+import AvatarUsuario from './AvatarUsuario';
 import './Layout.css';
 
 function Layout({ children }) {
@@ -211,9 +212,7 @@ function Layout({ children }) {
               </button>
               <div className="layout-user-menu">
               <button type="button" className="layout-user" onClick={() => setMenuUsuarioAbierto((abierto) => !abierto)} aria-expanded={menuUsuarioAbierto}>
-                <span className="layout-avatar">
-                  {usuario?.nombreCompleto?.charAt(0)?.toUpperCase() ?? '?'}
-                </span>
+                <AvatarUsuario nombre={usuario?.nombreCompleto ?? '?'} className="layout-avatar" />
 
                 <div className="layout-user-info">
                   <span className="layout-username">{usuario?.nombreCompleto}</span>

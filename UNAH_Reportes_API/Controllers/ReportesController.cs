@@ -84,6 +84,7 @@ namespace UNAH_Reportes_API.Controllers
                     Ubicacion = r.Espacio.Edificio == null ? "Área común · " + r.Espacio.NombreEspacio : r.Espacio.Edificio.NombreEdificio + " · " + r.Espacio.NombreEspacio,
                     Estado = r.EstadoActual.NombreEstado,
                     Prioridad = r.Prioridad,
+                    IdUsuarioReporta = r.IdUsuario,
                     UsuarioReporta = r.Usuario.NombreCompleto,
                     CorreoUsuarioReporta = r.Usuario.CorreoInstitucional,
                     CarreraUsuarioReporta = r.Usuario.Carrera == null ? "Sin carrera asignada" : r.Usuario.Carrera.NombreCarrera,

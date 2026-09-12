@@ -34,6 +34,7 @@ namespace UNAH_Reportes_API.Controllers
                 .Select(c => new ComentarioDTO
                 {
                     IdComentario = c.IdComentario,
+                    IdUsuario = c.IdUsuario,
                     Texto = c.Texto,
                     Usuario = c.Usuario.NombreCompleto,
                     FechaComentario = c.FechaComentario,
@@ -83,6 +84,7 @@ namespace UNAH_Reportes_API.Controllers
                 .Select(c => new ComentarioDTO
                 {
                     IdComentario = c.IdComentario,
+                    IdUsuario = c.IdUsuario,
                     Texto = c.Texto,
                     Usuario = c.Usuario.NombreCompleto,
                     FechaComentario = c.FechaComentario,
