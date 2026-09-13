@@ -17,3 +17,9 @@ IF COL_LENGTH('dbo.Usuarios', 'ColorAvatar') IS NULL
 
 IF COL_LENGTH('dbo.Usuarios', 'UrlAvatar') IS NULL
     ALTER TABLE dbo.Usuarios ADD UrlAvatar NVARCHAR(2048) NULL;
+
+/* Normaliza colores existentes que no garantizan contraste con las iniciales blancas. */
+UPDATE dbo.Usuarios
+SET ColorAvatar = '#1F6F8B'
+WHERE ColorAvatar IS NOT NULL
+  AND UPPER(ColorAvatar) NOT IN ('#1F6F8B', '#1E8449', '#6C3483', '#7B241C', '#7D6608', '#2C3E50', '#117864', '#AF601A');

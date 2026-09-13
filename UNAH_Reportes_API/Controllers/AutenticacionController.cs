@@ -17,6 +17,10 @@ namespace UNAH_Reportes_API.Controllers
     [ApiController]
     public class AutenticacionController : ControllerBase
     {
+        private static readonly HashSet<string> ColoresAvatarPermitidos = new(StringComparer.OrdinalIgnoreCase)
+        {
+            "#1F6F8B", "#1E8449", "#6C3483", "#7B241C", "#7D6608", "#2C3E50", "#117864", "#AF601A"
+        };
         private readonly AppDbContext _context;
         private readonly IPasswordHasher<Usuario> _passwordHasher;
         private readonly LocalTokenService _tokens;
@@ -66,6 +70,8 @@ namespace UNAH_Reportes_API.Controllers
             var usuario = await _context.Usuarios.Include(u => u.Carrera).Include(u => u.Rol).SingleOrDefaultAsync(u => u.CorreoInstitucional == correo);
             if (usuario == null) return Unauthorized();
             if (!await _context.Carreras.AnyAsync(c => c.IdCarrera == dto.IdCarrera)) return BadRequest("La carrera seleccionada no existe.");
+            if (!string.IsNullOrWhiteSpace(dto.ColorAvatar) && !ColoresAvatarPermitidos.Contains(dto.ColorAvatar))
+                return BadRequest("El color de avatar seleccionado no está permitido.");
             usuario.NombreCompleto = dto.NombreCompleto.Trim();
             usuario.IdCarrera = dto.IdCarrera;
             usuario.ColorAvatar = dto.ColorAvatar;

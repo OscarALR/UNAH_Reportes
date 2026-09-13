@@ -11,6 +11,7 @@ import './PerfilPage.css';
 
 const CONTRASENA_SEGURA = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[^A-Za-z\d]).{8,}$/;
 const TIPOS_IMAGEN = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+const COLORES_AVATAR = ['#1F6F8B', '#1E8449', '#6C3483', '#7B241C', '#7D6608', '#2C3E50', '#117864', '#AF601A'];
 const nombreCompletoValido = (nombre) => /^[\p{L}\p{M}]+(?: [\p{L}\p{M}]+)*$/u.test(nombre.trim());
 
 function CampoContrasena({ label, value, onChange, validarSeguridad = false }) {
@@ -25,7 +26,7 @@ function PerfilPage() {
   const [nombreCompleto, setNombreCompleto] = useState(usuario?.nombreCompleto ?? '');
   const [idCarrera, setIdCarrera] = useState('');
   const [correoRecuperacion, setCorreoRecuperacion] = useState(usuario?.correoRecuperacion ?? '');
-  const [colorAvatar, setColorAvatar] = useState(usuario?.colorAvatar ?? '#2a9d70');
+  const [colorAvatar, setColorAvatar] = useState(COLORES_AVATAR.includes(usuario?.colorAvatar) ? usuario.colorAvatar : COLORES_AVATAR[0]);
   const [mensaje, setMensaje] = useState('');
   const [subiendoAvatar, setSubiendoAvatar] = useState(false);
   const [contrasenas, setContrasenas] = useState({ actual: '', nueva: '', confirmar: '' });
@@ -41,7 +42,7 @@ function PerfilPage() {
   }, [usuario?.carrera]);
 
   useEffect(() => {
-    setNombreCompleto(usuario?.nombreCompleto ?? ''); setCorreoRecuperacion(usuario?.correoRecuperacion ?? ''); setColorAvatar(usuario?.colorAvatar ?? '#2a9d70');
+    setNombreCompleto(usuario?.nombreCompleto ?? ''); setCorreoRecuperacion(usuario?.correoRecuperacion ?? ''); setColorAvatar(COLORES_AVATAR.includes(usuario?.colorAvatar) ? usuario.colorAvatar : COLORES_AVATAR[0]);
   }, [usuario]);
 
   const guardar = async (e) => {
@@ -72,7 +73,7 @@ function PerfilPage() {
   return <div className="perfil-page">
     <p>Cuenta</p><h2>Mi perfil</h2><span>Actualiza tu nombre, carrera y avatar. El correo de acceso no se puede modificar.</span>
     <form onSubmit={guardar}>
-      <section className="perfil-avatar" aria-label="Personalización de avatar"><AvatarUsuario nombre={nombreCompleto || usuario?.nombreCompleto || 'U'} colorAvatar={colorAvatar} urlAvatar={usuario?.urlAvatar} className="perfil-avatar-vista" /><div><strong>Avatar</strong><small>Elige un color o sube una imagen JPEG, PNG, WEBP o GIF de hasta 5 MB.</small></div><label className="perfil-color">Color<input type="color" value={colorAvatar} onChange={(e) => setColorAvatar(e.target.value)} aria-label="Color del avatar" /></label><label className="perfil-imagen">{subiendoAvatar ? 'Subiendo imagen...' : 'Cambiar imagen'}<input type="file" accept="image/jpeg,image/png,image/webp,image/gif" onChange={seleccionarAvatar} disabled={subiendoAvatar} /></label></section>
+      <section className="perfil-avatar" aria-label="Personalización de avatar"><AvatarUsuario nombre={nombreCompleto || usuario?.nombreCompleto || 'U'} colorAvatar={colorAvatar} urlAvatar={usuario?.urlAvatar} className="perfil-avatar-vista" /><div><strong>Avatar</strong><small>Elige un color de alto contraste o sube una imagen JPEG, PNG, WEBP o GIF de hasta 5 MB.</small></div><div className="perfil-colores" role="radiogroup" aria-label="Color del avatar">{COLORES_AVATAR.map((color) => <button key={color} type="button" className={colorAvatar === color ? 'seleccionado' : ''} style={{ background: color }} onClick={() => setColorAvatar(color)} aria-label={`Seleccionar color ${color}`} aria-pressed={colorAvatar === color}>OL</button>)}</div><label className="perfil-imagen">{subiendoAvatar ? 'Subiendo imagen...' : 'Cambiar imagen'}<input type="file" accept="image/jpeg,image/png,image/webp,image/gif" onChange={seleccionarAvatar} disabled={subiendoAvatar} /></label></section>
       <label>Correo electrónico<input value={usuario?.correoInstitucional ?? ''} disabled /></label><label>Nombre completo<input required minLength="5" maxLength="150" value={nombreCompleto} onChange={(e) => setNombreCompleto(e.target.value)} /></label><label>Carrera<select required value={idCarrera} onChange={(e) => setIdCarrera(e.target.value)}><option value="">Selecciona tu carrera</option>{carreras.map((carrera) => <option key={carrera.idCarrera} value={carrera.idCarrera}>{carrera.nombreCarrera}</option>)}</select></label>{esLocal && <label>Correo de recuperación<input required type="email" value={correoRecuperacion} onChange={(e) => setCorreoRecuperacion(e.target.value)} /></label>}<button>Guardar cambios</button>
     </form>
     {esLocal && <form className="perfil-seccion-contrasena" onSubmit={guardarContrasena}><h3>Seguridad</h3><p>Usaremos este correo para una futura recuperación de acceso.</p><CampoContrasena label="Contraseña actual" value={contrasenas.actual} onChange={(e) => setContrasenas({ ...contrasenas, actual: e.target.value })} /><CampoContrasena label="Nueva contraseña" value={contrasenas.nueva} validarSeguridad onChange={(e) => setContrasenas({ ...contrasenas, nueva: e.target.value })} /><CampoContrasena label="Confirmar nueva contraseña" value={contrasenas.confirmar} validarSeguridad onChange={(e) => setContrasenas({ ...contrasenas, confirmar: e.target.value })} /><button>Cambiar contraseña</button></form>}
