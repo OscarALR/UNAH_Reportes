@@ -25,6 +25,9 @@ export function UserProvider({ children }) {
             });
             setUsuario(response.data);
         } catch (error) {
+            if (error.response?.status === 403) {
+                sessionStorage.setItem('unah_mensaje_acceso', 'Cuenta desactivada por el administrador. Comuníquese con soporte técnico.');
+            }
             console.error('Error cargando usuario:', error);
         } finally {
             setCargando(false);

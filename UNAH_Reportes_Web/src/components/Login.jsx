@@ -29,7 +29,11 @@ function Login() {
   const [iniciando, setIniciando] = useState(false);
   const [modoLocal, setModoLocal] = useState('ingresar');
   const [carreras, setCarreras] = useState([]);
-  const [errorLocal, setErrorLocal] = useState('');
+  const [errorLocal, setErrorLocal] = useState(() => {
+    const mensaje = sessionStorage.getItem('unah_mensaje_acceso') ?? '';
+    sessionStorage.removeItem('unah_mensaje_acceso');
+    return mensaje;
+  });
   const [mensajeLocal, setMensajeLocal] = useState('');
   const [formulario, setFormulario] = useState({ correo: '', contrasena: '', confirmarContrasena: '', correoRecuperacion: '', nombreCompleto: '', idCarrera: '' });
   const [mostrarContrasena, setMostrarContrasena] = useState(false);

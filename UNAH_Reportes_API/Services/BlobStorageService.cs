@@ -40,5 +40,22 @@ namespace UNAH_Reportes_API.Services
 
             return blobClient.Uri.ToString();
         }
+
+        public async Task EliminarImagenAsync(string? urlImagen)
+        {
+            if (string.IsNullOrWhiteSpace(urlImagen) || !Uri.TryCreate(urlImagen, UriKind.Absolute, out var uri)) return;
+
+            var blobServiceClient = new BlobServiceClient(_connectionString);
+            var containerClient = blobServiceClient.GetBlobContainerClient(_containerName);
+            var rutaContenedor = containerClient.Uri.AbsolutePath.TrimEnd('/') + "/";
+
+            // Solo se eliminan archivos que pertenezcan al contenedor configurado.
+            if (!string.Equals(uri.Host, containerClient.Uri.Host, StringComparison.OrdinalIgnoreCase)
+                || !uri.AbsolutePath.StartsWith(rutaContenedor, StringComparison.OrdinalIgnoreCase)) return;
+
+            var nombreBlob = Uri.UnescapeDataString(uri.AbsolutePath[rutaContenedor.Length..]);
+            if (!string.IsNullOrWhiteSpace(nombreBlob))
+                await containerClient.DeleteBlobIfExistsAsync(nombreBlob);
+        }
     }
 }

@@ -57,8 +57,10 @@ namespace UNAH_Reportes_API.Controllers
         {
             var correo = dto.Correo.Trim().ToLowerInvariant();
             var usuario = await _context.Usuarios.Include(u => u.Carrera).Include(u => u.Rol).SingleOrDefaultAsync(u => u.CorreoInstitucional == correo);
-            if (usuario == null || usuario.Estado != "Activo" || string.IsNullOrEmpty(usuario.PasswordHash) || _passwordHasher.VerifyHashedPassword(usuario, usuario.PasswordHash, dto.Contrasena) == PasswordVerificationResult.Failed)
+            if (usuario == null || string.IsNullOrEmpty(usuario.PasswordHash) || _passwordHasher.VerifyHashedPassword(usuario, usuario.PasswordHash, dto.Contrasena) == PasswordVerificationResult.Failed)
                 return Unauthorized("Correo o contraseña incorrectos.");
+            if (usuario.Estado != "Activo")
+                return StatusCode(StatusCodes.Status403Forbidden, "Cuenta desactivada por el administrador. Comuníquese con soporte técnico.");
             return Ok(CrearSesion(usuario));
         }
 
@@ -95,8 +97,25 @@ namespace UNAH_Reportes_API.Controllers
             if (!tiposPermitidos.Contains(archivo.ContentType.ToLowerInvariant())) return BadRequest("Solo se permiten imágenes JPEG, PNG, WEBP o GIF.");
             if (archivo.Length > 5 * 1024 * 1024) return BadRequest("La imagen no puede superar 5 MB.");
 
+            var urlAnterior = usuario.UrlAvatar;
             usuario.UrlAvatar = await _blobStorage.SubirImagenAsync(archivo);
             await _context.SaveChangesAsync();
+            await _blobStorage.EliminarImagenAsync(urlAnterior);
+            return Ok(MapearUsuario(usuario));
+        }
+
+        [Authorize]
+        [HttpDelete("perfil/avatar")]
+        public async Task<ActionResult<UsuarioDTO>> EliminarAvatar()
+        {
+            var correo = User.GetCorreoInstitucional();
+            var usuario = await _context.Usuarios.Include(u => u.Carrera).Include(u => u.Rol).SingleOrDefaultAsync(u => u.CorreoInstitucional == correo);
+            if (usuario == null) return Unauthorized();
+
+            var urlAnterior = usuario.UrlAvatar;
+            usuario.UrlAvatar = null;
+            await _context.SaveChangesAsync();
+            await _blobStorage.EliminarImagenAsync(urlAnterior);
             return Ok(MapearUsuario(usuario));
         }
 

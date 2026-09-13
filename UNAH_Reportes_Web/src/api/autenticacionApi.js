@@ -27,6 +27,11 @@ export async function actualizarAvatar(archivo, token) {
   return response.data;
 }
 
+export async function eliminarAvatar(token) {
+  const response = await apiClient.delete('/autenticacion/perfil/avatar', { headers: { Authorization: `Bearer ${token}` } });
+  return response.data;
+}
+
 export async function cambiarContrasena(datos, token) {
   await apiClient.put('/autenticacion/contrasena', datos, { headers: { Authorization: `Bearer ${token}` } });
 }
