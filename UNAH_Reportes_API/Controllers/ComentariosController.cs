@@ -139,5 +139,24 @@ namespace UNAH_Reportes_API.Controllers
             await _context.SaveChangesAsync();
             return NoContent();
         }
+
+        [Authorize(Policy = "SoloAdministrador")]
+        [HttpDelete]
+        public async Task<IActionResult> EliminarTodosLosComentarios(int idReporte)
+        {
+            var correo = User.GetCorreoInstitucional();
+            var administrador = await _context.Usuarios.SingleOrDefaultAsync(u => u.CorreoInstitucional == correo);
+            if (administrador == null) return Unauthorized();
+
+            var ahora = DateTime.UtcNow;
+            var cantidadEliminada = await _context.Comentarios
+                .Where(c => c.IdReporte == idReporte && !c.Eliminado)
+                .ExecuteUpdateAsync(actualizacion => actualizacion
+                    .SetProperty(c => c.Eliminado, true)
+                    .SetProperty(c => c.FechaEliminacion, ahora)
+                    .SetProperty(c => c.IdUsuarioEliminacion, administrador.IdUsuario));
+
+            return Ok(new { comentariosEliminados = cantidadEliminada });
+        }
     }
 }

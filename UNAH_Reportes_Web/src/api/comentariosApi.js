@@ -24,3 +24,8 @@ export async function alternarLikeComentario(idReporte, idComentario, token) {
 export async function eliminarComentario(idReporte, idComentario, token) {
   await apiClient.delete(`/reportes/${idReporte}/comentarios/${idComentario}`, { headers: { Authorization: `Bearer ${token}` } });
 }
+
+export async function eliminarTodosLosComentarios(idReporte, token) {
+  const response = await apiClient.delete(`/reportes/${idReporte}/comentarios`, { headers: { Authorization: `Bearer ${token}` } });
+  return response.data;
+}

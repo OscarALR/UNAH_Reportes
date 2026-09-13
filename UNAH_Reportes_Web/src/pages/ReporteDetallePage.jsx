@@ -20,7 +20,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { getAccessToken } from '../auth/getToken';
 import { getReportePorId, alternarLikeReporte } from '../api/reportesApi';
-import { getComentarios, crearComentario, alternarLikeComentario, eliminarComentario } from '../api/comentariosApi';
+import { getComentarios, crearComentario, alternarLikeComentario, eliminarComentario, eliminarTodosLosComentarios as eliminarTodosLosComentariosApi } from '../api/comentariosApi';
 import { getHistorial } from '../api/historialApi';
 import { getImagenes } from '../api/imagenesApi';
 import { useUser } from '../context/UserContext';
@@ -194,6 +194,7 @@ function ReporteDetallePage() {
   const [actualizandoEstado, setActualizandoEstado] = useState(false);
 
   const esGestorOAdmin = usuario?.rol === 'Gestor' || usuario?.rol === 'Administrador';
+  const esAdministrador = usuario?.rol === 'Administrador';
 
   const [reporte, setReporte] = useState(null);
   const [comentarios, setComentarios] = useState([]);
@@ -205,6 +206,7 @@ function ReporteDetallePage() {
 
   const [nuevoComentario, setNuevoComentario] = useState('');
   const [enviandoComentario, setEnviandoComentario] = useState(false);
+  const [eliminandoComentarios, setEliminandoComentarios] = useState(false);
   const [comentariosVisibles, setComentariosVisibles] = useState(5);
   const [ordenComentarios, setOrdenComentarios] = useState('recientes');
   const [respondiendoA, setRespondiendoA] = useState(null);
@@ -333,6 +335,23 @@ function ReporteDetallePage() {
     } catch (err) {
       console.error('Error eliminando comentario:', err);
       alert(err.response?.data || 'No se pudo eliminar el comentario.');
+    }
+  };
+
+  const eliminarTodosLosComentarios = async () => {
+    if (!window.confirm(`¿Eliminar los ${comentarios.length} comentarios de este reporte? Esta acción ocultará toda la conversación.`)) return;
+    try {
+      setEliminandoComentarios(true);
+      const token = await getAccessToken(instance, accounts);
+      await eliminarTodosLosComentariosApi(id, token);
+      setRespondiendoA(null);
+      setHilosContraidos(new Set());
+      setComentarios([]);
+    } catch (err) {
+      console.error('Error eliminando todos los comentarios:', err);
+      alert(err.response?.data || 'No se pudieron eliminar los comentarios.');
+    } finally {
+      setEliminandoComentarios(false);
     }
   };
 
@@ -513,7 +532,7 @@ function ReporteDetallePage() {
   const bloqueComentarios = (
     <div className="detalle-card">
       <h3><FontAwesomeIcon icon={faComments} />Comentarios</h3>
-      {comentarios.length > 5 && <div className="comentarios-controles"><select value={ordenComentarios} onChange={(e) => setOrdenComentarios(e.target.value)}><option value="recientes">Más recientes</option><option value="populares">Más populares</option></select></div>}
+      {(comentarios.length > 5 || (esAdministrador && comentarios.length > 0)) && <div className="comentarios-controles">{comentarios.length > 5 && <select value={ordenComentarios} onChange={(e) => setOrdenComentarios(e.target.value)}><option value="recientes">Más recientes</option><option value="populares">Más populares</option></select>}{esAdministrador && comentarios.length > 0 && <button type="button" className="comentarios-eliminar-todos" onClick={eliminarTodosLosComentarios} disabled={eliminandoComentarios}>{eliminandoComentarios ? 'Eliminando...' : 'Eliminar todos'}</button>}</div>}
       {comentarios.length === 0 ? (
         <p>Sin comentarios todavía.</p>
       ) : (
