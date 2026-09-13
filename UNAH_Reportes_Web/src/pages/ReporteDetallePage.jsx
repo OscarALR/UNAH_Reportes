@@ -118,13 +118,13 @@ function ComentarioPlano({ comentario, respondiendoA, responder, darLike, elimin
             <button type="button" className="comentario-nombre" onClick={() => abrirPerfil(comentario.idUsuario)}>{comentario.usuario}</button> ({fechaLocal(comentario.fechaComentario)} · <time dateTime={fechaUtc(comentario.fechaComentario)} title={fechaLocal(comentario.fechaComentario)}>{tiempoRelativo(comentario.fechaComentario)}</time>)
           </div>
           <p className="comentario-texto">
-            {!comentario.eliminado && comentario.usuarioPadre && <><span className="comentario-mencion">{comentario.usuarioPadre}</span>{' '}</>}
-            {comentario.eliminado ? 'Comentario eliminado.' : comentario.texto}
+            {comentario.usuarioPadre && <><span className="comentario-mencion">{comentario.usuarioPadre}</span>{' '}</>}
+            {comentario.texto}
           </p>
           <div className="comentario-acciones">
-            {!comentario.eliminado && <button type="button" className={comentario.leGustaUsuarioActual ? 'activo' : ''} onClick={() => darLike(comentario.idComentario)}><FontAwesomeIcon icon={faThumbsUp} /> {comentario.numeroLikes || 0}</button>}
+            <button type="button" className={comentario.leGustaUsuarioActual ? 'activo' : ''} onClick={() => darLike(comentario.idComentario)}><FontAwesomeIcon icon={faThumbsUp} /> {comentario.numeroLikes || 0}</button>
             <button type="button" onClick={() => responder(comentario.idComentario)}><FontAwesomeIcon icon={faReply} /> Responder</button>
-            {!comentario.eliminado && puedeEliminar(comentario) && <button type="button" className="comentario-eliminar" onClick={() => eliminar(comentario.idComentario)}><FontAwesomeIcon icon={faTrash} /> Eliminar</button>}
+            {puedeEliminar(comentario) && <button type="button" className="comentario-eliminar" onClick={() => eliminar(comentario.idComentario)}><FontAwesomeIcon icon={faTrash} /> Eliminar</button>}
           </div>
           {respondiendoA === comentario.idComentario && formularioRespuesta()}
         </div>
@@ -324,7 +324,7 @@ function ReporteDetallePage() {
   };
 
   const eliminarComentarioActual = async (idComentario) => {
-    if (!window.confirm('¿Eliminar este comentario? Se conservará la conversación, pero su contenido dejará de mostrarse.')) return;
+    if (!window.confirm('¿Eliminar este comentario? Dejará de aparecer en la sección de comentarios.')) return;
     try {
       const token = await getAccessToken(instance, accounts);
       await eliminarComentario(id, idComentario, token);

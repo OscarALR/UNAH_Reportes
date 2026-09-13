@@ -29,7 +29,7 @@ namespace UNAH_Reportes_API.Controllers
             if (usuario == null) return Unauthorized();
             var comentarios = await _context.Comentarios
                 .Include(c => c.Usuario)
-                .Where(c => c.IdReporte == idReporte)
+                .Where(c => c.IdReporte == idReporte && !c.Eliminado)
                 .OrderByDescending(c => c.FechaComentario)
                 .Select(c => new ComentarioDTO
                 {
@@ -41,7 +41,7 @@ namespace UNAH_Reportes_API.Controllers
                     IdComentarioPadre = c.IdComentarioPadre,
                     NumeroLikes = c.Likes.Count,
                     LeGustaUsuarioActual = c.Likes.Any(l => l.IdUsuario == usuario.IdUsuario),
-                    Eliminado = c.Eliminado,
+                    Eliminado = false,
                     ColorAvatar = c.Usuario.ColorAvatar,
                     UrlAvatar = c.Usuario.UrlAvatar
                 })
@@ -66,8 +66,8 @@ namespace UNAH_Reportes_API.Controllers
             var reporteExiste = await _context.Reportes.AnyAsync(r => r.IdReporte == idReporte);
             if (!reporteExiste)
                 return NotFound($"No existe un reporte con ID {idReporte}");
-            if (dto.IdComentarioPadre.HasValue && !await _context.Comentarios.AnyAsync(c => c.IdComentario == dto.IdComentarioPadre && c.IdReporte == idReporte))
-                return BadRequest("El comentario al que respondes no existe en este reporte.");
+            if (dto.IdComentarioPadre.HasValue && !await _context.Comentarios.AnyAsync(c => c.IdComentario == dto.IdComentarioPadre && c.IdReporte == idReporte && !c.Eliminado))
+                return BadRequest("El comentario al que respondes no existe o fue eliminado.");
 
             var comentario = new Comentario
             {
