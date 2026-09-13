@@ -37,7 +37,9 @@ namespace UNAH_Reportes_API.Controllers
                     Carrera = u.Carrera != null ? u.Carrera.NombreCarrera : null,
                     Rol = u.Rol.NombreRol,
                     TipoAutenticacion = u.TipoAutenticacion,
-                    CorreoRecuperacion = u.CorreoRecuperacion
+                    CorreoRecuperacion = u.CorreoRecuperacion,
+                    ColorAvatar = u.ColorAvatar,
+                    UrlAvatar = u.UrlAvatar
                 })
                 .FirstOrDefaultAsync();
 
@@ -64,7 +66,9 @@ namespace UNAH_Reportes_API.Controllers
                     Carrera = u.Carrera == null ? null : u.Carrera.NombreCarrera,
                     Rol = u.Rol.NombreRol,
                     NumeroReportes = _context.Reportes.Count(r => r.IdUsuario == u.IdUsuario && !r.Eliminado),
-                    NumeroComentarios = _context.Comentarios.Count(c => c.IdUsuario == u.IdUsuario)
+                    NumeroComentarios = _context.Comentarios.Count(c => c.IdUsuario == u.IdUsuario && !c.Eliminado),
+                    ColorAvatar = u.ColorAvatar,
+                    UrlAvatar = u.UrlAvatar
                 })
                 .FirstOrDefaultAsync();
 

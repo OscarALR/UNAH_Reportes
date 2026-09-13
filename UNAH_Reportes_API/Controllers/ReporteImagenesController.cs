@@ -54,11 +54,12 @@ namespace UNAH_Reportes_API.Controllers
             if (archivo == null || archivo.Length == 0)
                 return BadRequest("No se recibió ningún archivo.");
 
-            if (!archivo.ContentType.StartsWith("image/"))
-                return BadRequest("Solo se permiten imágenes.");
+            var tiposPermitidos = new[] { "image/jpeg", "image/png", "image/webp", "image/gif" };
+            if (!tiposPermitidos.Contains(archivo.ContentType.ToLowerInvariant()))
+                return BadRequest("Solo se permiten imágenes JPEG, PNG, WEBP o GIF.");
 
-            if (archivo.Length > 5 * 1024 * 1024)
-                return BadRequest("La imagen no puede superar 5 MB.");
+            if (archivo.Length > 10 * 1024 * 1024)
+                return BadRequest("La imagen no puede superar 10 MB.");
 
             string url = await _blobService.SubirImagenAsync(archivo);
 

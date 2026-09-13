@@ -8,6 +8,9 @@ import { subirImagen } from '../api/imagenesApi';
 import { ordenarAlfabeticamente } from '../utils/ordenarAlfabeticamente';
 import './CrearReportePage.css';
 
+const TIPOS_IMAGEN_PERMITIDOS = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+const TAMANO_MAXIMO_IMAGEN = 10 * 1024 * 1024;
+
 function CrearReportePage() {
   const { instance, accounts } = useMsal();
   const navigate = useNavigate();
@@ -78,6 +81,13 @@ function CrearReportePage() {
 
   const seleccionarImagenes = (evento) => {
     const archivos = Array.from(evento.target.files);
+    const archivoInvalido = archivos.find((archivo) => !TIPOS_IMAGEN_PERMITIDOS.includes(archivo.type) || archivo.size > TAMANO_MAXIMO_IMAGEN);
+    if (archivoInvalido) {
+      setError('Solo puedes adjuntar imágenes JPEG, PNG, WEBP o GIF de hasta 10 MB cada una.');
+      evento.target.value = '';
+      return;
+    }
+    setError(null);
     imagenesSeleccionadas.forEach(({ vistaPrevia }) => URL.revokeObjectURL(vistaPrevia));
     setImagenesSeleccionadas(archivos.map((archivo, indice) => ({
       archivo,
@@ -309,12 +319,12 @@ function CrearReportePage() {
             <span className="crear-reporte-archivo-icono">+</span>
             <span>
               <strong>Seleccionar fotografías</strong>
-              <small>Formatos de imagen; puedes elegir varias.</small>
+              <small>JPEG, PNG, WEBP o GIF; hasta 10 MB cada una. Puedes elegir varias.</small>
             </span>
             <input
               id="imagenes"
               type="file"
-              accept="image/*"
+              accept="image/jpeg,image/png,image/webp,image/gif"
               multiple
               onChange={seleccionarImagenes}
             />

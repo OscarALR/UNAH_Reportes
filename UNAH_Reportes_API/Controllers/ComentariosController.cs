@@ -40,7 +40,10 @@ namespace UNAH_Reportes_API.Controllers
                     FechaComentario = c.FechaComentario,
                     IdComentarioPadre = c.IdComentarioPadre,
                     NumeroLikes = c.Likes.Count,
-                    LeGustaUsuarioActual = c.Likes.Any(l => l.IdUsuario == usuario.IdUsuario)
+                    LeGustaUsuarioActual = c.Likes.Any(l => l.IdUsuario == usuario.IdUsuario),
+                    Eliminado = c.Eliminado,
+                    ColorAvatar = c.Usuario.ColorAvatar,
+                    UrlAvatar = c.Usuario.UrlAvatar
                 })
                 .ToListAsync();
 
@@ -90,7 +93,10 @@ namespace UNAH_Reportes_API.Controllers
                     FechaComentario = c.FechaComentario,
                     IdComentarioPadre = c.IdComentarioPadre,
                     NumeroLikes = 0,
-                    LeGustaUsuarioActual = false
+                    LeGustaUsuarioActual = false,
+                    Eliminado = false,
+                    ColorAvatar = c.Usuario.ColorAvatar,
+                    UrlAvatar = c.Usuario.UrlAvatar
                 })
                 .FirstOrDefaultAsync();
 
@@ -103,13 +109,35 @@ namespace UNAH_Reportes_API.Controllers
             var correo = User.GetCorreoInstitucional();
             var usuario = await _context.Usuarios.SingleOrDefaultAsync(u => u.CorreoInstitucional == correo);
             if (usuario == null) return Unauthorized();
-            if (!await _context.Comentarios.AnyAsync(c => c.IdComentario == idComentario && c.IdReporte == idReporte)) return NotFound();
+            var comentario = await _context.Comentarios.SingleOrDefaultAsync(c => c.IdComentario == idComentario && c.IdReporte == idReporte);
+            if (comentario == null) return NotFound();
+            if (comentario.Eliminado) return Conflict("No se puede reaccionar a un comentario eliminado.");
             var like = await _context.ComentarioLikes.FindAsync(idComentario, usuario.IdUsuario);
             var activo = like == null;
             if (activo) _context.ComentarioLikes.Add(new ComentarioLike { IdComentario = idComentario, IdUsuario = usuario.IdUsuario });
             else _context.ComentarioLikes.Remove(like!);
             await _context.SaveChangesAsync();
             return Ok(new { leGusta = activo, numeroLikes = await _context.ComentarioLikes.CountAsync(l => l.IdComentario == idComentario) });
+        }
+
+        [HttpDelete("{idComentario:int}")]
+        public async Task<IActionResult> EliminarComentario(int idReporte, int idComentario)
+        {
+            var correo = User.GetCorreoInstitucional();
+            var usuario = await _context.Usuarios.Include(u => u.Rol).SingleOrDefaultAsync(u => u.CorreoInstitucional == correo);
+            if (usuario == null) return Unauthorized();
+            var comentario = await _context.Comentarios.SingleOrDefaultAsync(c => c.IdComentario == idComentario && c.IdReporte == idReporte);
+            if (comentario == null) return NotFound();
+            if (comentario.Eliminado) return Conflict("El comentario ya fue eliminado.");
+
+            var puedeEliminar = comentario.IdUsuario == usuario.IdUsuario || usuario.Rol.NombreRol is "Gestor" or "Administrador";
+            if (!puedeEliminar) return Forbid();
+
+            comentario.Eliminado = true;
+            comentario.FechaEliminacion = DateTime.UtcNow;
+            comentario.IdUsuarioEliminacion = usuario.IdUsuario;
+            await _context.SaveChangesAsync();
+            return NoContent();
         }
     }
 }

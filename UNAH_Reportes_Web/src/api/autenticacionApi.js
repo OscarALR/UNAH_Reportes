@@ -20,6 +20,13 @@ export async function actualizarPerfil(datos, token) {
   return response.data;
 }
 
+export async function actualizarAvatar(archivo, token) {
+  const datos = new FormData();
+  datos.append('archivo', archivo);
+  const response = await apiClient.put('/autenticacion/perfil/avatar', datos, { headers: { Authorization: `Bearer ${token}` } });
+  return response.data;
+}
+
 export async function cambiarContrasena(datos, token) {
   await apiClient.put('/autenticacion/contrasena', datos, { headers: { Authorization: `Bearer ${token}` } });
 }

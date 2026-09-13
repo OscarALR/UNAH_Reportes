@@ -14,6 +14,8 @@ namespace UNAH_Reportes_API.Models
         public string TipoAutenticacion { get; set; } = "Microsoft";
         public string? PasswordHash { get; set; }
         public string? CorreoRecuperacion { get; set; }
+        public string? ColorAvatar { get; set; }
+        public string? UrlAvatar { get; set; }
 
         public Carrera? Carrera { get; set; }
         public Rol Rol { get; set; } = null!;

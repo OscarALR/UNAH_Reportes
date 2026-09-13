@@ -9,5 +9,7 @@ namespace UNAH_Reportes_API.DTOs
         public string Rol { get; set; } = string.Empty;
         public int NumeroReportes { get; set; }
         public int NumeroComentarios { get; set; }
+        public string? ColorAvatar { get; set; }
+        public string? UrlAvatar { get; set; }
     }
 }

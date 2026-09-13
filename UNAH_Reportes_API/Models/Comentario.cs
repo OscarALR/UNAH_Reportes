@@ -11,6 +11,9 @@ namespace UNAH_Reportes_API.Models
         public string Texto { get; set; } = string.Empty;
         public DateTime FechaComentario { get; set; } = DateTime.UtcNow;
         public int? IdComentarioPadre { get; set; }
+        public bool Eliminado { get; set; }
+        public DateTime? FechaEliminacion { get; set; }
+        public int? IdUsuarioEliminacion { get; set; }
 
         public Reporte Reporte { get; set; } = null!;
         public Usuario Usuario { get; set; } = null!;

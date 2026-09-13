@@ -10,5 +10,8 @@
         public int? IdComentarioPadre { get; set; }
         public int NumeroLikes { get; set; }
         public bool LeGustaUsuarioActual { get; set; }
+        public bool Eliminado { get; set; }
+        public string? ColorAvatar { get; set; }
+        public string? UrlAvatar { get; set; }
     }
 }

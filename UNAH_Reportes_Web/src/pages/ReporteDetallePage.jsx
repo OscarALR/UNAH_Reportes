@@ -15,11 +15,12 @@ import {
   faUserGear,
   faThumbsUp,
   faReply,
+  faTrash,
   faArrowLeft,
 } from '@fortawesome/free-solid-svg-icons';
 import { getAccessToken } from '../auth/getToken';
 import { getReportePorId, alternarLikeReporte } from '../api/reportesApi';
-import { getComentarios, crearComentario, alternarLikeComentario } from '../api/comentariosApi';
+import { getComentarios, crearComentario, alternarLikeComentario, eliminarComentario } from '../api/comentariosApi';
 import { getHistorial } from '../api/historialApi';
 import { getImagenes } from '../api/imagenesApi';
 import { useUser } from '../context/UserContext';
@@ -107,22 +108,23 @@ function aplanarHilosComentarios(hilos, usuarioPadre = null) {
   ]);
 }
 
-function ComentarioPlano({ comentario, respondiendoA, responder, darLike, fechaLocal, formularioRespuesta, abrirPerfil }) {
+function ComentarioPlano({ comentario, respondiendoA, responder, darLike, eliminar, puedeEliminar, fechaLocal, formularioRespuesta, abrirPerfil }) {
   return (
     <li className="comentario-plano">
       <article className="comentario-item">
-        <button type="button" className="comentario-perfil-trigger" onClick={() => abrirPerfil(comentario.idUsuario)} aria-label={`Ver perfil de ${comentario.usuario}`}><AvatarUsuario nombre={comentario.usuario} className="comentario-avatar" /></button>
+        <button type="button" className="comentario-perfil-trigger" onClick={() => abrirPerfil(comentario.idUsuario)} aria-label={`Ver perfil de ${comentario.usuario}`}><AvatarUsuario nombre={comentario.usuario} colorAvatar={comentario.colorAvatar} urlAvatar={comentario.urlAvatar} className="comentario-avatar" /></button>
         <div className="comentario-contenido">
           <div className="comentario-cabecera">
             <button type="button" className="comentario-nombre" onClick={() => abrirPerfil(comentario.idUsuario)}>{comentario.usuario}</button> ({fechaLocal(comentario.fechaComentario)} · <time dateTime={fechaUtc(comentario.fechaComentario)} title={fechaLocal(comentario.fechaComentario)}>{tiempoRelativo(comentario.fechaComentario)}</time>)
           </div>
           <p className="comentario-texto">
-            {comentario.usuarioPadre && <><span className="comentario-mencion">{comentario.usuarioPadre}</span>{' '}</>}
-            {comentario.texto}
+            {!comentario.eliminado && comentario.usuarioPadre && <><span className="comentario-mencion">{comentario.usuarioPadre}</span>{' '}</>}
+            {comentario.eliminado ? 'Comentario eliminado.' : comentario.texto}
           </p>
           <div className="comentario-acciones">
-            <button type="button" className={comentario.leGustaUsuarioActual ? 'activo' : ''} onClick={() => darLike(comentario.idComentario)}><FontAwesomeIcon icon={faThumbsUp} /> {comentario.numeroLikes || 0}</button>
+            {!comentario.eliminado && <button type="button" className={comentario.leGustaUsuarioActual ? 'activo' : ''} onClick={() => darLike(comentario.idComentario)}><FontAwesomeIcon icon={faThumbsUp} /> {comentario.numeroLikes || 0}</button>}
             <button type="button" onClick={() => responder(comentario.idComentario)}><FontAwesomeIcon icon={faReply} /> Responder</button>
+            {!comentario.eliminado && puedeEliminar(comentario) && <button type="button" className="comentario-eliminar" onClick={() => eliminar(comentario.idComentario)}><FontAwesomeIcon icon={faTrash} /> Eliminar</button>}
           </div>
           {respondiendoA === comentario.idComentario && formularioRespuesta()}
         </div>
@@ -131,7 +133,7 @@ function ComentarioPlano({ comentario, respondiendoA, responder, darLike, fechaL
   );
 }
 
-function HiloComentariosPlano({ nodo, hilosContraidos, alternarHilo, respondiendoA, responder, darLike, fechaLocal, formularioRespuesta, abrirPerfil }) {
+function HiloComentariosPlano({ nodo, hilosContraidos, alternarHilo, respondiendoA, responder, darLike, eliminar, puedeEliminar, fechaLocal, formularioRespuesta, abrirPerfil }) {
   const respuestas = aplanarHilosComentarios(nodo.respuestas, nodo.usuario);
   const tieneRespuestas = respuestas.length > 0;
   const contraido = hilosContraidos.has(nodo.idComentario);
@@ -139,13 +141,13 @@ function HiloComentariosPlano({ nodo, hilosContraidos, alternarHilo, respondiend
 
   return (
     <li className={`comentario-hilo-plano ${tieneRespuestas && !contraido ? 'con-respuestas-visibles' : ''}`}>
-      <ComentarioPlano comentario={nodo} respondiendoA={respondiendoA} responder={responder} darLike={darLike} fechaLocal={fechaLocal} formularioRespuesta={formularioRespuesta} abrirPerfil={abrirPerfil} />
+      <ComentarioPlano comentario={nodo} respondiendoA={respondiendoA} responder={responder} darLike={darLike} eliminar={eliminar} puedeEliminar={puedeEliminar} fechaLocal={fechaLocal} formularioRespuesta={formularioRespuesta} abrirPerfil={abrirPerfil} />
       {tieneRespuestas && (contraido ? (
         <button type="button" className="comentario-respuestas-toggle mostrar" onClick={() => alternarHilo(nodo.idComentario)}>Mostrar {etiquetaRespuestas}</button>
       ) : (
         <div className="comentario-respuestas-plano">
           <ul>
-            {respuestas.map((respuesta) => <ComentarioPlano key={respuesta.idComentario} comentario={respuesta} respondiendoA={respondiendoA} responder={responder} darLike={darLike} fechaLocal={fechaLocal} formularioRespuesta={formularioRespuesta} abrirPerfil={abrirPerfil} />)}
+            {respuestas.map((respuesta) => <ComentarioPlano key={respuesta.idComentario} comentario={respuesta} respondiendoA={respondiendoA} responder={responder} darLike={darLike} eliminar={eliminar} puedeEliminar={puedeEliminar} fechaLocal={fechaLocal} formularioRespuesta={formularioRespuesta} abrirPerfil={abrirPerfil} />)}
           </ul>
           <button type="button" className="comentario-respuestas-toggle" onClick={() => alternarHilo(nodo.idComentario)}>Contraer respuestas</button>
         </div>
@@ -163,7 +165,7 @@ function FichaPerfilUsuario({ perfil, cargando, error, cerrar }) {
       <section className="perfil-publico-ficha ui-entrada" role="dialog" aria-modal="true" aria-label={`Perfil de ${nombre}`} onClick={(e) => e.stopPropagation()}>
         <button type="button" className="perfil-publico-cerrar" onClick={cerrar} aria-label="Cerrar perfil">×</button>
         {cargando ? <p>Cargando perfil...</p> : error ? <p>{error}</p> : <>
-          <AvatarUsuario nombre={nombre} className="perfil-publico-avatar" />
+          <AvatarUsuario nombre={nombre} colorAvatar={perfil.colorAvatar} urlAvatar={perfil.urlAvatar} className="perfil-publico-avatar" />
           <h2>{nombre}</h2>
           <p className="perfil-publico-rol">{perfil.rol}</p>
           <dl>
@@ -320,6 +322,21 @@ function ReporteDetallePage() {
     const resultado = await alternarLikeComentario(id, idComentario, token);
     setComentarios((actuales) => actuales.map((comentario) => comentario.idComentario === idComentario ? { ...comentario, leGustaUsuarioActual: resultado.leGusta, numeroLikes: resultado.numeroLikes } : comentario));
   };
+
+  const eliminarComentarioActual = async (idComentario) => {
+    if (!window.confirm('¿Eliminar este comentario? Se conservará la conversación, pero su contenido dejará de mostrarse.')) return;
+    try {
+      const token = await getAccessToken(instance, accounts);
+      await eliminarComentario(id, idComentario, token);
+      setRespondiendoA((actual) => actual === idComentario ? null : actual);
+      setComentarios(await getComentarios(id, token));
+    } catch (err) {
+      console.error('Error eliminando comentario:', err);
+      alert(err.response?.data || 'No se pudo eliminar el comentario.');
+    }
+  };
+
+  const puedeEliminarComentario = (comentario) => comentario.idUsuario === usuario?.idUsuario || esGestorOAdmin;
   const abrirPerfil = async (idUsuario) => {
     if (!idUsuario) return;
     setPerfil(null);
@@ -501,7 +518,7 @@ function ReporteDetallePage() {
         <p>Sin comentarios todavía.</p>
       ) : (
         <ul className="comentarios-lista comentarios-planos">
-          {hilosVisibles.map((hilo) => <HiloComentariosPlano key={hilo.idComentario} nodo={hilo} hilosContraidos={hilosContraidos} alternarHilo={alternarHilo} respondiendoA={respondiendoA} responder={setRespondiendoA} darLike={darLikeComentario} fechaLocal={fechaLocal} formularioRespuesta={() => formularioComentario(true)} abrirPerfil={abrirPerfil} />)}
+          {hilosVisibles.map((hilo) => <HiloComentariosPlano key={hilo.idComentario} nodo={hilo} hilosContraidos={hilosContraidos} alternarHilo={alternarHilo} respondiendoA={respondiendoA} responder={setRespondiendoA} darLike={darLikeComentario} eliminar={eliminarComentarioActual} puedeEliminar={puedeEliminarComentario} fechaLocal={fechaLocal} formularioRespuesta={() => formularioComentario(true)} abrirPerfil={abrirPerfil} />)}
         </ul>
       )}
       {comentarios.length > 5 && <div className="comentarios-paginacion">{comentariosVisibles < comentarios.length ? <button type="button" onClick={() => setComentariosVisibles(comentarios.length)}>Ver más comentarios</button> : <button type="button" onClick={() => setComentariosVisibles(5)}>Ver menos comentarios</button>}</div>}

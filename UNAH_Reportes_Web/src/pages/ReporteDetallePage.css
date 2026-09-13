@@ -829,6 +829,8 @@
 
 .comentario-acciones, .comentarios-controles { display: flex; align-items: center; flex-wrap: wrap; gap: 9px; margin-top: 8px; }
 .comentario-acciones button, .comentarios-controles button, .comentarios-controles select { border: 1px solid var(--color-border); border-radius: 7px; background: var(--color-bg); color: var(--color-text-secondary); cursor: pointer; font-size: 12px; padding: 5px 8px; }
+.comentario-acciones .comentario-eliminar { color: #c94652; }
+.comentario-acciones .comentario-eliminar:hover { border-color: #c94652; background: rgba(201, 70, 82, .1); }
 
 @media (max-width: 640px) {
     .comentario-respuestas-plano {

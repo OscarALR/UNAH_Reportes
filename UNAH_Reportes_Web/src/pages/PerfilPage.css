@@ -3,6 +3,14 @@
 .perfil-page h2 { margin: 0; }
 .perfil-page > span { display: block; margin: 8px 0 20px; color: var(--color-text-secondary); }
 .perfil-page form { display: grid; gap: 15px; padding: 22px; border: 1px solid var(--color-border); border-radius: var(--radius); background: var(--color-surface); }
+.perfil-avatar { display: grid; grid-template-columns: auto 1fr auto auto; align-items: center; gap: 12px; padding-bottom: 15px; border-bottom: 1px solid var(--color-border); }
+.perfil-avatar-vista { width: 58px; height: 58px; font-size: 16px; }
+.perfil-avatar strong, .perfil-avatar small { display: block; }
+.perfil-avatar small { margin-top: 3px; color: var(--color-text-secondary); font-size: 12px; font-weight: 400; }
+.perfil-color { justify-items: center; }
+.perfil-page .perfil-color input { width: 42px; height: 34px; padding: 2px; cursor: pointer; }
+.perfil-imagen { display: inline-flex !important; align-items: center; min-height: 38px; padding: 0 12px; border-radius: 8px; background: var(--color-bg); color: var(--color-text) !important; cursor: pointer; }
+.perfil-imagen input { position: absolute; width: 1px; height: 1px; opacity: 0; }
 .perfil-page .perfil-seccion-contrasena { margin-top: 18px; }
 .perfil-seccion-contrasena h3, .perfil-seccion-contrasena p { margin: 0; }
 .perfil-seccion-contrasena p { color: var(--color-text-secondary); font-size: 13px; }
@@ -16,3 +24,4 @@
 .perfil-page input:disabled { opacity: .65; cursor: not-allowed; }
 .perfil-page form > button { justify-self: start; border: 0; border-radius: 8px; background: var(--color-primary); color: #fff; cursor: pointer; padding: 11px 16px; font-weight: 700; }
 .perfil-mensaje { margin: 0; color: var(--color-text-secondary); }
+@media (max-width: 600px) { .perfil-avatar { grid-template-columns: auto 1fr; } .perfil-color, .perfil-imagen { grid-column: span 1; } }

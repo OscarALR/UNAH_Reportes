@@ -212,7 +212,7 @@ function Layout({ children }) {
               </button>
               <div className="layout-user-menu">
               <button type="button" className="layout-user" onClick={() => setMenuUsuarioAbierto((abierto) => !abierto)} aria-expanded={menuUsuarioAbierto}>
-                <AvatarUsuario nombre={usuario?.nombreCompleto ?? '?'} className="layout-avatar" />
+                <AvatarUsuario nombre={usuario?.nombreCompleto ?? '?'} colorAvatar={usuario?.colorAvatar} urlAvatar={usuario?.urlAvatar} className="layout-avatar" />
 
                 <div className="layout-user-info">
                   <span className="layout-username">{usuario?.nombreCompleto}</span>

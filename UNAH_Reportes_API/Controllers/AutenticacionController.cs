@@ -21,10 +21,11 @@ namespace UNAH_Reportes_API.Controllers
         private readonly IPasswordHasher<Usuario> _passwordHasher;
         private readonly LocalTokenService _tokens;
         private readonly CorreoRecuperacionService _correoRecuperacion;
+        private readonly BlobStorageService _blobStorage;
         private readonly ILogger<AutenticacionController> _logger;
 
-        public AutenticacionController(AppDbContext context, IPasswordHasher<Usuario> passwordHasher, LocalTokenService tokens, CorreoRecuperacionService correoRecuperacion, ILogger<AutenticacionController> logger)
-        { _context = context; _passwordHasher = passwordHasher; _tokens = tokens; _correoRecuperacion = correoRecuperacion; _logger = logger; }
+        public AutenticacionController(AppDbContext context, IPasswordHasher<Usuario> passwordHasher, LocalTokenService tokens, CorreoRecuperacionService correoRecuperacion, BlobStorageService blobStorage, ILogger<AutenticacionController> logger)
+        { _context = context; _passwordHasher = passwordHasher; _tokens = tokens; _correoRecuperacion = correoRecuperacion; _blobStorage = blobStorage; _logger = logger; }
 
         [AllowAnonymous]
         [HttpGet("carreras")]
@@ -67,10 +68,29 @@ namespace UNAH_Reportes_API.Controllers
             if (!await _context.Carreras.AnyAsync(c => c.IdCarrera == dto.IdCarrera)) return BadRequest("La carrera seleccionada no existe.");
             usuario.NombreCompleto = dto.NombreCompleto.Trim();
             usuario.IdCarrera = dto.IdCarrera;
+            usuario.ColorAvatar = dto.ColorAvatar;
             if (usuario.TipoAutenticacion is "Local" or "Prueba" && !string.IsNullOrWhiteSpace(dto.CorreoRecuperacion))
                 usuario.CorreoRecuperacion = dto.CorreoRecuperacion.Trim().ToLowerInvariant();
             await _context.SaveChangesAsync();
             await _context.Entry(usuario).Reference(u => u.Carrera).LoadAsync();
+            return Ok(MapearUsuario(usuario));
+        }
+
+        [Authorize]
+        [HttpPut("perfil/avatar")]
+        public async Task<ActionResult<UsuarioDTO>> ActualizarAvatar(IFormFile? archivo)
+        {
+            var correo = User.GetCorreoInstitucional();
+            var usuario = await _context.Usuarios.Include(u => u.Carrera).Include(u => u.Rol).SingleOrDefaultAsync(u => u.CorreoInstitucional == correo);
+            if (usuario == null) return Unauthorized();
+            if (archivo == null || archivo.Length == 0) return BadRequest("No se recibió ninguna imagen.");
+
+            var tiposPermitidos = new[] { "image/jpeg", "image/png", "image/webp", "image/gif" };
+            if (!tiposPermitidos.Contains(archivo.ContentType.ToLowerInvariant())) return BadRequest("Solo se permiten imágenes JPEG, PNG, WEBP o GIF.");
+            if (archivo.Length > 5 * 1024 * 1024) return BadRequest("La imagen no puede superar 5 MB.");
+
+            usuario.UrlAvatar = await _blobStorage.SubirImagenAsync(archivo);
+            await _context.SaveChangesAsync();
             return Ok(MapearUsuario(usuario));
         }
 
@@ -145,6 +165,6 @@ namespace UNAH_Reportes_API.Controllers
         private static string CalcularHashToken(string token) => Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(token)));
 
         private SesionLocalDTO CrearSesion(Usuario usuario) => new() { Token = _tokens.CrearToken(usuario), Usuario = MapearUsuario(usuario) };
-        private static UsuarioDTO MapearUsuario(Usuario usuario) => new() { IdUsuario = usuario.IdUsuario, CorreoInstitucional = usuario.CorreoInstitucional, NombreCompleto = usuario.NombreCompleto, Carrera = usuario.Carrera?.NombreCarrera, Rol = usuario.Rol.NombreRol, TipoAutenticacion = usuario.TipoAutenticacion, CorreoRecuperacion = usuario.CorreoRecuperacion };
+        private static UsuarioDTO MapearUsuario(Usuario usuario) => new() { IdUsuario = usuario.IdUsuario, CorreoInstitucional = usuario.CorreoInstitucional, NombreCompleto = usuario.NombreCompleto, Carrera = usuario.Carrera?.NombreCarrera, Rol = usuario.Rol.NombreRol, TipoAutenticacion = usuario.TipoAutenticacion, CorreoRecuperacion = usuario.CorreoRecuperacion, ColorAvatar = usuario.ColorAvatar, UrlAvatar = usuario.UrlAvatar };
     }
 }

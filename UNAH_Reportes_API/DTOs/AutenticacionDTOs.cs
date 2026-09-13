@@ -29,6 +29,8 @@ namespace UNAH_Reportes_API.DTOs
         [Required, StringLength(150, MinimumLength = 5), RegularExpression(@"^[\p{L}\p{M}]+(?: [\p{L}\p{M}]+)*$", ErrorMessage = "El nombre completo solo puede contener letras y espacios.")] public string NombreCompleto { get; set; } = string.Empty;
         [Range(1, int.MaxValue)] public int IdCarrera { get; set; }
         [EmailAddress, StringLength(150)] public string? CorreoRecuperacion { get; set; }
+        [RegularExpression("^#[0-9A-Fa-f]{6}$", ErrorMessage = "El color del avatar no es válido.")]
+        public string? ColorAvatar { get; set; }
     }
 
     public class CambiarContrasenaDTO

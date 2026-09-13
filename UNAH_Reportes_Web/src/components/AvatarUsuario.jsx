@@ -8,8 +8,9 @@ function tonoAvatar(nombre = '') {
   return [...nombre].reduce((total, caracter) => total + caracter.charCodeAt(0), 0) % 360;
 }
 
-function AvatarUsuario({ nombre, className = '' }) {
-  return <span className={`avatar-usuario ${className}`} style={{ '--tono-avatar': tonoAvatar(nombre) }} aria-label={`Avatar de ${nombre}`}>{inicialesUsuario(nombre)}</span>;
+function AvatarUsuario({ nombre, className = '', colorAvatar, urlAvatar }) {
+  const estilo = colorAvatar ? { '--color-avatar': colorAvatar } : { '--tono-avatar': tonoAvatar(nombre) };
+  return <span className={`avatar-usuario ${className}`} style={estilo} aria-label={`Avatar de ${nombre}`}>{urlAvatar ? <img src={urlAvatar} alt="" /> : inicialesUsuario(nombre)}</span>;
 }
 
 export default AvatarUsuario;
