@@ -1,6 +1,7 @@
-# RiUVS | UNAH Reportes
+# Reporte de Incidencias UNAH VS
+<img width="2044" height="916" alt="imgriuvs" src="https://github.com/user-attachments/assets/d60cde3f-0fba-4e1e-9e42-542151757c8f" />
 
-Plataforma web para registrar, consultar y dar seguimiento a incidencias en la Universidad Nacional Autónoma de Honduras – Valle de Sula (UNAH-VS).
+Plataforma web para registrar, consultar y dar seguimiento a incidencias en la Universidad Nacional Autónoma de Honduras en el Valle de Sula (UNAH-VS).
 
 Los usuarios pueden crear reportes con fotografías, consultar su avance y apoyar incidencias de la comunidad. Los gestores y administradores cuentan con herramientas para asignar, actualizar y analizar los reportes.
 
@@ -14,6 +15,8 @@ Los usuarios pueden crear reportes con fotografías, consultar su avance y apoya
 - Panel de indicadores y tendencia de incidencias.
 - Administración de usuarios, categorías, carreras, edificios, espacios, estados y tipos de espacio.
 - Notificaciones y archivo lógico de reportes.
+<img width="2019" height="992" alt="image" src="https://github.com/user-attachments/assets/e25dd83a-c923-4fe8-b049-e60b1465c010" />
+
 
 ## Arquitectura
 
@@ -31,7 +34,6 @@ Los usuarios pueden crear reportes con fotografías, consultar su avance y apoya
 ```text
 UNAH_Reportes_Web/   # Aplicación React
 UNAH_Reportes_API/   # API ASP.NET Core
-DatabaseScripts/     # Scripts de base de datos, en orden cronológico
 .github/workflows/   # Flujos de compilación y despliegue
 ```
 
@@ -107,6 +109,16 @@ Antes de publicar, verifica en la configuración de App Service:
 - Los archivos `.env.local`, `appsettings.Development.json` y `appsettings.Production.json` están excluidos del repositorio.
 - El frontend contiene únicamente `VITE_API_URL`; nunca coloques secretos en variables `VITE_*`, pues se incluyen en el navegador.
 
-## Licencia
+## Autoría
+<img width="1992" height="1066" alt="image" src="https://github.com/user-attachments/assets/150a8157-595a-46ea-a1ba-547c622bed79" />
 
-Proyecto académico desarrollado para UNAH-VS. Define una licencia antes de aceptar contribuciones externas.
+Para acceder directamente al sitio web, el enlace es el siguiente: https://witty-mushroom-0b9725c10.3.azurestaticapps.net/
+
+Correo electrónico de prueba como Estudiante: usuario.prueba@unah.hn
+Contraseña: @pruebariuvs26
+
+Al principio suele mostrar un mensaje expresando que "el servicio se está cargando", esto es debido a las limitancias que impone el plan de suscripción básico de Microsoft Azure al cual estoy suscrito, recomiendo esperar alrededor de 30 segundos para acceder ya sea mediante una cuenta de Microsoft personal (No de escuela/universitaria o empresarial) o usando/creando una cuenta local.
+
+Para mayor información, comunicate a oalopezr5@gmail.com
+
+Proyecto académico desarrollado por [OscarALR](https://github.com/OscarALR) de índole personal.
